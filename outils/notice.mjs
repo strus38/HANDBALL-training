@@ -56,6 +56,7 @@ const LEGENDES = {
   bibliotheque: 'La bibliotheque, filtree sur les exercices d attaque.',
   bilan: 'Le bilan, ici sur tout l historique.',
   'mode-terrain': 'Le mode terrain : un exercice a la fois, avec le temps restant.',
+  collage: 'Un texte dicte sur le telephone, colle et reparti dans les champs.',
 }
 
 /** Remplit les emplacements de capture, ou les retire s'il n'y en a pas. */
@@ -295,7 +296,7 @@ writeFileSync(join(racine, 'src', 'notice', 'notice.genere.html'), html)
 console.log('Notice ecrite : src/notice/notice.genere.html')
 
 if (versDist) {
-  const captures = await capturer(['accueil', 'terrain', 'bibliotheque', 'bilan', 'mode-terrain'])
+  const captures = await capturer(['accueil', 'terrain', 'bibliotheque', 'bilan', 'mode-terrain', 'collage'])
   const images = new Map(
     captures.map(({ nom, chemin }) => [nom, readFileSync(chemin).toString('base64')]),
   )

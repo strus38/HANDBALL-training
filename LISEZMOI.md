@@ -275,6 +275,59 @@ droit court vers tel point, puis passe a l'ailier ») et construits par le meme
 moteur que le trace d'un entraineur a la souris. Positions, ballon qui suit et
 orientations en decoulent, au lieu d'etre recopies a la main dans les donnees.
 
+## Dicter plutot qu'ecrire
+
+Remplir un « Deroulement » de dix lignes au clavier decourage. Deux chemins
+existent, et ils ne se valent pas.
+
+### Coller un texte dicte sur son telephone — la voie fiable
+
+<!-- notice:capture collage -->
+
+Le bouton **« Coller un texte dicte »**, en haut du detail de l'exercice.
+
+Dictez dans les notes de votre telephone, puis collez le texte avec Ctrl+V.
+C'est la meilleure option et de loin : la dictee d'un telephone tourne **sur
+l'appareil**, elle fonctionne **sans connexion** — donc dans un gymnase — elle
+est gratuite, et elle connait le francais bien mieux que ce qu'un navigateur
+saurait faire tourner hors ligne.
+
+Si vous dictez les intitules — « mise en place », « deroulement », « points
+cles », « variantes » — le texte se range tout seul dans les bons champs. La
+fenetre annonce **avant d'appliquer** ou chaque partie va atterrir.
+
+Sans intitule reconnu, tout part dans le fonctionnement, d'un bloc.
+**L'application ne devine pas** : un paragraphe range au jugement se retrouve
+la ou personne ne le cherche, et l'on croit avoir perdu sa dictee. Un bloc dans
+un seul champ se recoupe d'un copier-coller ; un texte eparpille, non.
+
+Le texte colle **s'ajoute** a ce qui est deja ecrit, il ne le remplace jamais.
+
+### Le micro a cote des champs — un complement, la ou il marche
+
+Un bouton 🎤 apparait a droite de l'etiquette des champs longs. Il dicte
+directement dans le champ, phrase par phrase, chacune sur sa ligne.
+
+**Il exige une connexion internet.** La reconnaissance vocale du navigateur
+envoie l'audio a un service en ligne : elle ne fonctionne pas dans un gymnase
+sans reseau. C'est une aide pour preparer sa seance chez soi, pas davantage, et
+l'application le dit plutot que de vous laisser parler trente secondes pour
+rien.
+
+Le bouton **n'apparait pas du tout** sur un navigateur qui ne sait pas
+transcrire — Firefox, notamment. Un bouton grise a cote de chaque champ serait
+un reproche permanent ; absent, il ne coute rien.
+
+La aussi, ce qui est reconnu **s'ajoute** au texte existant : une phrase mal
+comprise ne peut pas effacer un paragraphe.
+
+### Et apres
+
+Le fonctionnement n'est pas un champ comme les autres : c'est le seul que
+l'application sache relire pour **proposer les deplacements sur le terrain**.
+Une fois le deroulement en place, le menu ⋯ du terrain propose ce qu'il y
+reconnait. Dicter alimente donc directement le dessin.
+
 ## Mener la seance : le mode terrain
 
 <!-- notice:capture mode-terrain -->

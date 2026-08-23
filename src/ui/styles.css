@@ -3082,6 +3082,112 @@ button,
   border-color: var(--bordure);
 }
 
+/* ---------------------------------------------------------------- Dictee */
+/*
+  Le bouton micro n'apparait que la ou le navigateur sait transcrire. Il n'est
+  jamais affiche grise avec une explication : un bouton mort a cote de chaque
+  champ est un reproche permanent, alors qu'absent il ne coute rien.
+*/
+/* L etiquette accueille le micro a sa droite ; un message d erreur passe a la ligne. */
+.champ > span.avec-dictee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dictee-message {
+  flex-basis: 100%;
+}
+
+.bouton-dictee {
+  margin-left: auto;
+  width: 28px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--rayon-petit);
+  background: transparent;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.bouton-dictee:hover {
+  border-color: var(--bordure-forte);
+  background: var(--surface-2);
+}
+
+/* Le rouge dit « ca ecoute » : c'est la seule information qui compte a cet instant. */
+.bouton-dictee.ecoute {
+  background: var(--danger-fond);
+  border-color: var(--danger);
+}
+
+.bouton-dictee:focus-visible {
+  outline: 2px solid var(--bleu-500);
+  outline-offset: 1px;
+}
+
+.dictee-message {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  font-style: normal;
+  color: var(--alerte);
+}
+
+.modale.coller-dictee {
+  width: min(720px, 100%);
+}
+
+.corps-coller {
+  padding: 16px 18px;
+  overflow-y: auto;
+}
+
+.explication-dictee {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  color: var(--texte-doux);
+}
+
+.zone-collage {
+  width: 100%;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.apercu-repartition {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--jaune);
+  background: var(--jaune-clair);
+  border-radius: var(--rayon-petit);
+  font-size: 13px;
+  color: var(--bleu-900);
+}
+
+.suite-collage {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: var(--texte-doux);
+}
+
+.actions-modale {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--bordure);
+  background: var(--surface);
+  flex-wrap: wrap;
+}
+
 /* ------------------------------------------------------------ Mode terrain */
 /*
   La seance telle qu'on la mene. Tout est dimensionne pour une tablette tenue

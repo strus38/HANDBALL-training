@@ -42,6 +42,9 @@ import { nomDeFichierSur } from '../platform/fichiers'
 import { refleterSchema } from '../domain/symetrie'
 import { proposerMouvements, type EtapeProposee } from '../domain/analyseTexte'
 import { PropositionMouvements } from './PropositionMouvements'
+import { EtiquetteAvecDictee } from './Dictee'
+import { CollerDictee } from './CollerDictee'
+import { ajouterFragment, type ChampDicte, type TexteReparti } from '../domain/dictee'
 import { redactionPossible, redigerConsigne, redigerDeroulement } from '../domain/redaction'
 import { useConfirmation } from './Dialogue'
 import { useHistorique } from './useHistorique'
@@ -93,6 +96,7 @@ export function FicheExercice({
   const [aimantation, setAimantation] = useState(true)
   const cadre = useRef<HTMLDivElement>(null)
   const [propositions, setPropositions] = useState<EtapeProposee[] | undefined>()
+  const [collageOuvert, setCollageOuvert] = useState(false)
   const confirmer = useConfirmation()
   const separation = useSeparation('fiche', 0.54)
   /**
@@ -475,6 +479,27 @@ export function FicheExercice({
    * « Objectifs » et « Points cles » s'y ajoutent ; une rubrique laissee vide
    * ne s'imprime pas.
    */
+  /**
+   * Depose une phrase dictee dans un champ.
+   *
+   * Elle s AJOUTE au texte deja present, sur sa propre ligne. Remplacer
+   * laisserait une phrase mal comprise effacer un paragraphe entier.
+   */
+  const dicter = (cle: ChampDicte, fragment: string) =>
+    onModifier({ [cle]: ajouterFragment(exercice[cle], fragment) })
+
+  /**
+   * Applique un bloc colle : chaque champ vise est complete, pas remplace.
+   */
+  const appliquerCollage = (reparti: TexteReparti) => {
+    const maj: Partial<Exercice> = {}
+    for (const [cle, texte] of Object.entries(reparti) as [ChampDicte, string][]) {
+      maj[cle] = ajouterFragment(exercice[cle], texte)
+    }
+    onModifier(maj)
+    setCollageOuvert(false)
+  }
+
   const champ = (
     cle:
       | 'objectifs'
@@ -499,6 +524,10 @@ export function FicheExercice({
 
   return (
     <div className="fiche">
+      {collageOuvert && (
+        <CollerDictee onAppliquer={appliquerCollage} onFermer={() => setCollageOuvert(false)} />
+      )}
+
       {propositions && (
         <PropositionMouvements
           schema={schema}
@@ -824,6 +853,19 @@ export function FicheExercice({
               </span>
             )}
             <div className="pousse">
+              {/*
+                La dictee du telephone tourne SUR L APPAREIL : elle marche sans
+                reseau, dans un gymnase, et connait le francais. C est la voie
+                fiable ; le micro des champs n est qu un complement pour ceux
+                qui preparent leur seance connectes.
+              */}
+              <button
+                className="bouton discret"
+                onClick={() => setCollageOuvert(true)}
+                title="Coller un texte dicte sur votre telephone, et le repartir dans les champs"
+              >
+                Coller un texte dicte
+              </button>
               <BoutonPleinEcran
                 actif={plein === 'detail'}
                 zone="Le detail"
@@ -933,8 +975,17 @@ export function FicheExercice({
             </label>
           </div>
 
+          {/*
+            Les champs longs portent un micro a droite de leur etiquette, la ou
+            le navigateur sait transcrire. Ailleurs, l'etiquette est celle
+            d'avant : on ne montre pas une commande morte.
+          */}
           <label className="champ">
-            <span>Objectifs</span>
+            <EtiquetteAvecDictee
+              libelle="Objectifs"
+              quoi="les objectifs"
+              onTexte={(f) => dicter('objectifs', f)}
+            />
             <textarea rows={2} placeholder="Ce que les joueurs doivent progresser" {...champ('objectifs')} />
           </label>
           <label className="champ">
@@ -946,7 +997,11 @@ export function FicheExercice({
             />
           </label>
           <label className="champ">
-            <span>Mise en place</span>
+            <EtiquetteAvecDictee
+              libelle="Mise en place"
+              quoi="la mise en place"
+              onTexte={(f) => dicter('misePlace', f)}
+            />
             <textarea
               rows={3}
               placeholder="Espaces a delimiter, colonnes, materiel a poser"
@@ -954,7 +1009,11 @@ export function FicheExercice({
             />
           </label>
           <label className="champ">
-            <span>Fonctionnement</span>
+            <EtiquetteAvecDictee
+              libelle="Fonctionnement"
+              quoi="le fonctionnement"
+              onTexte={(f) => dicter('fonctionnement', f)}
+            />
             <textarea
               rows={5}
               placeholder="Comment la situation se deroule une fois lancee"
@@ -962,7 +1021,11 @@ export function FicheExercice({
             />
           </label>
           <label className="champ">
-            <span>Regulation</span>
+            <EtiquetteAvecDictee
+              libelle="Regulation"
+              quoi="la regulation"
+              onTexte={(f) => dicter('regulation', f)}
+            />
             <textarea
               rows={3}
               placeholder="Regles, contraintes, bareme de points"
@@ -970,11 +1033,19 @@ export function FicheExercice({
             />
           </label>
           <label className="champ">
-            <span>Points cles</span>
+            <EtiquetteAvecDictee
+              libelle="Points cles"
+              quoi="les points cles"
+              onTexte={(f) => dicter('pointsCles', f)}
+            />
             <textarea rows={3} placeholder="Ce que l'entraineur observe et corrige" {...champ('pointsCles')} />
           </label>
           <label className="champ">
-            <span>Evolution</span>
+            <EtiquetteAvecDictee
+              libelle="Evolution"
+              quoi="les evolutions"
+              onTexte={(f) => dicter('evolution', f)}
+            />
             <textarea rows={3} placeholder="Simplifier, complexifier, faire evoluer" {...champ('evolution')} />
           </label>
           <label className="champ">
@@ -1023,6 +1094,20 @@ export function FicheExercice({
                         .join('/')}`
                     : '')}
             </p>
+            {/* Le retour d apres-seance se dicte aussi bien qu il s ecrit. */}
+            <label className="champ">
+              <EtiquetteAvecDictee
+                libelle="Ce qui a marche"
+                quoi="votre retour"
+                onTexte={(f) =>
+                  onModifier({
+                    evaluation: {
+                      ...exercice.evaluation,
+                      commentaire: ajouterFragment(exercice.evaluation.commentaire, f),
+                    },
+                  })
+                }
+              />
             <textarea
               rows={3}
               placeholder="Ce qui a marche ou non, a relire avant de le reprogrammer"
@@ -1031,6 +1116,7 @@ export function FicheExercice({
                 onModifier({ evaluation: { ...exercice.evaluation, commentaire: e.target.value } })
               }
             />
+            </label>
           </div>
         </section>
       </div>

@@ -218,6 +218,34 @@ const SCENARIOS = [
     `,
   },
   {
+    nom: 'collage',
+    taille: '1400,860',
+    etapes: `
+      pas(() => clicContenant('.liste-seances button', 'attaque placee'))
+      pas(() => clicContenant('.lien-exercice', 'Croise arriere'))
+      pas(() => clic('Coller un texte dicte'))
+      pas(() => {
+        const zone = par('.zone-collage')
+        if (!zone) return
+        const poseur = Object.getOwnPropertyDescriptor(
+          window.HTMLTextAreaElement.prototype,
+          'value',
+        ).set
+        poseur.call(
+          zone,
+          'Mise en place : deux colonnes a neuf metres, un plot devant chacune.' +
+            String.fromCharCode(10) +
+            'Deroulement : le demi-centre engage, passe a l arriere droit qui fixe son defenseur, puis croise avec l ailier.' +
+            String.fromCharCode(10) +
+            'Points cles : la passe se donne a hauteur de hanche, dans le sens de la course.' +
+            String.fromCharCode(10) +
+            'Variantes : ajouter un defenseur flottant sur l intervalle.',
+        )
+        zone.dispatchEvent(new Event('input', { bubbles: true }))
+      })
+    `,
+  },
+  {
     nom: 'mode-terrain',
     taille: '1500,950',
     etapes: `

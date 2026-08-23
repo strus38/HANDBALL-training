@@ -322,6 +322,85 @@ pas(() => {
   // premier exercice ne doit pas avoir ete remplacee par un temps mesure.
   r.seance_retrouvee = !!par('.liste-exercices, .lien-exercice')
 })
+
+// ------------------------------------------------------------------ Dictee
+// Deux chemins distincts, et le second doit marcher sans reseau :
+//  - le micro a cote des champs longs, qui passe par internet ;
+//  - « Coller un texte dicte », pour la dictee du telephone.
+pas(() => {
+  const lien = par('.lien-exercice')
+  r.retour_fiche = !!lien
+  if (lien) lien.click()
+})
+pas(() => {
+  r.fiche_rouverte = !!par('.colonne-detail')
+  // Le micro n'existe QUE si le navigateur sait transcrire. On mesure les deux
+  // ensemble : un bouton present sans support serait un bouton mort.
+  r.moteur_vocal = !!(window.SpeechRecognition || window.webkitSpeechRecognition)
+  r.micros = tous('.bouton-dictee').length
+  const micro = par('.bouton-dictee')
+  r.micro_dans_etiquette = micro ? !!micro.closest('.champ > span, span.avec-dictee') : false
+  // Un micro dans un <label> ne doit pas emporter le clic vers le champ.
+  r.micro_est_bouton = micro ? micro.tagName === 'BUTTON' && micro.type === 'button' : false
+  const posValeur = Object.getOwnPropertyDescriptor(
+    window.HTMLTextAreaElement.prototype,
+    'value',
+  ).set
+  const champFonc = tous('.colonne-detail label.champ').find((l) =>
+    /Fonctionnement/i.test(l.textContent),
+  )
+  const zoneFonc = champFonc && champFonc.querySelector('textarea')
+  r.temoin_pose = !!zoneFonc
+  if (zoneFonc) {
+    posValeur.call(zoneFonc, 'TEMOIN A PRESERVER')
+    zoneFonc.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+  const coller = tous('button').find((b) => /Coller un texte dicte/.test(b.textContent))
+  r.bouton_coller = !!coller
+  r.coller_differe = true
+})
+pas(() => {
+  const coller = tous('button').find((b) => /Coller un texte dicte/.test(b.textContent))
+  if (coller) coller.click()
+})
+pas(() => {
+  const zone = par('.zone-collage')
+  r.fenetre_collage = !!zone
+  if (zone) {
+    // On simule un collage : React ecoute onChange, pas la propriete brute.
+    const poseur = Object.getOwnPropertyDescriptor(
+      window.HTMLTextAreaElement.prototype,
+      'value',
+    ).set
+    poseur.call(
+      zone,
+      'Mise en place : deux colonnes a neuf metres.\\n' +
+        'Deroulement : le demi-centre engage puis passe a l arriere droit.\\n' +
+        'Points cles : la passe se donne a hauteur de hanche.',
+    )
+    zone.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+})
+pas(() => {
+  const apercu = par('.apercu-repartition')
+  r.apercu_annonce = apercu ? apercu.textContent.trim() : null
+  const appliquer = tous('.actions-modale button').find((b) => /Repartir/.test(b.textContent))
+  r.bouton_repartir = !!appliquer
+  if (appliquer) appliquer.click()
+})
+pas(() => {
+  r.collage_ferme = !par('.zone-collage')
+  const valeur = (etiquette) => {
+    const champ = tous('.colonne-detail label.champ').find((l) =>
+      new RegExp(etiquette, 'i').test(l.textContent),
+    )
+    const zone = champ && champ.querySelector('textarea')
+    return zone ? zone.value : null
+  }
+  r.mise_en_place = valeur('Mise en place')
+  r.fonctionnement = valeur('Fonctionnement')
+  r.points_cles = valeur('Points cles')
+})
 // Le demarrage sonde le stockage : il n'est pas instantane. On attend qu'il
 // aboutisse avant de jouer le scenario, sans quoi on mesurerait l'ecran de
 // chargement plutot que l'application.
@@ -542,6 +621,53 @@ verifier(
 )
 verifier('on peut quitter le mode terrain', r.mode_terrain_ferme === true)
 verifier('et l on retrouve la seance', r.seance_retrouvee === true)
+
+console.log('')
+console.log('5. Dictee')
+verifier('on rouvre une fiche', r.fiche_rouverte === true)
+verifier(
+  'le micro apparait exactement quand le navigateur sait transcrire',
+  r.moteur_vocal ? r.micros >= 6 : r.micros === 0,
+  `(moteur ${r.moteur_vocal}, ${r.micros} micros : un bouton mort serait pire qu'aucun bouton)`,
+)
+if (r.moteur_vocal) {
+  verifier('le micro est dans l etiquette du champ', r.micro_dans_etiquette === true)
+  verifier(
+    'et c est un bouton de type button',
+    r.micro_est_bouton === true,
+    "(sinon il envoie le formulaire ou double le clic depuis son <label>)",
+  )
+}
+verifier('« Coller un texte dicte » est atteignable', r.bouton_coller === true)
+verifier('la fenetre de collage s ouvre', r.fenetre_collage === true)
+verifier(
+  'la repartition est annoncee AVANT d agir',
+  /Mise en place/.test(r.apercu_annonce ?? '') && /Points cles/.test(r.apercu_annonce ?? ''),
+  JSON.stringify(r.apercu_annonce),
+)
+verifier('le bouton de repartition est propose', r.bouton_repartir === true)
+verifier('la fenetre se referme apres application', r.collage_ferme === true)
+verifier(
+  'la mise en place a bien atterri',
+  /deux colonnes a neuf metres/.test(r.mise_en_place ?? ''),
+  JSON.stringify(r.mise_en_place),
+)
+verifier(
+  'le deroulement est alle dans le fonctionnement',
+  /le demi-centre engage/.test(r.fonctionnement ?? ''),
+  JSON.stringify(r.fonctionnement),
+)
+verifier(
+  'les points cles aussi',
+  /hauteur de hanche/.test(r.points_cles ?? ''),
+  JSON.stringify(r.points_cles),
+)
+verifier('un temoin a bien ete pose avant le collage', r.temoin_pose === true)
+verifier(
+  'le texte deja present n a pas ete efface',
+  /TEMOIN A PRESERVER/.test(r.fonctionnement ?? ''),
+  "(le collage AJOUTE : il ne doit pas ecraser ce qui etait ecrit)",
+)
 
 console.log('')
 console.log(`=== ${ok} reussis, ${ko} echoues ===`)
