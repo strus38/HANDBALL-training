@@ -8,6 +8,8 @@ import {
 } from '../domain/types'
 import { NoteEtoiles } from './NoteEtoiles'
 import { useConfirmation } from './Dialogue'
+import { EtiquetteAvecDictee } from './Dictee'
+import { ajouterFragment } from '../domain/dictee'
 
 interface Props {
   seance: Seance
@@ -137,7 +139,13 @@ export function DetailSeance({
         </div>
 
         <label className="champ" style={{ marginTop: 14 }}>
-          <span>Objectif de la seance</span>
+          <EtiquetteAvecDictee
+            libelle="Objectif de la seance"
+            quoi="l'objectif de la seance"
+            onTexte={(f) =>
+              onModifier((s) => ({ ...s, objectifSeance: ajouterFragment(s.objectifSeance, f) }))
+            }
+          />
           <textarea
             rows={2}
             value={seance.objectifSeance}

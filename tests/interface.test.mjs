@@ -323,6 +323,10 @@ pas(() => {
   r.seance_retrouvee = !!par('.liste-exercices, .lien-exercice')
   // La rangee d actions : on releve son ordre pour verifier que la seule
   // commande irreversible ne touche pas les plus frequentes.
+  // L objectif de la seance se dicte aussi : il vit dans DetailSeance, pas
+  // dans la fiche, et pourrait donc etre oublie d un remaniement a l autre.
+  const champObjectif = tous('label.champ').find((l) => /Objectif de la seance/i.test(l.textContent))
+  r.micro_objectif_seance = champObjectif ? !!champObjectif.querySelector('.bouton-dictee') : false
   const rangee = par('.entete-section .pousse')
   r.actions = rangee
     ? [...rangee.children].map((e) =>
@@ -643,6 +647,9 @@ verifier('et l on retrouve la seance', r.seance_retrouvee === true)
 const actions = r.actions ?? []
 const rangSupprimer = actions.findIndex((t) => /Supprimer/.test(t))
 const rangPrincipal = actions.findIndex((t) => /\+ Exercice/.test(t))
+if (r.moteur_vocal) {
+  verifier('l objectif de la seance se dicte', r.micro_objectif_seance === true)
+}
 verifier('la rangee d actions est lisible', actions.length >= 6, JSON.stringify(actions))
 verifier(
   'la commande principale ferme la rangee',

@@ -305,11 +305,14 @@ Le texte colle **s'ajoute** a ce qui est deja ecrit, il ne le remplace jamais.
 
 ### Le micro a cote des champs — un complement, la ou il marche
 
-Un bouton 🎤 apparait a droite de l'etiquette des champs de texte — y compris
-la **consigne d'une etape** et la **forme d'intervention**, qui tiennent sur une
-ligne : la, les phrases dictees se suivent separees d'une espace, au lieu d'aller a la
-ligne. Il dicte
+Un bouton 🎤 apparait a droite de l'etiquette des champs de texte : ceux de la
+fiche, l'**objectif de la seance**, et le retour d'apres-seance. Il dicte
 directement dans le champ, phrase par phrase, chacune sur sa ligne.
+
+Deux champs tiennent sur **une seule ligne** — la **consigne d'une etape** et la
+**forme d'intervention**. Les phrases dictees s'y suivent separees d'une espace :
+un retour a la ligne y serait invisible a l'ecran, mais ressortirait a
+l'impression et en mode terrain comme une coupure au milieu d'une phrase.
 
 **Il exige une connexion internet.** La reconnaissance vocale du navigateur
 envoie l'audio a un service en ligne : elle ne fonctionne pas dans un gymnase
