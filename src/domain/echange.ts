@@ -257,6 +257,11 @@ function lireExercice(brut: Objet): Exercice {
       ? texte(brut.formatGardiens)
       : 'avec-joueurs') as Exercice['formatGardiens'],
     enParallele: brut.enParallele === true,
+    // Lien vers la fiche fournie d'origine, s'il en vient. Cette lecture est
+    // une LISTE BLANCHE : un champ absent d'ici est efface a chaque relecture,
+    // meme s'il est present dans le fichier. Tout nouveau champ d'Exercice doit
+    // donc etre ajoute ici, sous peine de disparaitre sans bruit.
+    refModele: brut.refModele ? texte(brut.refModele) : undefined,
     evaluation: lireEvaluation(brut.evaluation),
     schema: migrerSchema({
       vue: (['demi', 'complet', 'zone'].includes(texte(schemaBrut.vue))

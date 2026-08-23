@@ -23,7 +23,9 @@ import {
   LIBELLES_FORMAT_GARDIENS,
   type Categorie,
   type Exercice,
+  type Seance,
 } from '../domain/types'
+import { cleUtilisation, indexerUtilisations, resumeUtilisation } from '../domain/utilisation'
 
 export const CATALOGUE: ModeleExercice[] = [...SENIORS_MASCULINS, ...GARDIENS, ...SANS_BALLON, ...HBPSM]
 
@@ -83,12 +85,28 @@ const sansAccent = (t: string) =>
 
 interface Props {
   mesModeles: Exercice[]
+  /**
+   * Toutes les seances, pour reconstituer l'historique d'utilisation.
+   *
+   * Cet historique vit sur les COPIES posees dans les seances, pas sur les
+   * fiches : sans cette liste, une fiche menee dix fois afficherait zero.
+   */
+  seances: Seance[]
   onAjouter: (exercice: Exercice) => void
   onSupprimerModele: (id: string) => void
   onFermer: () => void
 }
 
-export function Bibliotheque({ mesModeles, onAjouter, onSupprimerModele, onFermer }: Props) {
+export function Bibliotheque({
+  mesModeles,
+  seances,
+  onAjouter,
+  onSupprimerModele,
+  onFermer,
+}: Props) {
+  const utilisations = useMemo(() => indexerUtilisations(seances), [seances])
+  const usage = (exercice: Exercice) => resumeUtilisation(utilisations.get(cleUtilisation(exercice)))
+
   const [source, setSource] = useState<Source>('fournie')
   const [filtre, setFiltre] = useState<Filtre>('tous')
   /**
@@ -246,6 +264,9 @@ export function Bibliotheque({ mesModeles, onAjouter, onSupprimerModele, onFerme
                       ? `${entree.exercice.nombreJoueurs} joueurs`
                       : `${entree.exercice.nombreGardiens} gardiens`}
                   </span>
+                  {usage(entree.exercice) && (
+                    <span className="usage-modele">{usage(entree.exercice)}</span>
+                  )}
                   <span className="etiquettes">
                     <em className={`etiquette-format ${entree.exercice.formatGardiens}`}>
                       {LIBELLES_FORMAT_GARDIENS[entree.exercice.formatGardiens]}
@@ -312,6 +333,11 @@ export function Bibliotheque({ mesModeles, onAjouter, onSupprimerModele, onFerme
                     <p key={i}>{l}</p>
                   ))}
                 </>
+              )}
+              {usage(apercu.exercice) && (
+                <p className="materiel-apercu">
+                  <strong>Historique :</strong> {usage(apercu.exercice)}
+                </p>
               )}
               <p className="materiel-apercu">
                 <strong>Materiel :</strong> {apercu.exercice.materiel.join(', ') || 'aucun'}

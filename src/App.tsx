@@ -344,6 +344,7 @@ export function App() {
       {bibliothequeOuverte && (
         <Bibliotheque
           mesModeles={atelier.mesModeles}
+          seances={atelier.seances}
           onFermer={() => setBibliothequeOuverte(false)}
           onSupprimerModele={(id) => void atelier.supprimerModele(id)}
           onAjouter={(exercice) => {

@@ -17,6 +17,7 @@ import {
   nouvelExercice,
   nouvelleSeance,
   normaliserSeance,
+  normaliserExercice,
   exporterSauvegarde,
 } from '../.build-tests/domaine.mjs'
 
@@ -282,6 +283,25 @@ abimee.contenu.modeles = [null, 'ni celle-ci']
 const reparee = importerFichier(JSON.stringify(abimee))
 verifier('une sauvegarde abimee ne fait pas tout perdre',
   reparee.seances.length === 0 && reparee.modeles.length === 0)
+
+console.log('')
+console.log('Champs qui doivent survivre a la relecture')
+// La lecture est une LISTE BLANCHE : un champ oublie disparait a chaque
+// ouverture, sans erreur ni message. C'est arrive a refModele, qui relie une
+// copie a la fiche fournie dont elle vient - et sans lui, les compteurs
+// d'utilisation retombaient a zero.
+const reluRef = normaliserExercice({
+  titre: 'Croise arriere',
+  refModele: 'croise-arriere-ailier-cote-droit',
+  evaluation: { note: 4, nombreUtilisations: 2, derniereUtilisation: '2026-09-15', commentaire: '' },
+})
+verifier('refModele survit a la relecture', reluRef.refModele === 'croise-arriere-ailier-cote-droit')
+verifier('le compteur d utilisation survit', reluRef.evaluation.nombreUtilisations === 2)
+verifier('la date de derniere utilisation survit', reluRef.evaluation.derniereUtilisation === '2026-09-15')
+verifier(
+  'une fiche sans reference n en invente pas',
+  normaliserExercice({ titre: 'Perso' }).refModele === undefined,
+)
 
 console.log(`\n=== ${ok} reussis, ${ko} echoues ===`)
 process.exit(ko === 0 ? 0 : 1)

@@ -1564,6 +1564,15 @@ textarea:focus {
   color: var(--bleu-900);
 }
 
+/* Historique d'utilisation sur la carte de bibliotheque : une information de
+   contexte, discrete, qui ne doit pas concurrencer le titre. */
+.usage-modele {
+  display: block;
+  font-size: 11.5px;
+  color: var(--texte-doux);
+  margin-top: 2px;
+}
+
 .etiquette-etapes {
   font-style: normal;
   font-size: 11px;

@@ -342,6 +342,21 @@ Les exercices sont regroupes par **titre** et non par identifiant : dupliquer
 une seance cree des copies independantes, qui doivent malgre tout compter comme
 un seul et meme exercice dans un bilan.
 
+## Savoir ce qu'on a deja mene
+
+Sous chaque fiche de la bibliotheque, une ligne rappelle **combien de fois vous
+l'avez menee et quand pour la derniere fois**. Elle apparait la ou l'on choisit,
+pas une fois la fiche ouverte.
+
+Rien ne s'affiche tant qu'une fiche n'a jamais servi : « jamais utilise » sur
+des dizaines de lignes serait du bruit.
+
+Ce compte est reconstitue en parcourant toutes vos seances. L'historique ne vit
+pas sur la fiche mais sur les **copies** qu'elle a produites : ajouter une fiche
+a une seance en fabrique un exemplaire independant, et c'est lui qu'on marque
+comme realise. Le regroupement se fait sur la reference de la fiche d'origine,
+donc **renommer un exercice dans une seance ne casse pas son compteur**.
+
 ## Noter les exercices
 
 Chaque fiche porte une note de 1 a 5 etoiles, donnee apres la seance :
@@ -657,6 +672,20 @@ au premier renommage - et un titre finit toujours par etre renomme.
 `tests/catalogue.test.mjs` echoue si l'une d'elles disparait. Retirer une fiche
 reste possible : il faut alors retirer aussi sa ligne de l'inventaire, ce qui
 rend la decision explicite dans la revue plutot qu'invisible dans un diff.
+
+### La lecture des fichiers est une liste blanche
+
+`lireExercice`, dans `src/domain/echange.ts`, reconstruit chaque exercice champ
+par champ. Un champ absent de cette fonction **est efface a chaque relecture**,
+sans erreur ni message, meme s'il figure dans le fichier.
+
+C'est une bonne chose - un fichier venu de l'exterieur ne peut pas injecter ce
+qu'il veut - mais c'est un piege pour qui ajoute un champ. `refModele` est
+tombe dedans : pose a la construction, il disparaissait au premier rechargement,
+et les compteurs d'utilisation retombaient a zero sans raison apparente.
+
+**Tout nouveau champ d'`Exercice` ou de `Seance` doit donc etre ajoute la**, et
+un test de `tests/echange.test.mjs` verifie qu'il survit a l'aller-retour.
 
 ### Organisation
 
