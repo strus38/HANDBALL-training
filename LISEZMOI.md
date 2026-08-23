@@ -843,6 +843,24 @@ au premier renommage - et un titre finit toujours par etre renomme.
 reste possible : il faut alors retirer aussi sa ligne de l'inventaire, ce qui
 rend la decision explicite dans la revue plutot qu'invisible dans un diff.
 
+### Deux jetons ne doivent pas se recouvrir
+
+La pastille qui porte l'etiquette d'un jeton fait 0,66 metre de rayon. En
+dessous de **1,30 metre entre deux centres**, les etiquettes se chevauchent et
+l'on ne lit plus qui est qui. Treize paires etaient dans ce cas, dont certaines
+a dix centimetres : le pivot etait purement invisible sous les defenseurs.
+
+`tests/catalogue.test.mjs` echoue desormais si deux jetons de joueur se
+retrouvent a moins de 1,30 metre **dans le placement de depart**. La regle ne
+vaut que la : un ecran est un contact, et se joue dans les etapes.
+
+Un compromis assume : le pivot est dessine **juste devant la ligne defensive**
+et non entre deux defenseurs. A cette echelle, un jeton mesure plus d'un metre
+et demi de diametre alors qu'une defense 6-0 espace ses joueurs de deux metres
+— dessiner le pivot dans l'intervalle le rend illisible. Il est visible et
+legerement en avant, plutot qu'exact et cache. L'entraineur le deplace d'un
+glisser s'il veut le montrer autrement.
+
 ### Ou poser le ballon sur un schema
 
 Le moteur reconnait comme porteur **tout joueur a moins de 1,9 metre du

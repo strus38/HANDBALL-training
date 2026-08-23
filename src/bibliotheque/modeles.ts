@@ -224,7 +224,7 @@ export const ATTAQUE_PLACEE: ModeleJeton[] = [
   { type: 'attaquant', etiquette: 'DC', ref: 'dc', x: 30.5, y: 10 },
   { type: 'attaquant', etiquette: 'ArD', ref: 'ard', x: 31.5, y: 5.5 },
   { type: 'attaquant', etiquette: 'AlD', ref: 'ald', x: 36.5, y: 1.7 },
-  { type: 'attaquant', etiquette: 'PIV', ref: 'piv', x: 33.7, y: 10 },
+  { type: 'attaquant', etiquette: 'PIV', ref: 'piv', x: 32.3, y: 10 },
 ]
 
 /** Bloc defensif 6-0 aligne sur la ligne de surface. */
@@ -244,7 +244,7 @@ export const DEFENSE_5_1: ModeleJeton[] = [
   { type: 'defenseur', etiquette: '3', ref: 'd3', x: 33.8, y: 10 },
   { type: 'defenseur', etiquette: '4', ref: 'd4', x: 33.9, y: 12.6 },
   { type: 'defenseur', etiquette: '5', ref: 'd5', x: 35.18, y: 15.4 },
-  { type: 'defenseur', etiquette: 'P', ref: 'dp', x: 31, y: 10 },
+  { type: 'defenseur', etiquette: 'P', ref: 'dp', x: 31.6, y: 11.3 },
 ]
 
 export const GARDIEN_DROITE: ModeleJeton = { type: 'gardien', etiquette: 'GB', ref: 'gb', x: 38.9, y: 10 }
@@ -260,7 +260,7 @@ export const DEFENSE_3_2_1: ModeleJeton[] = [
   { type: 'defenseur', etiquette: '3b', ref: 'd3b', x: 33.8, y: 10 },
   { type: 'defenseur', etiquette: '2', ref: 'd5', x: 32.2, y: 13 },
   { type: 'defenseur', etiquette: '1', ref: 'd6', x: 35.18, y: 15.4 },
-  { type: 'defenseur', etiquette: '3h', ref: 'd3h', x: 29.5, y: 10 },
+  { type: 'defenseur', etiquette: '3h', ref: 'd3h', x: 28.9, y: 10 },
 ]
 
 /** Attaque a deux pivots : un arriere descend dans le bloc adverse. */
@@ -269,6 +269,6 @@ export const ATTAQUE_DEUX_PIVOTS: ModeleJeton[] = [
   { type: 'attaquant', etiquette: 'ArG', ref: 'arg', x: 31.5, y: 14.5 },
   { type: 'attaquant', etiquette: 'DC', ref: 'dc', x: 30.5, y: 10 },
   { type: 'attaquant', etiquette: 'AlD', ref: 'ald', x: 36.5, y: 1.7 },
-  { type: 'attaquant', etiquette: 'PIV', ref: 'piv1', x: 33.83, y: 12.5 },
-  { type: 'attaquant', etiquette: 'PIV', ref: 'piv2', x: 33.83, y: 7.5 },
+  { type: 'attaquant', etiquette: 'PIV', ref: 'piv1', x: 32.5, y: 12.9 },
+  { type: 'attaquant', etiquette: 'PIV', ref: 'piv2', x: 32.5, y: 7.1 },
 ]

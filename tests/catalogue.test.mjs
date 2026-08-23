@@ -254,6 +254,36 @@ verifier(
   orphelins.length === 0,
   '(' + orphelins.join(', ') + ')',
 )
+
+console.log('')
+console.log('8. Personne n en cache un autre')
+// Le pivot etait dessine SOUS les defenseurs 3 et 4, a un metre de chacun, et
+// disparaissait : treize paires de jetons se recouvraient ainsi dans les
+// placements de depart, certaines a dix centimetres. La pastille d un jeton
+// fait 0,66 m de rayon : en dessous de 1,30 m entre deux centres, les
+// etiquettes se chevauchent et l on ne lit plus qui est qui.
+//
+// La regle ne vaut QUE pour le placement de depart : un ecran, lui, est un
+// contact, et se joue dans les etapes.
+const ECART_LISIBLE = 1.3
+const JOUEURS_JETON = ['attaquant', 'defenseur', 'gardien']
+const chevauchements = []
+for (const modele of CATALOGUE) {
+  const js = modele.jetons.filter((j) => JOUEURS_JETON.includes(j.type))
+  for (let a = 0; a < js.length; a++) {
+    for (let b = a + 1; b < js.length; b++) {
+      const d = Math.hypot(js[a].x - js[b].x, js[a].y - js[b].y)
+      if (d < ECART_LISIBLE) {
+        chevauchements.push(`${modele.ref} : ${js[a].etiquette} et ${js[b].etiquette} a ${d.toFixed(2)} m`)
+      }
+    }
+  }
+}
+verifier(
+  'aucun jeton n en recouvre un autre au depart',
+  chevauchements.length === 0,
+  '(' + chevauchements.join(' ; ') + ')',
+)
 console.log('')
 console.log('=== ' + ok + ' reussis, ' + ko + ' echoues ===')
 process.exit(ko === 0 ? 0 : 1)

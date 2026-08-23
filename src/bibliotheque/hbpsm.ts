@@ -209,7 +209,7 @@ export const HBPSM: ModeleExercice[] = [
       // Demi-espace bas : ailier, arriere, pivot.
       { type: 'attaquant', etiquette: 'AlD', x: 37, y: 1.2 },
       { type: 'attaquant', etiquette: 'ArD', x: 31.5, y: 5.5 },
-      { type: 'attaquant', etiquette: 'PIV', x: 33.4, y: 7.2 },
+      { type: 'attaquant', etiquette: 'PIV', x: 34, y: 6.8 },
       { type: 'ballon', x: 30.8, y: 5.9 },
       // Ligne de partage du demi-terrain.
       { type: 'plot', x: 24, y: 10 },
