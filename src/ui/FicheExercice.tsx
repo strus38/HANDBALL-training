@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Terrain, type Outil, type Selection, type TraceFleche } from '../terrain/Terrain'
 import { APPARENCES, positionInitiale } from '../terrain/jetons'
-import { avancement, interpolerEtape } from '../terrain/animation'
+import { avancement, etapeMiseEnAvant, interpolerEtape } from '../terrain/animation'
 import { nouvelId, nouvelleEtape } from '../domain/fabrique'
 import {
   LIBELLES_CATEGORIE,
@@ -79,7 +79,17 @@ export function FicheExercice({
   const [selection, setSelection] = useState<Selection | undefined>()
   const [outil, setOutil] = useState<Outil>('selection')
   const [etapeIndex, setEtapeIndex] = useState(0)
-  const [lecture, setLecture] = useState<{ debut: number; temps: number } | undefined>()
+  /**
+   * Etat de la lecture.
+   *
+   * temps est la position dans l animation, en millisecondes ; debut est
+   * l instant ou cette position valait zero. Mettre en pause revient donc a
+   * arreter la boucle en gardant temps, et reprendre a recaler debut derriere
+   * lui : aucune position n est perdue au passage.
+   */
+  const [lecture, setLecture] = useState<
+    { debut: number; temps: number; pause: boolean } | undefined
+  >()
   const [aimantation, setAimantation] = useState(true)
   const cadre = useRef<HTMLDivElement>(null)
   const [propositions, setPropositions] = useState<EtapeProposee[] | undefined>()
@@ -137,7 +147,7 @@ export function FicheExercice({
 
   const image = useRef<number>()
   useEffect(() => {
-    if (!lecture) return
+    if (!lecture || lecture.pause) return
     const boucle = () => {
       const temps = performance.now() - lecture.debut
       const etat = avancement(temps, schema.etapes.length)
@@ -154,7 +164,22 @@ export function FicheExercice({
       if (image.current) cancelAnimationFrame(image.current)
     }
     // La boucle ne depend que du demarrage : relancer a chaque image la couperait.
-  }, [lecture?.debut, schema.etapes.length])
+  }, [lecture?.debut, lecture?.pause, schema.etapes.length])
+
+  /**
+   * Lire, mettre en pause, reprendre.
+   *
+   * Reprendre recale debut derriere le temps deja ecoule. Sans ce recalage,
+   * l'animation sauterait d'un coup a l'endroit ou elle serait si l'on ne
+   * s'etait jamais arrete : la pause ferait perdre le passage qu'on voulait
+   * justement regarder.
+   */
+  const basculerLecture = () =>
+    setLecture((p) => {
+      if (!p) return { debut: performance.now(), temps: 0, pause: false }
+      if (p.pause) return { ...p, debut: performance.now() - p.temps, pause: false }
+      return { ...p, pause: true }
+    })
 
   const etatLecture =
     lecture && schema.etapes.length >= 2 ? avancement(lecture.temps, schema.etapes.length) : undefined
@@ -184,6 +209,14 @@ export function FicheExercice({
         etapes: schema.etapes.map((e, i) => (i === indexAffiche ? etapeAffichee : e)),
       }
     : schema
+
+  /**
+   * Puce a mettre en jaune. Pendant la lecture elle suit l animation ; sinon
+   * elle marque l etape en cours d edition.
+   */
+  const puceActive = etatLecture
+    ? etapeMiseEnAvant(etatLecture, schema.etapes.length)
+    : index
 
   // -------------------------------------------------------------- Jetons
 
@@ -614,7 +647,7 @@ export function FicheExercice({
             {schema.etapes.map((e, i) => (
               <button
                 key={e.id}
-                className={`puce-etape${i === index && !lecture ? ' active' : ''}`}
+                className={`puce-etape${i === puceActive ? ' active' : ''}${lecture ? ' en-lecture' : ''}`}
                 onClick={() => {
                   setLecture(undefined)
                   setEtapeIndex(i)
@@ -645,18 +678,29 @@ export function FicheExercice({
               <SelecteurJeton onChoisir={ajouterJeton} />
               <button
                 className="bouton"
-                onClick={() =>
-                  lecture ? setLecture(undefined) : setLecture({ debut: performance.now(), temps: 0 })
-                }
+                onClick={basculerLecture}
                 disabled={schema.etapes.length < 2}
                 title={
                   schema.etapes.length < 2
                     ? 'Ajoutez une deuxieme etape pour animer le mouvement'
-                    : 'Lire le mouvement'
+                    : lecture?.pause
+                      ? "Reprendre la lecture ou on l'a laissee"
+                      : lecture
+                        ? "Figer l'image sans perdre l'endroit"
+                        : 'Lire le mouvement'
                 }
               >
-                {lecture ? '■ Arreter' : '▶ Lire'}
+                {!lecture ? '▶ Lire' : lecture.pause ? '▶ Reprendre' : '❚❚ Pause'}
               </button>
+              {lecture && (
+                <button
+                  className="bouton discret"
+                  onClick={() => setLecture(undefined)}
+                  title="Arreter la lecture et revenir a l'edition"
+                >
+                  ■
+                </button>
+              )}
             </div>
           </div>
 

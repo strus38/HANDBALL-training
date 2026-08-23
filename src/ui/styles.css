@@ -1805,6 +1805,21 @@ textarea:focus {
   color: var(--bleu-900);
 }
 
+/*
+  Pendant la lecture, la puce jaune suit l animation au lieu de rester figee
+  sur l etape en cours d edition : sans cela, le terrain montrait l etape 3
+  pendant que la barre affichait encore la 1, et l entraineur ne savait plus
+  ou il en etait. Le halo dit que la puce est pilotee par la lecture, pas par
+  un clic.
+*/
+.puce-etape.en-lecture {
+  cursor: default;
+}
+
+.puce-etape.en-lecture.active {
+  box-shadow: 0 0 0 3px var(--jaune-clair);
+}
+
 .detail-etape {
   display: grid;
   grid-template-columns: minmax(140px, 1fr) 2fr;

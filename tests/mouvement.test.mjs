@@ -15,9 +15,11 @@ import {
   interpolerAngle,
   interpolerEtape,
   avancement,
+  etapeMiseEnAvant,
   tracerFleche,
   distanceAFleche,
   DUREE_TRANSITION,
+  DUREE_PAUSE,
 } from '../.build-tests/domaine.mjs'
 
 let ok = 0, ko = 0
@@ -111,6 +113,33 @@ verifier('progression a mi-transition', presque(avancement(DUREE_TRANSITION / 2,
 verifier('transition terminee avant la pause', avancement(DUREE_TRANSITION, 3).progression === 1)
 verifier('la lecture se termine apres la derniere etape', avancement(1e6, 3).termine === true)
 verifier('une seule etape = rien a animer', avancement(0, 1).termine === true)
+
+// La puce mise en avant pendant la lecture. Le piege garde ici : un cycle vaut
+// une transition PUIS une pause, et pendant la pause les jetons sont deja sur
+// l etape suivante alors que l indice, lui, n a pas bouge. Suivre l indice brut
+// affichait « 1 » en jaune pendant que le terrain montrait l etape 2 immobile.
+verifier('au depart, la puce est celle de l etape de depart', etapeMiseEnAvant(avancement(0, 3), 3) === 0)
+verifier(
+  'pendant le mouvement, la puce reste sur l etape quittee',
+  etapeMiseEnAvant(avancement(DUREE_TRANSITION / 2, 3), 3) === 0,
+)
+verifier(
+  'des que les jetons se posent, la puce passe a l etape suivante',
+  etapeMiseEnAvant(avancement(DUREE_TRANSITION, 3), 3) === 1,
+  '(sinon la barre contredit le terrain)',
+)
+verifier(
+  'pendant toute la pause, la puce reste sur l etape atteinte',
+  etapeMiseEnAvant(avancement(DUREE_TRANSITION + DUREE_PAUSE / 2, 3), 3) === 1,
+)
+verifier(
+  'le deuxieme cycle repart de l etape atteinte',
+  etapeMiseEnAvant(avancement(DUREE_TRANSITION + DUREE_PAUSE, 3), 3) === 1,
+)
+verifier(
+  'la puce ne depasse jamais la derniere etape',
+  etapeMiseEnAvant(avancement(1e6, 3), 3) === 2,
+)
 
 console.log('')
 console.log('5. Trace des fleches')

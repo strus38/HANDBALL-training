@@ -247,6 +247,16 @@ les joueurs glissent et pivotent vers leur position suivante. C'est ce qui rend
 les etapes utiles devant un groupe — au lieu de decrire le mouvement, on le
 montre.
 
+Pendant la lecture, la **puce de l'etape s'allume au rythme de l'animation** :
+elle reste sur l'etape de depart tant que les joueurs se deplacent, et passe a
+la suivante des qu'ils s'y posent. On sait donc toujours quel temps de jeu on
+regarde.
+
+« **Pause** » fige l'image sans perdre l'endroit, et « Reprendre » repart
+exactement de la. C'est ce qui permet d'arreter le mouvement au moment precis
+ou l'on veut commenter un placement, puis de laisser filer la suite. « ■ »
+arrete la lecture et rend la main a l'edition.
+
 ### Fiches chorégraphiées
 
 Onze des 41 fiches fournies decrivent un **enchainement complet**, etape par

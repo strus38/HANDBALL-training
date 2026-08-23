@@ -151,6 +151,61 @@ pas(() => {
   }
 })
 
+
+// --------------------------------------------------------- Lecture des etapes
+// Deux pannes signalees par l'entraineur : pendant la lecture aucune puce ne
+// s'allumait, on ne savait donc plus quelle etape on regardait ; et rien ne
+// permettait de figer l'image pour commenter un placement.
+const boutonLecture = () =>
+  tous('.barre-etapes button').find((b) => /Pause|Lire|Reprendre/.test(b.textContent))
+
+pas(() => {
+  // Le menu deroulant est reste ouvert et recouvre la barre : on le referme.
+  const menu = tous('.colonne-terrain .barre-outils button').find(
+    (b) => b.getAttribute('aria-haspopup') === 'menu',
+  )
+  if (menu) menu.click()
+})
+pas(() => {
+  r.menu_referme = !par('.colonne-terrain .panneau-flottant')
+  const ajouter = parTexte('+ Etape')
+  r.bouton_etape = !!ajouter
+  if (ajouter) ajouter.click()
+})
+pas(() => {
+  r.puces = tous('.puce-etape').length
+  const lire = boutonLecture()
+  r.libelle_au_repos = lire ? lire.textContent.trim() : null
+  r.lire_actif = lire ? !lire.disabled : false
+  if (lire) lire.click()
+})
+pas(() => {
+  const b = boutonLecture()
+  r.libelle_en_lecture = b ? b.textContent.trim() : null
+  // Le defaut signale : pendant la lecture, plus aucune puce n'etait jaune.
+  r.puce_active_en_lecture = tous('.puce-etape.active').length
+  r.puce_marquee_lecture = tous('.puce-etape.en-lecture').length
+  r.arret_present = tous('.barre-etapes button').filter((x) => x.textContent.trim() === '■').length
+  if (b) b.click()
+})
+pas(() => {
+  const b = boutonLecture()
+  r.libelle_en_pause = b ? b.textContent.trim() : null
+})
+// Une fiche a deux etapes se lit en 2,1 s. On patiente plus longtemps que cela :
+// si la pause ne tenait pas, la lecture serait finie et le bouton serait revenu
+// a « Lire ». C'est ce qui rend ce test capable d'echouer.
+for (let k = 0; k < 12; k++) pas(() => {})
+pas(() => {
+  const b = boutonLecture()
+  r.libelle_apres_attente = b ? b.textContent.trim() : null
+  r.puce_active_en_pause = tous('.puce-etape.active').length
+  if (b) b.click()
+})
+pas(() => {
+  const b = boutonLecture()
+  r.libelle_apres_reprise = b ? b.textContent.trim() : null
+})
 // Le demarrage sonde le stockage : il n'est pas instantane. On attend qu'il
 // aboutisse avant de jouer le scenario, sans quoi on mesurerait l'ecran de
 // chargement plutot que l'application.
@@ -277,6 +332,27 @@ verifier(
 )
 verifier('le menu n est pas rogne par le defilement', r.menu_rogne_en_haut === false)
 verifier('le menu reste dans la fenetre', r.menu_hors_ecran === false)
+
+console.log('')
+console.log('2. Lecture des etapes')
+verifier('une deuxieme etape peut etre ajoutee', r.bouton_etape === true && r.puces === 2)
+verifier('la lecture est proposee des deux etapes', r.lire_actif === true)
+verifier(
+  'une puce reste allumee pendant la lecture',
+  r.puce_active_en_lecture === 1,
+  `(${r.puce_active_en_lecture} puce(s) : sans cela on ne sait plus quelle etape on regarde)`,
+)
+verifier('les puces sont marquees comme pilotees par la lecture', r.puce_marquee_lecture === 2)
+verifier('la lecture propose de mettre en pause', /Pause/.test(r.libelle_en_lecture ?? ''), r.libelle_en_lecture)
+verifier('un arret separe est offert', r.arret_present === 1)
+verifier('la pause propose de reprendre', /Reprendre/.test(r.libelle_en_pause ?? ''), r.libelle_en_pause)
+verifier(
+  'la pause tient dans la duree',
+  /Reprendre/.test(r.libelle_apres_attente ?? ''),
+  `(${r.libelle_apres_attente} : la lecture a repris toute seule)`,
+)
+verifier('la puce reste allumee pendant la pause', r.puce_active_en_pause === 1)
+verifier('reprendre relance la lecture', /Pause/.test(r.libelle_apres_reprise ?? ''), r.libelle_apres_reprise)
 
 console.log('')
 console.log(`=== ${ok} reussis, ${ko} echoues ===`)

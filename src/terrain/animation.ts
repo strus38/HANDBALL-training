@@ -84,3 +84,23 @@ export function avancement(
     termine: false,
   }
 }
+
+/**
+ * Etape que la barre de puces doit mettre en avant pendant la lecture.
+ *
+ * Ce n'est pas toujours `avancement().index`. Un cycle vaut une transition
+ * PUIS une pause : pendant la pause, les jetons sont deja arrives sur l'etape
+ * suivante alors que l'indice, lui, n'a pas encore change. Suivre l'indice brut
+ * afficherait « 1 » en jaune alors que le terrain montre l'etape 2, immobile.
+ *
+ * On met donc en avant l'etape de DEPART tant que les jetons se deplacent, et
+ * l'etape d'ARRIVEE des qu'ils s'y posent. La puce raconte alors exactement ce
+ * que le terrain montre.
+ */
+export function etapeMiseEnAvant(
+  etat: { index: number; progression: number },
+  nombreEtapes: number,
+): number {
+  if (etat.progression < 1) return etat.index
+  return Math.min(etat.index + 1, nombreEtapes - 1)
+}
