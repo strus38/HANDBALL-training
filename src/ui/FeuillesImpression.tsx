@@ -1,0 +1,243 @@
+/**
+ * Feuilles d'exercice destinees au papier.
+ *
+ * Une fiche tient sur une page A4 paysage. La disposition n'est PAS fixee :
+ * elle est calculee fiche par fiche par choisirMiseEnPage(), qui cherche le
+ * plus grand schema possible sans faire deborder le texte. Un terrain complet,
+ * large et plat, part en banniere sur toute la largeur ; un demi-terrain ou une
+ * vue de zone restent en colonne a gauche, comme a l'ecran.
+ *
+ * Ce bloc n'est visible qu'a l'impression (voir styles.css).
+ */
+
+import { Terrain } from '../terrain/Terrain'
+import { choisirMiseEnPage, nombreSchemas, type MiseEnPage } from '../impression/miseEnPage'
+import {
+  dureeTotale,
+  LIBELLES_CATEGORIE,
+  LIBELLES_FORMAT_GARDIENS,
+  type Exercice,
+  type Seance,
+} from '../domain/types'
+
+interface Props {
+  seance: Seance
+  /** Exercices a imprimer : la seance entiere, ou une seule fiche. */
+  exercices: Exercice[]
+}
+
+export function FeuillesImpression({ seance, exercices }: Props) {
+  return (
+    <div className="impression" aria-hidden="true">
+      {exercices.map((exercice, index) => (
+        <Feuille
+          key={exercice.id}
+          exercice={exercice}
+          seance={seance}
+          index={index}
+          total={exercices.length}
+        />
+      ))}
+    </div>
+  )
+}
+
+function Feuille({
+  exercice,
+  seance,
+  index,
+  total,
+}: {
+  exercice: Exercice
+  seance: Seance
+  index: number
+  total: number
+}) {
+  const page = choisirMiseEnPage(exercice)
+  const schemas = exercice.schema.etapes.slice(0, nombreSchemas(exercice))
+
+  return (
+    <article
+      className="feuille"
+      data-disposition={page.disposition}
+      data-police={page.policePt}
+    >
+      <header className="feuille-entete">
+        <div>
+          <h1>
+            {total > 1 && <span className="numero">{index + 1}.</span>}
+            {exercice.titre || 'Sans titre'}
+          </h1>
+          <p className="feuille-seance">
+            {seance.titre} · {formaterDate(seance.date)}
+            {seance.equipe && ` · ${seance.equipe}`}
+            {seance.categorieAge && ` · ${seance.categorieAge}`}
+          </p>
+        </div>
+        <ul className="feuille-reperes">
+          <li>
+            <span>Duree</span>
+            <strong>
+              {exercice.duree} min{exercice.enParallele && ' (parallele)'}
+            </strong>
+          </li>
+          <li>
+            <span>Joueurs</span>
+            <strong>
+              {exercice.nombreJoueurs} + {exercice.nombreGardiens} GB
+            </strong>
+          </li>
+          <li>
+            <span>Categorie</span>
+            <strong>{LIBELLES_CATEGORIE[exercice.categorie]}</strong>
+          </li>
+        </ul>
+      </header>
+
+      <div className="feuille-corps" style={styleCorps(page)}>
+        <div className="feuille-schema">
+          {schemas.length === 1 ? (
+            <Terrain
+              schema={exercice.schema}
+              etape={schemas[0]}
+              etapeIndex={0}
+              interactif={false}
+            />
+          ) : (
+            <div
+              className="grille-etapes"
+              style={{ gridTemplateColumns: `repeat(${page.grille.colonnes}, 1fr)` }}
+            >
+              {/* Au dela de quatre etapes, les suivantes ne sont pas dessinees
+                  pour que la fiche tienne sur une page ; leur consigne reste
+                  listee dans la colonne de texte. */}
+              {schemas.map((etape, i) => (
+                <figure key={etape.id}>
+                  {/* etapeIndex est indispensable : sans lui, les quatre
+                      vignettes resolvaient leurs fleches et leurs orientations
+                      sur l'etape 1. */}
+                  <Terrain
+                    schema={exercice.schema}
+                    etape={etape}
+                    etapeIndex={i}
+                    etapePrecedente={i > 0 ? exercice.schema.etapes[i - 1] : undefined}
+                    interactif={false}
+                  />
+                  <figcaption>
+                    {i + 1}. {etape.titre}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="feuille-texte" style={styleTexte(page)}>
+          {exercice.objectifs && (
+            <section>
+              <h2>Objectifs</h2>
+              <p>{exercice.objectifs}</p>
+            </section>
+          )}
+          {exercice.formeIntervention && (
+            <section>
+              <h2>Forme d'intervention</h2>
+              <p>{exercice.formeIntervention}</p>
+            </section>
+          )}
+          {exercice.misePlace && (
+            <section>
+              <h2>Mise en place</h2>
+              {lignes(exercice.misePlace)}
+            </section>
+          )}
+          {exercice.fonctionnement && (
+            <section>
+              <h2>Fonctionnement</h2>
+              {lignes(exercice.fonctionnement)}
+            </section>
+          )}
+          {exercice.regulation && (
+            <section>
+              <h2>Regulation</h2>
+              {lignes(exercice.regulation)}
+            </section>
+          )}
+          {exercice.schema.etapes.length > 1 && (
+            <section>
+              <h2>Etapes</h2>
+              <ol className="liste-etapes-impression">
+                {exercice.schema.etapes.map((etape) => (
+                  <li key={etape.id}>
+                    <strong>{etape.titre}</strong>
+                    {etape.consigne && ` — ${etape.consigne}`}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+          {exercice.pointsCles && (
+            <section>
+              <h2>Points cles</h2>
+              {lignes(exercice.pointsCles)}
+            </section>
+          )}
+          {exercice.evolution && (
+            <section>
+              <h2>Evolution</h2>
+              {lignes(exercice.evolution)}
+            </section>
+          )}
+          <section className="feuille-pied">
+            <p>
+              <strong>Materiel :</strong> {exercice.materiel.join(', ') || 'aucun'} ·{' '}
+              <strong>Gardiens :</strong> {LIBELLES_FORMAT_GARDIENS[exercice.formatGardiens]}
+            </p>
+          </section>
+        </div>
+      </div>
+
+      <footer className="feuille-bas">
+        <span>HBPSM · {seance.titre}</span>
+        <span>
+          {total > 1
+            ? `Exercice ${index + 1} sur ${total} · seance de ${dureeTotale(seance)} min`
+            : `${exercice.duree} min`}
+        </span>
+      </footer>
+    </article>
+  )
+}
+
+/**
+ * Repartition schema / texte, en pourcentages calcules.
+ *
+ * Cote a cote : deux colonnes. En banniere : deux lignes, le schema recevant
+ * exactement la hauteur que le texte lui laisse.
+ */
+function styleCorps(page: MiseEnPage): React.CSSProperties {
+  const part = `${(page.partSchema * 100).toFixed(1)}%`
+  return page.disposition === 'cote-a-cote'
+    ? { gridTemplateColumns: `${part} 1fr`, gridTemplateRows: '1fr' }
+    : { gridTemplateColumns: '1fr', gridTemplateRows: `${part} 1fr` }
+}
+
+function styleTexte(page: MiseEnPage): React.CSSProperties {
+  return {
+    fontSize: `${page.policePt}pt`,
+    columnCount: page.colonnesTexte > 1 ? page.colonnesTexte : undefined,
+    columnGap: page.colonnesTexte > 1 ? '6mm' : undefined,
+  }
+}
+
+function lignes(texte: string) {
+  return texte
+    .split('\n')
+    .filter(Boolean)
+    .map((ligne, i) => <p key={i}>{ligne}</p>)
+}
+
+function formaterDate(iso: string): string {
+  const parties = iso.split('-')
+  return parties.length === 3 ? `${parties[2]}/${parties[1]}/${parties[0]}` : iso
+}

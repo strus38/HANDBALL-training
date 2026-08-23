@@ -1,0 +1,159 @@
+/**
+ * Tests du choix automatique de mise en page a l'impression.
+ *
+ * Ce que l'on verifie n'est pas « telle fiche donne telle disposition » — ce
+ * serait figer une decision arbitraire — mais les proprietes qui doivent tenir
+ * quoi qu'il arrive : la fiche tient sur une page, le schema est aussi grand
+ * que possible, et un terrain large ne finit pas ecrase dans une colonne.
+ *
+ * Lancement : npm test
+ */
+
+import {
+  choisirMiseEnPage,
+  hauteurTexte,
+  ratioGrille,
+  grillesPossibles,
+  nombreSchemas,
+  ZONE,
+  nouvelExercice,
+} from '../.build-tests/domaine.mjs'
+
+let ok = 0, ko = 0
+const verifier = (nom, condition, detail = '') => {
+  if (condition) { ok++; console.log('  OK    ' + nom) }
+  else { ko++; console.log('  ECHEC ' + nom + ' ' + detail) }
+}
+
+/** Fiche de test : vue du terrain, volume de texte, nombre d'etapes. */
+function fiche({ vue = 'demi', etapes = 1, texte = 'moyen' } = {}) {
+  const ex = nouvelExercice('Test')
+  ex.schema.vue = vue
+  const volumes = {
+    court: 90,
+    moyen: 420,
+    long: 1100,
+    enorme: 3200,
+  }
+  const n = volumes[texte]
+  ex.objectifs = 'o'.repeat(Math.round(n * 0.15))
+  ex.fonctionnement = 'd'.repeat(Math.round(n * 0.45))
+  ex.pointsCles = 'p'.repeat(Math.round(n * 0.25))
+  ex.evolution = 'v'.repeat(Math.round(n * 0.15))
+  ex.materiel = ['ballons', 'plots']
+  ex.schema.etapes = Array.from({ length: etapes }, (_, i) => ({
+    id: 'e' + i, titre: 'Etape ' + (i + 1), consigne: 'consigne', positions: {}, fleches: [],
+  }))
+  return ex
+}
+
+console.log('')
+console.log('1. Mesure du texte')
+const court = hauteurTexte(fiche({ texte: 'court' }), 120, 9, 1)
+const long = hauteurTexte(fiche({ texte: 'long' }), 120, 9, 1)
+verifier('un texte long occupe plus de place', long > court, `(${court} vs ${long})`)
+verifier('une colonne large tient en moins de hauteur',
+  hauteurTexte(fiche({ texte: 'long' }), 240, 9, 1) < long)
+verifier('une police plus petite tient en moins de hauteur',
+  hauteurTexte(fiche({ texte: 'long' }), 120, 7, 1) < long)
+verifier('deux colonnes reduisent la hauteur',
+  hauteurTexte(fiche({ texte: 'long' }), 120, 9, 2) < long)
+verifier('une fiche vide occupe une hauteur non nulle',
+  hauteurTexte(nouvelExercice('Vide'), 120, 9, 1) > 0)
+
+console.log('')
+console.log('2. Grilles d etapes')
+verifier('une etape = une case', grillesPossibles(1).length === 1)
+verifier('deux etapes : empilees ou cote a cote', grillesPossibles(2).length === 2)
+verifier('au dela de quatre schemas, on plafonne a quatre',
+  nombreSchemas(fiche({ etapes: 9 })) === 4)
+verifier('une fiche sans etape compte quand meme un schema',
+  nombreSchemas(nouvelExercice('X')) === 1)
+verifier('empiler deux schemas larges reduit le rapport',
+  ratioGrille(1.9, { colonnes: 1, lignes: 2 }) < ratioGrille(1.9, { colonnes: 2, lignes: 1 }))
+
+console.log('')
+console.log('3. La forme du terrain decide de la disposition')
+const complet = choisirMiseEnPage(fiche({ vue: 'complet' }))
+const zone = choisirMiseEnPage(fiche({ vue: 'zone' }))
+const demi = choisirMiseEnPage(fiche({ vue: 'demi' }))
+console.log(`        terrain complet -> ${complet.disposition}, ${complet.surfaceSchemaCm2.toFixed(0)} cm2`)
+console.log(`        demi-terrain    -> ${demi.disposition}, ${demi.surfaceSchemaCm2.toFixed(0)} cm2`)
+console.log(`        zone 6m/9m      -> ${zone.disposition}, ${zone.surfaceSchemaCm2.toFixed(0)} cm2`)
+
+verifier('un terrain complet passe en banniere', complet.disposition === 'dessus',
+  '(' + complet.disposition + ')')
+verifier('un schema vertical reste en colonne', zone.disposition === 'cote-a-cote',
+  '(' + zone.disposition + ')')
+verifier('la banniere donne plusieurs colonnes de texte', complet.colonnesTexte >= 2)
+verifier('la colonne garde une seule colonne de texte', zone.colonnesTexte === 1)
+
+// Le vrai critere : la disposition retenue bat l'autre en surface.
+const complettSurfaceEnColonne = (() => {
+  // Surface qu'aurait obtenue un terrain complet coince dans 47 % de la largeur.
+  const largeur = (ZONE.largeur - 6) * 0.47
+  const ratio = ratioGrille(279 / 147, { colonnes: 1, lignes: 1 })
+  const hauteur = Math.min(ZONE.hauteur, largeur / ratio)
+  return (largeur * hauteur) / 100
+})()
+verifier('le terrain complet y gagne vraiment',
+  complet.surfaceSchemaCm2 > complettSurfaceEnColonne,
+  `(${complet.surfaceSchemaCm2.toFixed(0)} vs ${complettSurfaceEnColonne.toFixed(0)} cm2 en colonne)`)
+
+console.log('')
+console.log('4. La fiche tient toujours sur une page')
+const cas = []
+for (const vue of ['complet', 'demi', 'zone']) {
+  for (const etapes of [1, 2, 3, 4, 6]) {
+    for (const texte of ['court', 'moyen', 'long', 'enorme']) {
+      cas.push({ vue, etapes, texte })
+    }
+  }
+}
+let debordements = 0
+let sansSchema = 0
+for (const c of cas) {
+  const ex = fiche(c)
+  const m = choisirMiseEnPage(ex)
+  const largeurColonne =
+    m.disposition === 'cote-a-cote'
+      ? (ZONE.largeur - 6) * (1 - m.partSchema)
+      : (ZONE.largeur - 6 * (m.colonnesTexte - 1)) / m.colonnesTexte
+  const besoin = hauteurTexte(ex, largeurColonne, m.policePt, m.colonnesTexte)
+  const dispo =
+    m.disposition === 'cote-a-cote' ? ZONE.hauteur : ZONE.hauteur - m.partSchema * ZONE.hauteur - 6
+  if (besoin > dispo + 0.5 && m.texteTient) debordements++
+  if (m.surfaceSchemaCm2 < 60) sansSchema++
+}
+verifier('aucune fiche ne deborde de sa page', debordements === 0, `(${debordements} sur ${cas.length})`)
+verifier('le schema reste lisible partout', sansSchema === 0, `(${sansSchema} trop petits)`)
+verifier('tous les cas ont une reponse', cas.length === 60)
+
+console.log('')
+console.log('5. Le texte fait reculer le schema, jamais la page')
+const avecPeu = choisirMiseEnPage(fiche({ vue: 'demi', texte: 'court' }))
+const avecBeaucoup = choisirMiseEnPage(fiche({ vue: 'demi', texte: 'enorme' }))
+verifier('plus de texte, schema plus petit',
+  avecBeaucoup.surfaceSchemaCm2 <= avecPeu.surfaceSchemaCm2,
+  `(${avecPeu.surfaceSchemaCm2.toFixed(0)} -> ${avecBeaucoup.surfaceSchemaCm2.toFixed(0)} cm2)`)
+verifier('une fiche bavarde resserre la police',
+  avecBeaucoup.policePt <= avecPeu.policePt,
+  `(${avecPeu.policePt} -> ${avecBeaucoup.policePt} pt)`)
+verifier('une fiche courte garde la police confortable', avecPeu.policePt >= 8.6,
+  '(' + avecPeu.policePt + ' pt)')
+
+console.log('')
+console.log('6. Plusieurs etapes')
+const quatre = choisirMiseEnPage(fiche({ vue: 'demi', etapes: 4 }))
+verifier('quatre etapes tiennent en grille', quatre.grille.colonnes * quatre.grille.lignes >= 4,
+  JSON.stringify(quatre.grille))
+const deuxComplet = choisirMiseEnPage(fiche({ vue: 'complet', etapes: 2 }))
+verifier('deux terrains complets sont empiles', deuxComplet.grille.lignes === 2,
+  JSON.stringify(deuxComplet.grille))
+const deuxZone = choisirMiseEnPage(fiche({ vue: 'zone', etapes: 2 }))
+verifier('deux vues zone sont cote a cote', deuxZone.grille.colonnes === 2,
+  JSON.stringify(deuxZone.grille))
+
+console.log('')
+console.log('=== ' + ok + ' reussis, ' + ko + ' echoues ===')
+process.exit(ko === 0 ? 0 : 1)

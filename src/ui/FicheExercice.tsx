@@ -1,0 +1,1070 @@
+/**
+ * Fiche d'un exercice : le schema de terrain a gauche, le detail a droite.
+ *
+ * Le schema passe par un historique annuler / retablir local, remis a zero a
+ * chaque changement d'exercice (le composant est monte avec la cle de
+ * l'exercice). Chaque etat valide est immediatement remonte pour etre
+ * enregistre.
+ */
+
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Terrain, type Outil, type Selection, type TraceFleche } from '../terrain/Terrain'
+import { APPARENCES, positionInitiale } from '../terrain/jetons'
+import { avancement, interpolerEtape } from '../terrain/animation'
+import { nouvelId, nouvelleEtape } from '../domain/fabrique'
+import {
+  LIBELLES_CATEGORIE,
+  LIBELLES_FLECHE,
+  LIBELLES_FORMAT_GARDIENS_COURTS,
+  LIBELLES_VUE,
+  manqueEffectif,
+  ORIENTATION_PAR_DEFAUT,
+  type Categorie,
+  type Etape,
+  type Exercice,
+  type FormatGardiens,
+  type Jeton,
+  type Position,
+  type Schema,
+  type Seance,
+  type TypeFleche,
+  type TypeJeton,
+  type VueTerrain,
+} from '../domain/types'
+import {
+  appliquerMouvement,
+  orientationEffective,
+  resoudreFleches,
+  retirerFleche,
+} from '../domain/mouvement'
+import { schemaEnPng } from '../terrain/exportImage'
+import { nomDeFichierSur } from '../platform/fichiers'
+import { refleterSchema } from '../domain/symetrie'
+import { proposerMouvements, type EtapeProposee } from '../domain/analyseTexte'
+import { PropositionMouvements } from './PropositionMouvements'
+import { redactionPossible, redigerConsigne, redigerDeroulement } from '../domain/redaction'
+import { useConfirmation } from './Dialogue'
+import { useHistorique } from './useHistorique'
+import { NoteEtoiles } from './NoteEtoiles'
+import { MenuActions, SelecteurJeton } from './MenusFiche'
+import { AlerteEffectif } from './AlerteEffectif'
+import { Separateur, useSeparation } from './Separateur'
+
+interface Props {
+  exercice: Exercice
+  seance: Seance
+  onModifier: (modifications: Partial<Exercice>) => void
+  onRetour: () => void
+  onEnregistrerDansBibliotheque: () => void
+  onImprimer: () => void
+}
+
+const OUTILS_FLECHE: TypeFleche[] = ['course', 'passe', 'dribble', 'tir', 'ecran']
+
+/** Libelles abreges des vues : le libelle complet reste en infobulle. */
+const LIBELLES_VUE_COURTS: Record<VueTerrain, string> = {
+  demi: 'Demi',
+  complet: 'Complet',
+  zone: 'Zone',
+}
+
+export function FicheExercice({
+  exercice,
+  seance,
+  onModifier,
+  onRetour,
+  onEnregistrerDansBibliotheque,
+  onImprimer,
+}: Props) {
+  const [selection, setSelection] = useState<Selection | undefined>()
+  const [outil, setOutil] = useState<Outil>('selection')
+  const [etapeIndex, setEtapeIndex] = useState(0)
+  const [lecture, setLecture] = useState<{ debut: number; temps: number } | undefined>()
+  const [aimantation, setAimantation] = useState(true)
+  const cadre = useRef<HTMLDivElement>(null)
+  const [propositions, setPropositions] = useState<EtapeProposee[] | undefined>()
+  const confirmer = useConfirmation()
+  const separation = useSeparation('fiche', 0.54)
+  /**
+   * Colonne occupant toute la largeur, le cas echeant. Volontairement non
+   * memorise : c'est un mode de travail du moment (tracer, ou rediger), pas
+   * une preference d'affichage comme la position du separateur.
+   */
+  const [plein, setPlein] = useState<'terrain' | 'detail' | undefined>()
+  /**
+   * Fiche signaletique repliee ou non.
+   *
+   * Ces six valeurs se reglent a la creation de l'exercice et se consultent
+   * ensuite : repliees, elles rendent plus de deux cents pixels a la zone de
+   * redaction, qui est le vrai espace de travail. Le choix est memorise, comme
+   * la position du separateur.
+   */
+  const [signaletiqueRepliee, setSignaletiqueRepliee] = useState(
+    () => localStorage.getItem('hbpsm:signaletique') === 'repliee',
+  )
+  const basculerSignaletique = () => {
+    setSignaletiqueRepliee((replie) => {
+      const suivant = !replie
+      try {
+        localStorage.setItem('hbpsm:signaletique', suivant ? 'repliee' : 'ouverte')
+      } catch {
+        // Stockage refuse : le repli reste valable pour la session.
+      }
+      return suivant
+    })
+  }
+  const basculer = (zone: 'terrain' | 'detail') =>
+    setPlein((actuel) => (actuel === zone ? undefined : zone))
+
+  const enregistrerSchema = useCallback((schema: Schema) => onModifier({ schema }), [onModifier])
+  const historique = useHistorique<Schema>(exercice.schema, enregistrerSchema)
+  const schema = historique.present
+
+  const index = Math.min(etapeIndex, schema.etapes.length - 1)
+  const etape = schema.etapes[index]
+  const etapePrecedente = index > 0 ? schema.etapes[index - 1] : undefined
+
+  const modifierSchema = (transformation: (schema: Schema) => Schema) =>
+    historique.pousser(transformation)
+
+  const modifierEtape = (transformation: (etape: Etape) => Etape) =>
+    modifierSchema((s) => ({
+      ...s,
+      etapes: s.etapes.map((e, i) => (i === index ? transformation(e) : e)),
+    }))
+
+  // ------------------------------------------------------------- Lecture
+
+  const image = useRef<number>()
+  useEffect(() => {
+    if (!lecture) return
+    const boucle = () => {
+      const temps = performance.now() - lecture.debut
+      const etat = avancement(temps, schema.etapes.length)
+      if (etat.termine) {
+        setLecture(undefined)
+        setEtapeIndex(schema.etapes.length - 1)
+        return
+      }
+      setLecture((precedent) => (precedent ? { ...precedent, temps } : undefined))
+      image.current = requestAnimationFrame(boucle)
+    }
+    image.current = requestAnimationFrame(boucle)
+    return () => {
+      if (image.current) cancelAnimationFrame(image.current)
+    }
+    // La boucle ne depend que du demarrage : relancer a chaque image la couperait.
+  }, [lecture?.debut, schema.etapes.length])
+
+  const etatLecture =
+    lecture && schema.etapes.length >= 2 ? avancement(lecture.temps, schema.etapes.length) : undefined
+
+  const etapeAffichee: Etape = etatLecture
+    ? interpolerEtape(
+        schema.etapes[etatLecture.index],
+        schema.etapes[Math.min(etatLecture.index + 1, schema.etapes.length - 1)],
+        etatLecture.progression,
+      )
+    : etape
+
+  /**
+   * Schema tel qu'il doit etre AFFICHE.
+   *
+   * Le terrain ne se contente pas des positions : il en deduit les orientations
+   * et resout les fleches, en lisant le schema a l'etape indiquee. Pendant la
+   * lecture, lui passer le schema d'origine gelait donc les fleches et les
+   * orientations sur l'etape selectionnee — les joueurs glissaient sans jamais
+   * pivoter. On lui donne un schema dont l'etape courante EST l'etape
+   * interpolee : tout le reste en decoule.
+   */
+  const indexAffiche = etatLecture ? etatLecture.index : index
+  const schemaAffiche: Schema = etatLecture
+    ? {
+        ...schema,
+        etapes: schema.etapes.map((e, i) => (i === indexAffiche ? etapeAffichee : e)),
+      }
+    : schema
+
+  // -------------------------------------------------------------- Jetons
+
+  const ajouterJeton = (type: TypeJeton) => {
+    const id = nouvelId()
+    modifierSchema((s) => {
+      const memeType = s.jetons.filter((j) => j.type === type).length
+      const etiquette =
+        type === 'attaquant' || type === 'defenseur'
+          ? String(memeType + 1)
+          : APPARENCES[type].etiquetteParDefaut
+      const jeton: Jeton = { id, type, etiquette, orientation: ORIENTATION_PAR_DEFAUT[type] ?? 0 }
+      const depart = positionInitiale(s.vue, s.jetons.length)
+      // La position ne porte PAS d'orientation : la renseigner signifie « choix
+      // manuel de l'entraineur » et desactive la deduction. Un jeton fraichement
+      // pose naissait donc fige, et l'orientation automatique ne servait plus a
+      // rien sur les fiches construites dans l'application.
+      const position: Position = { ...depart }
+      return {
+        ...s,
+        jetons: [...s.jetons, jeton],
+        // Un jeton ajoute existe des la premiere etape : sinon il apparaitrait
+        // au milieu de l'exercice sans explication.
+        etapes: s.etapes.map((e) => ({ ...e, positions: { ...e.positions, [id]: position } })),
+      }
+    })
+    setSelection({ type: 'jeton', id })
+  }
+
+  const supprimerJeton = (id: string) => {
+    modifierSchema((s) => ({
+      ...s,
+      jetons: s.jetons.filter((j) => j.id !== id),
+      etapes: s.etapes.map((e) => {
+        const positions = { ...e.positions }
+        delete positions[id]
+        return { ...e, positions, fleches: e.fleches.filter((f) => f.jetonId !== id) }
+      }),
+    }))
+    setSelection(undefined)
+  }
+
+  /** Deplacement ou rotation : ne touche que l'etape affichee. */
+  const deplacerJeton = (id: string, position: Position) =>
+    modifierEtape((e) => ({ ...e, positions: { ...e.positions, [id]: position } }))
+
+  const modifierJeton = (id: string, modifications: Partial<Jeton>) =>
+    modifierSchema((s) => ({
+      ...s,
+      jetons: s.jetons.map((j) => (j.id === id ? { ...j, ...modifications } : j)),
+    }))
+
+  /**
+   * Fixer l'orientation a la main desactive la deduction pour ce jeton, a cette
+   * etape : l'entraineur reprend la main, l'application ne la lui repren pas.
+   */
+  const orienterJeton = (id: string, orientation: number) =>
+    modifierEtape((e) => ({
+      ...e,
+      positions: { ...e.positions, [id]: { ...e.positions[id], orientation } },
+    }))
+
+  const libererOrientation = (id: string) =>
+    modifierEtape((e) => {
+      const position = { ...e.positions[id] }
+      delete position.orientation
+      return { ...e, positions: { ...e.positions, [id]: position } }
+    })
+
+  // ------------------------------------------------------------- Fleches
+
+  /**
+   * Un trace acheve devient un deplacement : le jeton concerne est place a
+   * l'etape suivante, qui est creee si besoin, et le ballon suit son porteur.
+   */
+  const creerFleche = (trace: TraceFleche) => {
+    modifierSchema((s) => appliquerMouvement(s, index, trace))
+    setSelection(undefined)
+    setOutil('selection')
+    // On reste sur l'etape courante : une etape comporte souvent plusieurs
+    // mouvements (un croise en compte deux), et la fleche qui vient d'etre
+    // tracee y est deja visible.
+  }
+
+  const supprimerFleche = (id: string) => {
+    modifierSchema((s) => retirerFleche(s, index, id))
+    setSelection(undefined)
+  }
+
+  const courberFleche = (id: string, courbure: Position) =>
+    modifierEtape((e) => ({
+      ...e,
+      fleches: e.fleches.map((f) => (f.id === id ? { ...f, courbure } : f)),
+    }))
+
+  // -------------------------------------------------------------- Etapes
+
+  const ajouterEtape = () => {
+    modifierSchema((s) => {
+      const modele = s.etapes[Math.min(index, s.etapes.length - 1)]
+      // La nouvelle etape repart des positions de la precedente : on ne
+      // deplace que ce qui bouge, au lieu de tout replacer.
+      const suivante: Etape = {
+        ...nouvelleEtape(`Etape ${s.etapes.length + 1}`),
+        positions: JSON.parse(JSON.stringify(modele.positions)),
+      }
+      const etapes = [...s.etapes]
+      etapes.splice(index + 1, 0, suivante)
+      return { ...s, etapes }
+    })
+    setEtapeIndex(index + 1)
+    setSelection(undefined)
+  }
+
+  const supprimerEtape = () => {
+    if (schema.etapes.length <= 1) return
+    modifierSchema((s) => ({ ...s, etapes: s.etapes.filter((_, i) => i !== index) }))
+    setEtapeIndex(Math.max(0, index - 1))
+    setSelection(undefined)
+  }
+
+  /** Enregistre le schema de l'etape affichee en image PNG. */
+  const exporterImage = async () => {
+    const svg = cadre.current?.querySelector('svg.terrain')
+    if (!(svg instanceof SVGSVGElement)) return
+    const blob = await schemaEnPng(svg)
+    const url = URL.createObjectURL(blob)
+    const lien = document.createElement('a')
+    lien.href = url
+    lien.download = nomDeFichierSur(
+      `${exercice.titre || 'schema'}-etape-${index + 1}`,
+      '.png',
+    )
+    document.body.appendChild(lien)
+    lien.click()
+    lien.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 10_000)
+  }
+
+  /**
+   * Applique les mouvements lus dans le deroulement.
+   *
+   * Chaque action devient une etape, appliquee par le meme moteur qu'un trace a
+   * la main : le resultat est donc modifiable et annulable comme le reste.
+   */
+  const appliquerPropositions = () => {
+    if (!propositions) return
+    modifierSchema((s) => {
+      let resultat = s
+      propositions.forEach((etape, rang) => {
+        for (const action of etape.actions) {
+          if (!action.acteur) continue
+          resultat = appliquerMouvement(resultat, index + rang, {
+            type: action.type,
+            jetonDepart: action.acteur,
+            jetonArrivee: action.cible,
+            arrivee: action.destination,
+          })
+        }
+        const creee = resultat.etapes[index + rang + 1]
+        if (creee) {
+          creee.titre = `Etape ${index + rang + 2}`
+          creee.consigne = etape.actions[0]?.phrase ?? ''
+        }
+      })
+      return resultat
+    })
+    setPropositions(undefined)
+    setSelection(undefined)
+  }
+
+  // ------------------------------------------------- Symetrie et redaction
+
+  const appliquerSymetrie = () => {
+    modifierSchema(refleterSchema)
+    setSelection(undefined)
+  }
+
+  /**
+   * Ecrit le deroulement a partir du schema.
+   *
+   * Le texte deja saisi n'est jamais ecrase sans accord : c'est du travail de
+   * l'entraineur, la proposition automatique ne vaut pas mieux que lui.
+   */
+  const rediger = async () => {
+    const texte = redigerDeroulement(schema)
+    if (!texte) return
+    if (exercice.fonctionnement.trim()) {
+      const accepte = await confirmer({
+        titre: 'Remplacer le deroulement ?',
+        message: (
+          <>
+            Le deroulement redige a partir du schema remplacera le texte actuel.
+            <em className="dialogue-note">{premiereLigne(texte)}</em>
+          </>
+        ),
+        libelleConfirmer: 'Remplacer',
+      })
+      if (!accepte) return
+    }
+    onModifier({ fonctionnement: texte })
+    // Chaque etape recoit aussi sa consigne, si elle n'en avait pas.
+    modifierSchema((s) => ({
+      ...s,
+      etapes: s.etapes.map((etape, i) =>
+        etape.consigne.trim() ? etape : { ...etape, consigne: redigerConsigne(s, i) },
+      ),
+    }))
+  }
+
+  // ------------------------------------------------------------ Raccourcis
+
+  useEffect(() => {
+    const surTouche = (evenement: KeyboardEvent) => {
+      const cible = evenement.target as HTMLElement | null
+      if (
+        cible instanceof HTMLInputElement ||
+        cible instanceof HTMLTextAreaElement ||
+        cible instanceof HTMLSelectElement
+      ) {
+        return
+      }
+      const commande = evenement.ctrlKey || evenement.metaKey
+      if (commande && evenement.key.toLowerCase() === 'z') {
+        evenement.preventDefault()
+        if (evenement.shiftKey) historique.retablir()
+        else historique.annuler()
+        return
+      }
+      if (commande && evenement.key.toLowerCase() === 'y') {
+        evenement.preventDefault()
+        historique.retablir()
+        return
+      }
+      if ((evenement.key === 'Delete' || evenement.key === 'Backspace') && selection) {
+        evenement.preventDefault()
+        if (selection.type === 'jeton') supprimerJeton(selection.id)
+        else supprimerFleche(selection.id)
+        return
+      }
+      if (evenement.key === 'Escape') {
+        // Echap deroule un cran a la fois : d'abord ce qui est selectionne,
+        // ensuite seulement on quitte le plein ecran.
+        if (selection) setSelection(undefined)
+        else if (plein) setPlein(undefined)
+        setOutil('selection')
+      }
+    }
+    window.addEventListener('keydown', surTouche)
+    return () => window.removeEventListener('keydown', surTouche)
+  })
+
+  /*
+   * Rubriques de la fiche, dans l'ordre de la trame de l'entraineur :
+   * forme d'intervention, mise en place, fonctionnement, regulation, evolution.
+   * « Objectifs » et « Points cles » s'y ajoutent ; une rubrique laissee vide
+   * ne s'imprime pas.
+   */
+  const champ = (
+    cle:
+      | 'objectifs'
+      | 'formeIntervention'
+      | 'misePlace'
+      | 'fonctionnement'
+      | 'regulation'
+      | 'pointsCles'
+      | 'evolution',
+  ) => ({
+    value: exercice[cle],
+    onChange: (e: { target: { value: string } }) => onModifier({ [cle]: e.target.value }),
+  })
+
+  const jetonSelectionne =
+    selection?.type === 'jeton' ? schema.jetons.find((j) => j.id === selection.id) : undefined
+  const flecheSelectionnee =
+    selection?.type === 'fleche'
+      ? resoudreFleches(schema, index).find((f) => f.id === selection.id)
+      : undefined
+  const manque = manqueEffectif(exercice, seance)
+
+  return (
+    <div className="fiche">
+      {propositions && (
+        <PropositionMouvements
+          schema={schema}
+          propositions={propositions}
+          onAppliquer={appliquerPropositions}
+          onAnnuler={() => setPropositions(undefined)}
+        />
+      )}
+      <div className="fiche-entete">
+        <button className="bouton discret" onClick={onRetour} title="Revenir a la seance">
+          ← Seance
+        </button>
+        <input
+          className="titre-fiche"
+          value={exercice.titre}
+          onChange={(e) => onModifier({ titre: e.target.value })}
+          placeholder="Titre de l'exercice"
+        />
+        <div className="pousse">
+          <NoteEtoiles
+            note={exercice.evaluation.note}
+            onChanger={(note) => onModifier({ evaluation: { ...exercice.evaluation, note } })}
+          />
+          <button className="bouton" onClick={onEnregistrerDansBibliotheque}>
+            Vers la bibliotheque
+          </button>
+          <button className="bouton" onClick={onImprimer}>
+            Imprimer
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={`fiche-corps${separation.enDeplacement ? ' en-deplacement' : ''}${
+          plein ? ` plein-${plein}` : ''
+        }`}
+        ref={separation.refConteneur}
+        style={separation.style}
+      >
+        {/* ------------------------------------------------- Colonne terrain */}
+        <section className="colonne-terrain">
+          {/*
+            Une seule barre, sur une seule ligne.
+            Deux barres qui passaient a la ligne coutaient 166 pixels de hauteur
+            sur un ecran de 13 pouces, au detriment du terrain lui-meme. Les
+            outils de trace tiennent dans une bande qui defile plutot que de se
+            replier, et les actions secondaires passent dans un menu.
+          */}
+          <div className="barre-outils">
+            <div className="groupe-vues compact">
+              {(Object.keys(LIBELLES_VUE) as VueTerrain[]).map((vue) => (
+                <button
+                  key={vue}
+                  className={`bouton segment${schema.vue === vue ? ' actif' : ''}`}
+                  onClick={() => modifierSchema((s) => ({ ...s, vue }))}
+                  title={LIBELLES_VUE[vue]}
+                >
+                  {LIBELLES_VUE_COURTS[vue]}
+                </button>
+              ))}
+            </div>
+
+            <div className="bande-outils">
+              <button
+                className={`bouton segment${outil === 'selection' ? ' actif' : ''}`}
+                onClick={() => setOutil('selection')}
+                title="Deplacer et orienter les joueurs"
+                aria-label="Placer"
+              >
+                ✥
+              </button>
+              {OUTILS_FLECHE.map((type) => (
+                <button
+                  key={type}
+                  className={`bouton segment outil-${type}${outil === type ? ' actif' : ''}`}
+                  onClick={() => {
+                    setOutil(type)
+                    setSelection(undefined)
+                  }}
+                  title={`Tracer un mouvement : ${LIBELLES_FLECHE[type].toLowerCase()}`}
+                  aria-label={LIBELLES_FLECHE[type]}
+                >
+                  <ApercuFleche type={type} />
+                </button>
+              ))}
+            </div>
+
+            <div className="pousse">
+              <button
+                className="bouton discret"
+                onClick={historique.annuler}
+                disabled={!historique.peutAnnuler}
+                title="Annuler (Ctrl+Z)"
+              >
+                ↶
+              </button>
+              <button
+                className="bouton discret"
+                onClick={historique.retablir}
+                disabled={!historique.peutRetablir}
+                title="Retablir (Ctrl+Y)"
+              >
+                ↷
+              </button>
+              <MenuActions
+                aimantation={aimantation}
+                onAimantation={() => setAimantation((a) => !a)}
+                onSymetrie={appliquerSymetrie}
+                onImage={() => void exporterImage()}
+                onProposer={() =>
+                  setPropositions(proposerMouvements(schema, exercice.fonctionnement))
+                }
+                proposerPossible={exercice.fonctionnement.trim().length > 0}
+                onRediger={() => void rediger()}
+                redigerPossible={redactionPossible(schema)}
+              />
+              {/* Hors du menu deroulant : c'est la commande la plus utilisee de
+                  la barre, elle doit rester atteignable en un clic. */}
+              <BoutonPleinEcran
+                actif={plein === 'terrain'}
+                zone="Le terrain"
+                onBasculer={() => basculer('terrain')}
+              />
+            </div>
+          </div>
+
+          <div className="cadre-terrain" ref={cadre}>
+            <Terrain
+              schema={schemaAffiche}
+              etape={etapeAffichee}
+              etapeIndex={indexAffiche}
+              outil={lecture ? 'selection' : outil}
+              selection={lecture ? undefined : selection}
+              onSelection={setSelection}
+              onDeplacer={deplacerJeton}
+              onCreerFleche={creerFleche}
+              onCourber={courberFleche}
+              aimantation={aimantation}
+              etapePrecedente={lecture ? undefined : etapePrecedente}
+              interactif={!lecture}
+            />
+          </div>
+
+          {/* ------------------------------------------------ Barre d'etapes */}
+          <div className="barre-etapes">
+            {schema.etapes.map((e, i) => (
+              <button
+                key={e.id}
+                className={`puce-etape${i === index && !lecture ? ' active' : ''}`}
+                onClick={() => {
+                  setLecture(undefined)
+                  setEtapeIndex(i)
+                  setSelection(undefined)
+                }}
+                title={e.titre}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button className="bouton discret" onClick={ajouterEtape} title="Ajouter une etape">
+              + Etape
+            </button>
+            <button
+              className="bouton discret"
+              onClick={supprimerEtape}
+              disabled={schema.etapes.length <= 1}
+              title="Supprimer cette etape"
+            >
+              ✕
+            </button>
+            <div className="pousse">
+              {/*
+                La palette occupait deux rangees en permanence, soit 132 pixels,
+                pour un geste qu'on fait quelques fois par fiche. Elle devient un
+                bouton qui ouvre un choix, et rend cette hauteur au terrain.
+              */}
+              <SelecteurJeton onChoisir={ajouterJeton} />
+              <button
+                className="bouton"
+                onClick={() =>
+                  lecture ? setLecture(undefined) : setLecture({ debut: performance.now(), temps: 0 })
+                }
+                disabled={schema.etapes.length < 2}
+                title={
+                  schema.etapes.length < 2
+                    ? 'Ajoutez une deuxieme etape pour animer le mouvement'
+                    : 'Lire le mouvement'
+                }
+              >
+                {lecture ? '■ Arreter' : '▶ Lire'}
+              </button>
+            </div>
+          </div>
+
+          <div className="detail-etape">
+            <label className="champ-en-ligne large">
+              <span>Titre de l'etape {index + 1}</span>
+              <input
+                type="text"
+                value={etape.titre}
+                onChange={(e) => modifierEtape((et) => ({ ...et, titre: e.target.value }))}
+              />
+            </label>
+            <label className="champ-en-ligne large">
+              <span>Consigne</span>
+              <input
+                type="text"
+                value={etape.consigne}
+                placeholder="Ce que fait le groupe a ce moment"
+                onChange={(e) => modifierEtape((et) => ({ ...et, consigne: e.target.value }))}
+              />
+            </label>
+          </div>
+
+
+          {jetonSelectionne ? (
+            <div className="editeur-jeton">
+              <span className="etiquette-groupe">
+                {APPARENCES[jetonSelectionne.type].libelle} selectionne
+              </span>
+              <label className="champ-en-ligne">
+                <span>Etiquette</span>
+                <input
+                  type="text"
+                  maxLength={4}
+                  value={jetonSelectionne.etiquette}
+                  placeholder="7, AlG..."
+                  onChange={(e) => modifierJeton(jetonSelectionne.id, { etiquette: e.target.value })}
+                />
+              </label>
+              <label className="champ-en-ligne">
+                <span>
+                  Orientation
+                  {etape.positions[jetonSelectionne.id]?.orientation === undefined && (
+                    <em className="mention-auto">auto</em>
+                  )}
+                </span>
+                <input
+                  type="range"
+                  min={0}
+                  max={355}
+                  step={5}
+                  value={Math.round(orientationEffective(schema, index, jetonSelectionne.id))}
+                  onChange={(e) => orienterJeton(jetonSelectionne.id, Number(e.target.value))}
+                />
+              </label>
+              {etape.positions[jetonSelectionne.id]?.orientation !== undefined && (
+                <button
+                  className="bouton discret"
+                  onClick={() => libererOrientation(jetonSelectionne.id)}
+                  title="Laisser l'application orienter ce joueur"
+                >
+                  ↺ auto
+                </button>
+              )}
+              <button
+                className="bouton danger"
+                onClick={() => supprimerJeton(jetonSelectionne.id)}
+                title="Supprimer (Suppr)"
+              >
+                Retirer du terrain
+              </button>
+            </div>
+          ) : flecheSelectionnee ? (
+            <div className="editeur-jeton">
+              <span className="etiquette-groupe">
+                {LIBELLES_FLECHE[flecheSelectionnee.type]} selectionne
+              </span>
+              <span className="aide-terrain sans-marge">
+                Faites glisser le point du milieu pour courber le trace.
+              </span>
+              <button
+                className="bouton danger"
+                onClick={() => supprimerFleche(flecheSelectionnee.id)}
+              >
+                Effacer le trace
+              </button>
+            </div>
+          ) : (
+            <p className="aide-terrain">
+              Ajoutez un element de la palette, puis faites-le glisser sur le terrain. La poignee
+              jaune fait pivoter le joueur sur 360°. Choisissez un type de mouvement ci-dessus pour
+              tracer une fleche.
+            </p>
+          )}
+        </section>
+
+        <Separateur separation={separation} libelle="Largeur du schema de terrain" />
+
+        {/* -------------------------------------------------- Colonne detail */}
+        <section className="colonne-detail">
+          <div className="barre-detail">
+            <button
+              className="repli-signaletique"
+              onClick={basculerSignaletique}
+              aria-expanded={!signaletiqueRepliee}
+              title={
+                signaletiqueRepliee
+                  ? 'Afficher categorie, duree, effectif et difficulte'
+                  : 'Replier : le resume reste visible'
+              }
+            >
+              <span className={`chevron${signaletiqueRepliee ? ' replie' : ''}`}>⌄</span>
+              <span className="etiquette-groupe">Detail de l'exercice</span>
+            </button>
+            {signaletiqueRepliee && (
+              <span className="resume-signaletique">
+                {LIBELLES_CATEGORIE[exercice.categorie]} · {exercice.duree} min ·{' '}
+                {exercice.nombreJoueurs} joueurs
+                {exercice.nombreGardiens > 0 && ` + ${exercice.nombreGardiens} GB`}
+                {exercice.enParallele && ' · en parallele'}
+              </span>
+            )}
+            <div className="pousse">
+              <BoutonPleinEcran
+                actif={plein === 'detail'}
+                zone="Le detail"
+                onBasculer={() => basculer('detail')}
+              />
+            </div>
+          </div>
+
+          {manque && <AlerteEffectif manque={manque} seance={seance} />}
+
+          {/*
+            Fiche signaletique : six valeurs courtes, consultees souvent et
+            modifiees rarement. Elles occupaient trois rangees de champs pleine
+            largeur avec une etiquette en capitales au-dessus de chacune — 203
+            pixels pris sur la zone de redaction, qui est le vrai espace de
+            travail. Les nombres sont regroupes et leur unite sert d'etiquette.
+          */}
+          <div className={`grille-detail${signaletiqueRepliee ? ' repliee' : ''}`}>
+            <label className="champ etendu">
+              <span>Categorie</span>
+              <select
+                value={exercice.categorie}
+                onChange={(e) => onModifier({ categorie: e.target.value as Categorie })}
+              >
+                {Object.entries(LIBELLES_CATEGORIE).map(([valeur, libelle]) => (
+                  <option key={valeur} value={valeur}>
+                    {libelle}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="champ">
+              <span>Difficulte</span>
+              <select
+                value={exercice.difficulte}
+                onChange={(e) =>
+                  onModifier({ difficulte: Number(e.target.value) as Exercice['difficulte'] })
+                }
+              >
+                <option value={1}>Facile</option>
+                <option value={2}>Intermediaire</option>
+                <option value={3}>Difficile</option>
+              </select>
+            </label>
+
+            <div className="groupe-nombres" role="group" aria-label="Volume de l'exercice">
+              <label className="nombre">
+                <input
+                  type="number"
+                  min={0}
+                  max={180}
+                  value={exercice.duree}
+                  aria-label="Duree en minutes"
+                  onChange={(e) => onModifier({ duree: Number(e.target.value) || 0 })}
+                />
+                <span>min</span>
+              </label>
+              <label className="nombre">
+                <input
+                  type="number"
+                  min={0}
+                  max={40}
+                  value={exercice.nombreJoueurs}
+                  aria-label="Nombre de joueurs de champ"
+                  onChange={(e) => onModifier({ nombreJoueurs: Number(e.target.value) || 0 })}
+                />
+                <span>joueurs</span>
+              </label>
+              <label className="nombre">
+                <input
+                  type="number"
+                  min={0}
+                  max={6}
+                  value={exercice.nombreGardiens}
+                  aria-label="Nombre de gardiens"
+                  onChange={(e) => onModifier({ nombreGardiens: Number(e.target.value) || 0 })}
+                />
+                <span>gardiens</span>
+              </label>
+            </div>
+
+            {/* Pleine largeur : les intitules debordaient de la liste. */}
+            <label className="champ etendu">
+              <span>Role des gardiens</span>
+              <select
+                value={exercice.formatGardiens}
+                onChange={(e) => onModifier({ formatGardiens: e.target.value as FormatGardiens })}
+              >
+                {Object.entries(LIBELLES_FORMAT_GARDIENS_COURTS).map(([valeur, libelle]) => (
+                  <option key={valeur} value={valeur}>
+                    {libelle}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label
+              className="case-a-cocher compacte"
+              title="Un exercice mene en parallele se deroule pendant un autre : sa duree ne s'ajoute pas au temps total de la seance."
+            >
+              <input
+                type="checkbox"
+                checked={exercice.enParallele}
+                onChange={(e) => onModifier({ enParallele: e.target.checked })}
+              />
+              <span>En parallele d'un autre exercice</span>
+            </label>
+          </div>
+
+          <label className="champ">
+            <span>Objectifs</span>
+            <textarea rows={2} placeholder="Ce que les joueurs doivent progresser" {...champ('objectifs')} />
+          </label>
+          <label className="champ">
+            <span>Forme d'intervention</span>
+            <input
+              type="text"
+              placeholder="Approche inductive, consigne directe, couverture pivot..."
+              {...champ('formeIntervention')}
+            />
+          </label>
+          <label className="champ">
+            <span>Mise en place</span>
+            <textarea
+              rows={3}
+              placeholder="Espaces a delimiter, colonnes, materiel a poser"
+              {...champ('misePlace')}
+            />
+          </label>
+          <label className="champ">
+            <span>Fonctionnement</span>
+            <textarea
+              rows={5}
+              placeholder="Comment la situation se deroule une fois lancee"
+              {...champ('fonctionnement')}
+            />
+          </label>
+          <label className="champ">
+            <span>Regulation</span>
+            <textarea
+              rows={3}
+              placeholder="Regles, contraintes, bareme de points"
+              {...champ('regulation')}
+            />
+          </label>
+          <label className="champ">
+            <span>Points cles</span>
+            <textarea rows={3} placeholder="Ce que l'entraineur observe et corrige" {...champ('pointsCles')} />
+          </label>
+          <label className="champ">
+            <span>Evolution</span>
+            <textarea rows={3} placeholder="Simplifier, complexifier, faire evoluer" {...champ('evolution')} />
+          </label>
+          <label className="champ">
+            <span>Materiel</span>
+            <input
+              type="text"
+              placeholder="ballons, plots, chasubles (separes par des virgules)"
+              value={exercice.materiel.join(', ')}
+              onChange={(e) =>
+                onModifier({
+                  materiel: e.target.value
+                    .split(',')
+                    .map((m) => m.trim())
+                    .filter(Boolean),
+                })
+              }
+            />
+          </label>
+
+          <div className="bloc-evaluation">
+            <div className="entete-evaluation">
+              <span className="etiquette-groupe">Retour apres seance</span>
+              <button
+                className="bouton"
+                onClick={() =>
+                  onModifier({
+                    evaluation: {
+                      ...exercice.evaluation,
+                      nombreUtilisations: exercice.evaluation.nombreUtilisations + 1,
+                      derniereUtilisation: new Date().toISOString().slice(0, 10),
+                    },
+                  })
+                }
+              >
+                Marquer comme realise
+              </button>
+            </div>
+            <p className="compteur-utilisations">
+              {exercice.evaluation.nombreUtilisations === 0
+                ? 'Jamais utilise'
+                : `Utilise ${exercice.evaluation.nombreUtilisations} fois` +
+                  (exercice.evaluation.derniereUtilisation
+                    ? `, la derniere fois le ${exercice.evaluation.derniereUtilisation
+                        .split('-')
+                        .reverse()
+                        .join('/')}`
+                    : '')}
+            </p>
+            <textarea
+              rows={3}
+              placeholder="Ce qui a marche ou non, a relire avant de le reprogrammer"
+              value={exercice.evaluation.commentaire}
+              onChange={(e) =>
+                onModifier({ evaluation: { ...exercice.evaluation, commentaire: e.target.value } })
+              }
+            />
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Bouton d'agrandissement d'une colonne.
+ *
+ * Le pictogramme est trace en SVG plutot qu'ecrit avec un caractere : les
+ * fleches d'agrandissement d'Unicode manquent dans beaucoup de polices, et un
+ * carre vide a la place d'une icone n'aide personne.
+ */
+function BoutonPleinEcran({
+  actif,
+  zone,
+  onBasculer,
+}: {
+  actif: boolean
+  zone: string
+  onBasculer: () => void
+}) {
+  return (
+    <button
+      className={`bouton discret plein-ecran${actif ? ' actif' : ''}`}
+      onClick={onBasculer}
+      aria-pressed={actif}
+      title={
+        actif
+          ? `${zone} occupe toute la largeur : revenir a deux colonnes (Echap)`
+          : `${zone} occupe toute la largeur`
+      }
+    >
+      <svg className="icone-plein-ecran" viewBox="0 0 16 16" aria-hidden="true">
+        <path
+          d={
+            actif
+              ? 'M7 2 V7 H2 M9 14 V9 H14'
+              : 'M2 6 V2 H6 M14 6 V2 H10 M2 10 V14 H6 M14 10 V14 H10'
+          }
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  )
+}
+
+/** Petit apercu du style de trait, dans la barre d'outils. */
+function ApercuFleche({ type }: { type: TypeFleche }) {
+  const traits: Record<TypeFleche, string> = {
+    course: 'M 1 8 L 15 8',
+    passe: 'M 1 8 L 15 8',
+    dribble: 'M 1 8 Q 3.5 3, 6 8 T 11 8 T 15 8',
+    tir: 'M 1 6 L 15 6 M 1 10 L 15 10',
+    ecran: 'M 1 8 L 13 8 M 13 3 L 13 13',
+  }
+  return (
+    <svg viewBox="0 0 16 16" className="apercu-fleche" aria-hidden="true">
+      <path
+        d={traits[type]}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={type === 'tir' ? 1.4 : 1.6}
+        strokeDasharray={type === 'passe' ? '3 2.2' : undefined}
+        strokeLinecap="round"
+      />
+      {type !== 'ecran' && <polygon points="16,8 12,10 12,6" fill="currentColor" />}
+    </svg>
+  )
+}
+
+/** Premiere ligne d un texte : sert d apercu dans la demande de confirmation. */
+function premiereLigne(texte: string): string {
+  const fin = texte.indexOf(String.fromCharCode(10))
+  return fin === -1 ? texte : texte.slice(0, fin)
+}

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.local
+.DS_Store
+
+.build-tests/
+
+# Notice engendree depuis LISEZMOI.md par outils/notice.mjs
+src/notice/notice.genere.html

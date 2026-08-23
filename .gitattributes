@@ -1,0 +1,6 @@
+# Fins de ligne normalisees dans le depot : le projet se developpe sous
+# Windows mais doit pouvoir se cloner ailleurs sans un diff entier.
+* text=auto eol=lf
+
+*.png binary
+*.odp binary

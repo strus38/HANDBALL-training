@@ -1,0 +1,2978 @@
+/**
+ * Feuille de style de l'application.
+ *
+ * Les couleurs viennent du club : jaune et bleu (HBPSM, Saint-Marcellin).
+ * Le bleu profond porte la structure (entete, boutons d'action, titres) car il
+ * garde un contraste suffisant sur fond clair ; le jaune sert d'accent, sur les
+ * elements actifs et les reperes, toujours associe a du texte bleu fonce, un
+ * texte clair sur jaune etant illisible.
+ */
+
+:root {
+  /* Couleurs du club */
+  --jaune: #ffc72c;
+  --jaune-clair: #fff3d1;
+  --jaune-fonce: #d99e00;
+  --bleu-900: #0b2a52;
+  --bleu-800: #103866;
+  --bleu-700: #16487f;
+  --bleu-500: #1f6fbd;
+  --bleu-100: #e4eefa;
+  --bleu-050: #f2f7fd;
+
+  /* Neutres */
+  --fond: #f5f7fa;
+  --surface: #ffffff;
+  --surface-2: #eef2f7;
+  --bordure: #d8dfe8;
+  --bordure-forte: #b9c4d2;
+  --texte: #16202e;
+  --texte-doux: #5a6a7d;
+  --texte-faible: #8494a6;
+
+  /* Etats */
+  --danger: #b3261e;
+  --danger-fond: #fdedec;
+  --succes: #1c7a45;
+  --alerte: #8a5a00;
+  --alerte-fond: #fff6de;
+
+  /* Formes */
+  --rayon: 10px;
+  --rayon-petit: 7px;
+  --ombre: 0 1px 2px rgba(11, 42, 82, 0.07), 0 2px 8px rgba(11, 42, 82, 0.06);
+  --ombre-forte: 0 8px 30px rgba(11, 42, 82, 0.18);
+
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--fond);
+  color: var(--texte);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--bleu-900);
+  letter-spacing: -0.01em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* ============================================================== Structure */
+
+.application {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding: 10px 20px;
+  background: var(--bleu-900);
+  color: #fff;
+  box-shadow: var(--ombre);
+  z-index: 3;
+}
+
+.entete h1 {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 650;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.entete .sous-titre {
+  color: #9fb6d4;
+  font-size: 12px;
+}
+
+.entete .pousse {
+  margin-left: auto;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.identite {
+  min-width: 0;
+}
+
+/* Les boutons discrets de l'entete sont poses sur le bleu profond : la couleur
+   par defaut, prevue pour un fond clair, y tombe a 2,6:1 de contraste. */
+.entete .bouton.discret {
+  color: #9fb6d4;
+}
+
+.entete .bouton.discret:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.bouton.replier {
+  font-size: 17px;
+  min-width: 36px;
+}
+
+.corps {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.panneau-principal {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 22px 26px 60px;
+  min-width: 0;
+}
+
+.attente {
+  color: var(--texte-doux);
+}
+
+/* ============================================================== Controles */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  min-height: 38px;
+  border: 1px solid var(--bordure-forte);
+  border-radius: var(--rayon-petit);
+  background: var(--surface);
+  color: var(--bleu-800);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+}
+
+.bouton:hover:not(:disabled) {
+  background: var(--bleu-050);
+  border-color: var(--bleu-500);
+}
+
+.bouton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.bouton.principal {
+  background: var(--bleu-700);
+  border-color: var(--bleu-700);
+  color: #fff;
+}
+
+.bouton.principal:hover:not(:disabled) {
+  background: var(--bleu-800);
+  border-color: var(--bleu-800);
+}
+
+.bouton.danger {
+  color: var(--danger);
+  border-color: #e7c6c3;
+}
+
+.bouton.danger:hover:not(:disabled) {
+  background: var(--danger-fond);
+  border-color: var(--danger);
+}
+
+.bouton.discret {
+  border-color: transparent;
+  background: transparent;
+  padding: 6px 9px;
+  min-height: 34px;
+  color: var(--texte-doux);
+}
+
+.bouton.discret:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--bleu-800);
+}
+
+.bouton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.groupe-vues {
+  display: inline-flex;
+}
+
+.bouton.segment {
+  border-radius: 0;
+  border-right-width: 0;
+  font-size: 14px;
+  padding: 7px 12px;
+  min-height: 36px;
+}
+
+.groupe-vues .bouton.segment:first-child {
+  border-radius: var(--rayon-petit) 0 0 var(--rayon-petit);
+}
+
+.groupe-vues .bouton.segment:last-child {
+  border-radius: 0 var(--rayon-petit) var(--rayon-petit) 0;
+  border-right-width: 1px;
+}
+
+.bouton.segment.actif {
+  background: var(--jaune);
+  border-color: var(--jaune-fonce);
+  color: var(--bleu-900);
+  font-weight: 650;
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.champ > span,
+.etiquette-groupe {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--texte-doux);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='date'],
+select,
+textarea {
+  padding: 8px 11px;
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-petit);
+  background: var(--surface);
+  width: 100%;
+  min-height: 38px;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 62px;
+  line-height: 1.55;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--bordure-forte);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--bleu-500);
+  box-shadow: 0 0 0 3px var(--bleu-100);
+}
+
+.bouton:focus-visible,
+.liste-seances button:focus-visible,
+.carte-modele:focus-visible,
+.lien-exercice:focus-visible,
+.puce:focus-visible,
+.etoile:focus-visible {
+  outline: 2px solid var(--bleu-500);
+  outline-offset: 2px;
+}
+
+.case-a-cocher {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px 13px;
+  background: var(--bleu-050);
+  border: 1px solid var(--bleu-100);
+  border-radius: var(--rayon-petit);
+  cursor: pointer;
+}
+
+.case-a-cocher input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--bleu-700);
+  flex-shrink: 0;
+}
+
+.case-a-cocher small {
+  display: block;
+  color: var(--texte-doux);
+  font-size: 12.5px;
+}
+
+/* =========================================================== Liste seances */
+
+.colonne-seances {
+  width: 268px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--bordure);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Tete du menu : elle ne porte que son nom et le bouton qui le replie, la ou
+   l'utilisateur le cherche. Le bouton de l'entete, lui, sert a le rouvrir. */
+.tete-seances {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 0;
+}
+
+.tete-seances .etiquette-groupe {
+  margin: 0;
+}
+
+.tete-seances .replier-menu {
+  margin-left: auto;
+  min-width: 30px;
+  padding: 2px 7px;
+  font-size: 13px;
+  letter-spacing: -2px;
+}
+
+.colonne-seances .barre {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--bordure);
+}
+
+.colonne-seances .barre .bouton {
+  flex: 1;
+}
+
+.liste-seances {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.liste-seances li + li {
+  margin-top: 3px;
+}
+
+.liste-seances button {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  border-radius: var(--rayon-petit);
+  background: transparent;
+  cursor: pointer;
+}
+
+.liste-seances button:hover {
+  background: var(--surface-2);
+}
+
+.liste-seances .active {
+  background: var(--bleu-050);
+  border-color: var(--bleu-100);
+  border-left-color: var(--jaune);
+}
+
+.liste-seances .titre-seance {
+  font-weight: 600;
+  display: block;
+  color: var(--bleu-900);
+}
+
+.liste-seances .meta-seance {
+  font-size: 12px;
+  color: var(--texte-doux);
+}
+
+.vide-liste {
+  padding: 16px;
+  color: var(--texte-doux);
+  font-size: 13px;
+}
+
+/* ================================================================ Bandeaux */
+
+.bandeau {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 20px;
+  font-size: 13.5px;
+}
+
+.bandeau.alerte {
+  background: var(--alerte-fond);
+  border-bottom: 1px solid #eddaa8;
+  color: var(--alerte);
+}
+
+.bandeau.information {
+  background: var(--bleu-050);
+  border-bottom: 1px solid var(--bleu-100);
+  color: var(--bleu-800);
+}
+
+.bandeau.information .bouton {
+  margin-left: auto;
+}
+
+.bandeau strong {
+  display: block;
+}
+
+.indicateur {
+  font-size: 12px;
+  color: #9fb6d4;
+  min-width: 120px;
+  text-align: right;
+}
+
+.indicateur.erreur {
+  color: var(--jaune);
+  font-weight: 600;
+}
+
+.indicateur.enregistre {
+  color: #86d6a5;
+}
+
+/* ================================================================== Cartes */
+
+.carte {
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.carte > h2 {
+  font-size: 15px;
+  margin: 0 0 14px;
+}
+
+.grille-seance {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.entete-section {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 26px 0 12px;
+}
+
+.entete-section h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.entete-section .pousse {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.compteur {
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 3px 11px;
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+
+.vide {
+  text-align: center;
+  color: var(--texte-doux);
+  padding: 40px 20px;
+  border: 1px dashed var(--bordure-forte);
+  border-radius: var(--rayon);
+  background: var(--surface);
+}
+
+.vide p {
+  margin: 0 0 16px;
+}
+
+.actions-vide {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ============================================================== Exercices */
+
+.liste-exercices {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ligne-exercice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-petit);
+  padding: 9px 12px;
+  margin-bottom: 7px;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.ligne-exercice:hover {
+  border-color: var(--bleu-500);
+  box-shadow: var(--ombre);
+}
+
+.ligne-exercice .rang {
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--jaune);
+  color: var(--bleu-900);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.lien-exercice {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.titre-exercice {
+  display: block;
+  font-weight: 600;
+  color: var(--bleu-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta-exercice {
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.jeton-parallele {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--jaune-clair);
+  color: var(--alerte);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.ligne-exercice .actions {
+  display: flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+/* ================================================================= Etoiles */
+
+.etoiles {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  white-space: nowrap;
+}
+
+.etoile {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 1px 2px;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--bordure-forte);
+  transition: color 0.1s ease, transform 0.1s ease;
+}
+
+.etoile:hover {
+  transform: scale(1.15);
+}
+
+.etoile.pleine {
+  color: var(--jaune);
+}
+
+.etoiles.note-basse .etoile.pleine {
+  color: #c98b8b;
+}
+
+.etoiles.lecture {
+  color: var(--jaune);
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+.etoiles.lecture.note-basse {
+  color: #c98b8b;
+}
+
+.etoiles.lecture.compacte {
+  font-size: 13px;
+  min-width: 68px;
+  text-align: right;
+  display: inline-block;
+}
+
+.non-evalue {
+  color: var(--texte-faible);
+  font-size: 11.5px;
+  letter-spacing: 0;
+  font-style: italic;
+}
+
+.libelle-note {
+  font-size: 12px;
+  color: #9fb6d4;
+  margin-left: 7px;
+}
+
+.fiche-entete .libelle-note {
+  color: var(--texte-doux);
+}
+
+/* =================================================================== Fiche */
+
+.fiche {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.fiche-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--bordure);
+  flex-wrap: wrap;
+}
+
+.titre-fiche {
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--bleu-900);
+  border: 1px solid transparent;
+  background: transparent;
+  max-width: 480px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.titre-fiche:hover {
+  border-color: var(--bordure);
+}
+
+/* Sans mise en flex, les enfants sont des boites en ligne collees les unes aux
+   autres : le libelle de la note venait toucher le premier bouton, et son
+   contour de focus mordait dessus. */
+.fiche-entete .pousse {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Les boutons gardent leur largeur : c'est le titre, elastique, qui cede. */
+.fiche-entete .pousse .bouton {
+  flex-shrink: 0;
+}
+
+.fiche-corps {
+  flex: 1;
+  display: grid;
+  /* La premiere colonne est pilotee par le separateur (voir Separateur.tsx).
+     La valeur de repli sert avant le premier rendu et si le style est absent. */
+  grid-template-columns: var(--part-terrain, 54%) var(--largeur-poignee, 7px) 1fr;
+  gap: 0;
+  min-height: 0;
+}
+
+/* Pendant le glissement, tout l'ecran garde le curseur de redimensionnement
+   et cesse de selectionner du texte : sans cela, passer sur un paragraphe en
+   surligne la moitie. */
+.fiche-corps.en-deplacement {
+  cursor: col-resize;
+  user-select: none;
+}
+
+/*
+  Le terrain est l'element ELASTIQUE de la colonne : les commandes prennent la
+  hauteur qu'il leur faut, le schema occupe tout le reste. Auparavant c'etait
+  l'inverse — un plafond de 58vh sur le terrain, des barres a hauteur fixe
+  au-dessus — et sur un ecran de 13 pouces la somme depassait la fenetre :
+  la barre d'etapes et la palette tombaient sous la ligne de flottaison.
+*/
+.colonne-terrain {
+  padding: 16px 18px;
+  background: var(--surface);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Si meme le minimum ne tient pas, on defile plutot que de tout ecraser. */
+  overflow-y: auto;
+}
+
+.colonne-terrain .cadre-terrain {
+  flex: 1 1 auto;
+  /* Plancher : en deca, un schema ne se lit plus. */
+  min-height: 190px;
+  display: flex;
+}
+
+/*
+  Le SVG remplit la boite qu'on lui donne ; preserveAspectRatio le centre sans
+  jamais le deformer. C'est ce qui permet au terrain de grandir et de retrecir
+  avec la fenetre au lieu d'imposer sa hauteur.
+*/
+.colonne-terrain .terrain {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+}
+
+.colonne-detail {
+  padding: 16px 20px 60px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------- Plein ecran */
+
+/* Une seule colonne occupe toute la largeur : l'autre et la poignee sortent de
+   la grille. Utile pour tracer au large, ou pour rediger sans un terrain qui
+   prend la moitie de l'ecran. */
+.fiche-corps.plein-terrain,
+.fiche-corps.plein-detail {
+  grid-template-columns: 1fr;
+}
+
+.fiche-corps.plein-terrain .separateur,
+.fiche-corps.plein-terrain .colonne-detail,
+.fiche-corps.plein-detail .separateur,
+.fiche-corps.plein-detail .colonne-terrain {
+  display: none;
+}
+
+/* Le plafond de hauteur du terrain existe pour garder la palette a l'ecran.
+   En plein ecran il n'y a plus de deuxieme colonne a menager : on desserre. */
+.fiche-corps.plein-terrain .terrain {
+  max-height: 76vh;
+}
+
+.bouton.plein-ecran {
+  padding: 4px 7px;
+}
+
+.bouton.plein-ecran.actif {
+  background: var(--jaune);
+  color: var(--bleu-900);
+}
+
+.icone-plein-ecran {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+/* Barre de tete de la colonne de droite : elle n'existe que pour porter le
+   bouton d'agrandissement, symetrique de celui de la barre d'outils du terrain. */
+.barre-detail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: -4px;
+}
+
+.barre-detail .pousse {
+  margin-left: auto;
+}
+
+/* ------------------------------------------------------------ Separateur */
+
+.separateur {
+  position: relative;
+  background: var(--bordure);
+  cursor: col-resize;
+  /* Le terrain capte les gestes tactiles : la poignee doit garder les siens. */
+  touch-action: none;
+}
+
+/* Zone de prise elargie : la barre reste fine a l'oeil, mais s'attrape sans
+   viser au pixel pres. */
+.separateur::before {
+  content: '';
+  position: absolute;
+  inset: 0 -4px;
+}
+
+/* Reperes centraux, pour que la barre se lise comme une poignee. */
+.separateur::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
+  background: var(--texte-doux);
+  opacity: 0.45;
+}
+
+.separateur:hover,
+.separateur.actif {
+  background: var(--jaune);
+}
+
+.separateur:hover::after,
+.separateur.actif::after {
+  background: var(--bleu-900);
+  opacity: 1;
+}
+
+.separateur:focus-visible {
+  outline: 2px solid var(--bleu-500);
+  outline-offset: -1px;
+}
+
+.barre-outils {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  /* Une seule ligne, toujours : le repli coutait une deuxieme rangee entiere. */
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+/* Les outils de trace defilent lateralement plutot que de passer a la ligne. */
+.bande-outils {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-width: 0;
+  padding: 1px;
+}
+
+.bande-outils::-webkit-scrollbar {
+  display: none;
+}
+
+.bande-outils .bouton.segment {
+  flex-shrink: 0;
+  padding: 7px 9px;
+  min-width: 40px;
+  justify-content: center;
+}
+
+.groupe-vues.compact .bouton.segment {
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.barre-outils .pousse {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
+
+/*
+  Fiche signaletique compacte.
+  Les champs sont dimensionnes selon ce qu'ils contiennent, au lieu d'occuper
+  chacun une colonne identique : une categorie a besoin de place, un nombre de
+  gardiens n'en demande aucune.
+*/
+.grille-detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 9px 10px;
+}
+
+.grille-detail .champ {
+  flex: 1 1 150px;
+  min-width: 130px;
+  gap: 3px;
+}
+
+/*
+  Base volontairement basse : avec 220 px, ce champ manquait de six pixels pour
+  tenir a cote du groupe de nombres et se retrouvait seul sur une rangee. Il
+  s'etire de toute facon pour occuper la place restante.
+*/
+.grille-detail .champ.etendu {
+  flex: 2 1 172px;
+}
+
+.grille-detail .champ > span {
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+}
+
+/* Repliee, la fiche signaletique disparait au profit d'un resume d'une ligne. */
+.grille-detail.repliee {
+  display: none;
+}
+
+.repli-signaletique {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.repli-signaletique:hover .etiquette-groupe {
+  color: var(--bleu-700);
+}
+
+.chevron {
+  font-size: 15px;
+  line-height: 1;
+  color: var(--texte-doux);
+  transition: transform 0.15s ease;
+}
+
+.chevron.replie {
+  transform: rotate(-90deg);
+}
+
+.resume-signaletique {
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  margin-left: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* Les trois nombres partagent une seule etiquette : leur unite. */
+.groupe-nombres {
+  display: flex;
+  gap: 5px;
+  flex: 0 0 auto;
+}
+
+.nombre {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px 0 0;
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-petit);
+  background: var(--surface);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.nombre:hover {
+  border-color: var(--bordure-forte);
+}
+
+.nombre:focus-within {
+  border-color: var(--bleu-500);
+  box-shadow: 0 0 0 3px var(--bleu-100);
+}
+
+.nombre input {
+  width: 2.9em;
+  border: none;
+  background: none;
+  text-align: right;
+  font-weight: 650;
+  color: var(--bleu-900);
+  padding-right: 0;
+}
+
+.nombre input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Les fleches du champ nombre volent une place precieuse pour rien. */
+.nombre input::-webkit-outer-spin-button,
+.nombre input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.nombre input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.nombre > span {
+  font-size: 12px;
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+
+.case-a-cocher.compacte {
+  flex: 1 1 100%;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 13.5px;
+}
+
+.aide-terrain {
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  margin: 10px 0 0;
+  line-height: 1.45;
+  flex-shrink: 0;
+}
+
+/* ================================================================ Terrain */
+
+.cadre-terrain {
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  overflow: hidden;
+  background: var(--bleu-050);
+  box-shadow: var(--ombre);
+}
+
+.terrain {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* La vue zoomee sur la zone est plus haute que large : sans plafond, elle
+     repousserait la palette hors de l'ecran. Le SVG se centre alors dans le
+     cadre au lieu de s'etirer, le trace reste a l'echelle. */
+  max-height: 58vh;
+  touch-action: none;
+}
+
+.apercu-modele .terrain {
+  max-height: 34vh;
+}
+
+.terrain-fond {
+  fill: #dfe7f0;
+}
+
+.terrain-aire {
+  fill: #f7f4ec;
+}
+
+.terrain-surface {
+  fill: rgba(31, 111, 189, 0.12);
+  stroke: none;
+}
+
+.terrain-ligne {
+  fill: none;
+  stroke: var(--bleu-800);
+  stroke-width: 0.14;
+  stroke-linecap: round;
+}
+
+.terrain-contour {
+  fill: none;
+  stroke-width: 0.18;
+}
+
+.terrain-ligne.pointillee {
+  stroke-dasharray: 0.75 0.55;
+}
+
+.terrain-but {
+  fill: #ffffff;
+  stroke: var(--bleu-900);
+  stroke-width: 0.16;
+}
+
+.jeton-etiquette {
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-weight: 700;
+  pointer-events: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.jeton.deplacable {
+  cursor: grab;
+}
+
+.jeton.deplacable:active {
+  cursor: grabbing;
+}
+
+.jeton-halo {
+  fill: none;
+  stroke: var(--bleu-500);
+  stroke-width: 0.18;
+  stroke-dasharray: 0.4 0.3;
+}
+
+.jeton-fantome {
+  fill: rgba(11, 42, 82, 0.13);
+  stroke: none;
+}
+
+/* ================================================================ Palette */
+
+.menu-flottant {
+  position: relative;
+  display: inline-flex;
+}
+
+.panneau-flottant {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  z-index: 30;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre-forte);
+  padding: 7px;
+}
+
+/*
+  Par defaut un panneau s'ouvre VERS LE HAUT : c'est juste pour la palette, qui
+  est ancree en bas de colonne. Un menu ancre en HAUT doit faire l'inverse -
+  sinon il remonte hors de .colonne-terrain, que son overflow-y rogne, et se
+  glisse sous le bandeau de l'application.
+*/
+.panneau-flottant.vers-le-bas {
+  top: calc(100% + 6px);
+  bottom: auto;
+}
+
+.palette-flottante {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 5px;
+  width: max-content;
+}
+
+.menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 258px;
+}
+
+.entree-menu {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  grid-template-rows: auto auto;
+  gap: 0 10px;
+  align-items: center;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--rayon-petit);
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--texte);
+}
+
+.entree-menu:hover:not(:disabled) {
+  background: var(--bleu-050);
+}
+
+.entree-menu:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.entree-menu.active {
+  background: var(--jaune-clair);
+}
+
+.icone-menu {
+  grid-row: 1 / span 2;
+  font-size: 15px;
+  text-align: center;
+}
+
+.entree-menu em {
+  grid-column: 2;
+  font-style: normal;
+  font-size: 11.5px;
+  color: var(--texte-doux);
+}
+
+.entree-menu-libre {
+  border-top: 1px solid var(--bordure);
+  margin-top: 4px;
+  padding-top: 5px;
+}
+
+.palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.palette-item {
+  justify-content: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 10px;
+  min-height: 40px;
+}
+
+.pastille {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+
+.editeur-jeton {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+  flex-shrink: 0;
+  padding: 12px 14px;
+  background: var(--bleu-050);
+  border: 1px solid var(--bleu-100);
+  border-radius: var(--rayon-petit);
+  flex-wrap: wrap;
+}
+
+.editeur-jeton > .etiquette-groupe {
+  align-self: center;
+}
+
+.champ-en-ligne {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 110px;
+}
+
+.champ-en-ligne span {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--texte-doux);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.editeur-jeton .bouton.danger {
+  margin-left: auto;
+}
+
+/* ============================================================ Evaluation */
+
+.bloc-evaluation {
+  margin-top: 6px;
+  padding: 14px;
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon-petit);
+  background: var(--surface);
+}
+
+.entete-evaluation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.entete-evaluation .bouton {
+  margin-left: auto;
+}
+
+.compteur-utilisations {
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  margin: 0 0 10px;
+}
+
+/* =========================================================== Bibliotheque */
+
+.voile {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 42, 82, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  z-index: 10;
+}
+
+.modale {
+  background: var(--fond);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre-forte);
+  width: min(1180px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modale-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--bordure);
+  flex-wrap: wrap;
+}
+
+.modale-entete h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.recherche {
+  margin-left: auto;
+  max-width: 320px;
+}
+
+.filtres {
+  display: flex;
+  gap: 6px;
+  padding: 10px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--bordure);
+  flex-wrap: wrap;
+}
+
+.puce {
+  border: 1px solid var(--bordure);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 4px 13px;
+  font-size: 13px;
+  color: var(--texte-doux);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.puce:hover {
+  border-color: var(--bleu-500);
+  color: var(--bleu-800);
+}
+
+.puce.active {
+  background: var(--bleu-700);
+  border-color: var(--bleu-700);
+  color: #fff;
+  font-weight: 600;
+}
+
+.corps-bibliotheque {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) 1fr;
+  min-height: 0;
+  flex: 1;
+}
+
+.liste-modeles {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  overflow-y: auto;
+  border-right: 1px solid var(--bordure);
+  background: var(--surface);
+}
+
+.liste-modeles li + li {
+  margin-top: 5px;
+}
+
+.aucun-resultat {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--texte-doux);
+}
+
+.carte-modele {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 13px;
+  border: 1px solid var(--bordure);
+  border-left: 3px solid transparent;
+  border-radius: var(--rayon-petit);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.carte-modele:hover {
+  border-color: var(--bleu-500);
+}
+
+.carte-modele.active {
+  background: var(--bleu-050);
+  border-color: var(--bleu-100);
+  border-left-color: var(--jaune);
+}
+
+.titre-modele {
+  display: block;
+  font-weight: 600;
+  color: var(--bleu-900);
+  margin-bottom: 2px;
+}
+
+.meta-modele {
+  display: block;
+  font-size: 12.5px;
+  color: var(--texte-doux);
+}
+
+.etiquettes {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 7px;
+  flex-wrap: wrap;
+}
+
+.etiquette-format {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 1px 8px;
+  background: var(--surface-2);
+  color: var(--texte-doux);
+}
+
+.etiquette-format.gardiens-seuls {
+  background: #e2f3ea;
+  color: var(--succes);
+}
+
+.etiquette-format.avec-joueurs {
+  background: var(--bleu-100);
+  color: var(--bleu-700);
+}
+
+/* Exercice dont le mouvement se deroule en plusieurs etapes : le jaune du club
+   sur texte bleu fonce, comme partout ou l'accent signale quelque chose. */
+/* « Avec animation » n'appartient pas au groupe exclusif des puces : elle s'y
+   ajoute. Un simple ecart la detache — pas un trait de separation, qui se
+   retrouverait en debut de ligne si la barre passe a la ligne. C'est la couleur
+   active qui la distingue : le jaune de l'etiquette qu'elle filtre, la ou les
+   puces de categorie prennent le bleu. */
+.puce.bascule {
+  margin-left: 12px;
+}
+
+/* Les bascules suivantes restent collees a la premiere : c'est le groupe des
+   filtres qui s'ajoutent qui est detache, pas chacune d'elles. */
+.puce.bascule + .puce.bascule {
+  margin-left: 6px;
+}
+
+.puce.bascule.active {
+  background: var(--jaune-clair);
+  border-color: var(--jaune);
+  color: var(--bleu-900);
+  font-weight: 600;
+}
+
+.puce.bascule.active:hover {
+  border-color: var(--jaune-fonce);
+  color: var(--bleu-900);
+}
+
+.etiquette-etapes {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 1px 8px;
+  background: var(--jaune-clair);
+  color: var(--bleu-900);
+  border: 1px solid var(--jaune);
+}
+
+.etiquette-difficulte {
+  font-style: normal;
+  font-size: 9px;
+  color: var(--bleu-500);
+  letter-spacing: 1px;
+  margin-left: auto;
+}
+
+.etiquette-difficulte .creux {
+  color: var(--bordure-forte);
+}
+
+.apercu-modele {
+  overflow-y: auto;
+  padding: 18px 22px 30px;
+}
+
+.apercu-modele h3 {
+  margin: 16px 0 4px;
+  font-size: 17px;
+}
+
+.apercu-modele h4 {
+  margin: 18px 0 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--texte-doux);
+}
+
+.apercu-modele p {
+  margin: 0 0 7px;
+  line-height: 1.55;
+}
+
+.apercu-modele ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.apercu-modele li {
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+
+.objectifs-apercu {
+  color: var(--bleu-800);
+  font-weight: 500;
+  border-left: 3px solid var(--jaune);
+  padding-left: 11px;
+}
+
+.materiel-apercu {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--texte-doux);
+}
+
+.actions-apercu {
+  margin-top: 18px;
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent, var(--fond) 40%);
+  padding-top: 14px;
+}
+
+/* ================================================================ Ecrans */
+
+/*
+  Entre 900 et 1240 pixels, les deux colonnes tiennent parfaitement : a 1194 —
+  une tablette de 11 pouces en paysage — elles font environ 500 et 410 pixels.
+  L'ancien seuil de 1240 les empilait alors sans raison, et le detail de
+  l'exercice se retrouvait a plus de mille pixels sous le terrain.
+  Le cote a cote est la demande d'origine : il faut le tenir aussi longtemps
+  qu'il reste lisible.
+*/
+@media (max-width: 1240px) and (min-width: 901px) {
+  /* Le schema garde la main, mais laisse au texte de quoi rester lisible. */
+  .fiche-corps {
+    --part-terrain: 54%;
+  }
+
+  .colonne-terrain,
+  .colonne-detail {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .fiche-corps {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  /* Empilees, les deux colonnes n'ont plus de separateur a deplacer. */
+  .separateur {
+    display: none;
+  }
+
+  /*
+    Empilee, la colonne cesse d'etre une boite flexible.
+    En disposition flexible sans hauteur definie a repartir, elle s'effondrait a
+    la hauteur de ses marges (33 px) pendant que son contenu debordait par
+    dessus : le terrain etait alors peint SOUS la colonne de detail, et un clic
+    en son centre atteignait un champ de texte. La colonne reprend donc une
+    disposition en bloc, et grandit avec son contenu.
+  */
+  .colonne-terrain {
+    border-bottom: 1px solid var(--bordure);
+    display: block;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  /* Sans hauteur a repartir, le terrain prend une hauteur relative a la fenetre. */
+  .colonne-terrain .cadre-terrain {
+    flex: none;
+    height: 52vh;
+    min-height: 260px;
+  }
+
+  .colonne-detail {
+    overflow: visible;
+  }
+
+  .corps-bibliotheque {
+    grid-template-columns: 1fr;
+  }
+
+  .liste-modeles {
+    border-right: none;
+    border-bottom: 1px solid var(--bordure);
+    max-height: 260px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .colonne-seances {
+    width: 214px;
+  }
+
+  .grille-seance {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .colonne-seances {
+    width: 168px;
+  }
+
+  .panneau-principal {
+    padding: 16px 14px 50px;
+  }
+
+  .grille-seance {
+    grid-template-columns: 1fr;
+  }
+
+  .ligne-exercice .etoiles.lecture.compacte {
+    display: none;
+  }
+}
+
+/* ======================================================= Outils et etapes */
+
+.apercu-fleche {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.bouton.segment.outil-tir,
+.bouton.segment.outil-ecran,
+.bouton.segment.outil-course,
+.bouton.segment.outil-passe,
+.bouton.segment.outil-dribble {
+  gap: 5px;
+  padding: 7px 10px;
+}
+
+.terrain.mode-trace {
+  cursor: crosshair;
+}
+
+.barre-etapes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.barre-etapes .pousse {
+  margin-left: auto;
+}
+
+.puce-etape {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--bordure-forte);
+  background: var(--surface);
+  color: var(--bleu-800);
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.puce-etape:hover {
+  border-color: var(--bleu-500);
+}
+
+.puce-etape.active {
+  background: var(--jaune);
+  border-color: var(--jaune-fonce);
+  color: var(--bleu-900);
+}
+
+.detail-etape {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) 2fr;
+  gap: 10px;
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+
+.champ-en-ligne.large {
+  width: auto;
+}
+
+.aide-terrain.sans-marge {
+  margin: 0;
+  align-self: center;
+  max-width: 260px;
+}
+
+.editeur-jeton input[type='range'] {
+  width: 130px;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--bleu-700);
+}
+
+.mention-auto {
+  font-style: normal;
+  font-size: 9.5px;
+  font-weight: 700;
+  background: var(--bleu-100);
+  color: var(--bleu-700);
+  border-radius: 999px;
+  padding: 1px 6px;
+  margin-left: 5px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ================================================================ Fleches */
+
+.fleche .trait {
+  fill: none;
+  stroke: var(--bleu-900);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fleche .pointe {
+  fill: var(--bleu-900);
+  stroke: none;
+}
+
+.fleche-passe .trait {
+  stroke-dasharray: 0.62 0.45;
+}
+
+.fleche-tir .trait,
+.fleche-tir .pointe {
+  stroke: #b3261e;
+  fill: #b3261e;
+}
+
+.fleche-tir .pointe {
+  stroke: none;
+}
+
+.fleche-ecran .trait {
+  stroke: #6b4b00;
+}
+
+.fleche-dribble .trait {
+  stroke: var(--bleu-700);
+}
+
+.fleche .zone-clic {
+  stroke: transparent;
+  stroke-width: 1.1;
+  fill: none;
+  cursor: pointer;
+}
+
+.fleche.selectionnee .trait,
+.fleche.selectionnee .pointe {
+  stroke: var(--bleu-500);
+}
+
+.fleche.selectionnee .pointe {
+  fill: var(--bleu-500);
+  stroke: none;
+}
+
+/* Repere d'aimantation et numeros d'action */
+
+.repere-aimant circle {
+  fill: none;
+  stroke: var(--bleu-500);
+  stroke-width: 0.12;
+  stroke-dasharray: 0.3 0.24;
+}
+
+.repere-aimant text {
+  text-anchor: middle;
+  fill: var(--bleu-700);
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 0.28;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.numero-action circle {
+  fill: #fff;
+  stroke: var(--bleu-900);
+  stroke-width: 0.11;
+}
+
+.numero-action text {
+  text-anchor: middle;
+  dominant-baseline: central;
+  fill: var(--bleu-900);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.bouton.discret.enfonce {
+  background: var(--jaune-clair);
+  color: var(--alerte);
+}
+
+/* --------------------------------------------------------- Poignees */
+
+.poignee-rotation,
+.poignee-courbure {
+  cursor: grab;
+}
+
+.poignee-rotation:active,
+.poignee-courbure:active {
+  cursor: grabbing;
+}
+
+.tige-rotation {
+  stroke: var(--bleu-500);
+  stroke-width: 0.1;
+  stroke-dasharray: 0.3 0.22;
+}
+
+.bouton-rotation {
+  fill: var(--jaune);
+  stroke: var(--bleu-900);
+  stroke-width: 0.11;
+}
+
+.fantome {
+  opacity: 0.24;
+}
+
+/* ============================================================= Effectif */
+
+.grille-effectif {
+  display: grid;
+  grid-template-columns: 200px 200px 1fr;
+  gap: 12px;
+  align-items: end;
+  margin-top: 12px;
+}
+
+.aide-effectif {
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  margin: 0 0 8px;
+}
+
+.jeton-manque {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--danger-fond);
+  color: var(--danger);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.alerte-effectif {
+  background: var(--alerte-fond);
+  border: 1px solid #eddaa8;
+  border-left: 3px solid var(--alerte);
+  border-radius: var(--rayon-petit);
+  padding: 11px 13px;
+  color: var(--alerte);
+  font-size: 13.5px;
+}
+
+.alerte-effectif strong {
+  display: block;
+}
+
+/* ========================================================= Page d accueil */
+
+.marque {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  border-radius: 50%;
+}
+
+.marque:focus-visible {
+  outline: 2px solid var(--jaune);
+  outline-offset: 2px;
+}
+
+.lien-accueil {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 0 12px 6px;
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  border-radius: var(--rayon-petit);
+  background: transparent;
+  color: var(--texte-doux);
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.lien-accueil:hover {
+  background: var(--surface-2);
+  color: var(--bleu-800);
+}
+
+.lien-accueil.actif {
+  background: var(--bleu-050);
+  border-color: var(--bleu-100);
+  border-left-color: var(--jaune);
+  color: var(--bleu-900);
+}
+
+.fil-ariane {
+  background: none;
+  border: none;
+  padding: 0 0 12px;
+  color: var(--texte-doux);
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.fil-ariane:hover {
+  color: var(--bleu-700);
+  text-decoration: underline;
+}
+
+.entete-tableau {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.entete-tableau h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.resume-global {
+  margin: 2px 0 0;
+  color: var(--texte-doux);
+  font-size: 13.5px;
+}
+
+.entete-tableau .pousse {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.barre-tableau {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.barre-tableau .recherche {
+  max-width: 380px;
+  margin: 0;
+}
+
+/* --------------------------------------------------------- Cartes */
+
+.grille-seances {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 14px;
+}
+
+.carte-seance {
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.carte-seance:hover {
+  border-color: var(--bleu-500);
+  box-shadow: 0 2px 4px rgba(11, 42, 82, 0.1), 0 6px 18px rgba(11, 42, 82, 0.1);
+}
+
+/* Une seance deja passee est presente mais moins mise en avant. */
+.carte-seance.passee {
+  background: var(--bleu-050);
+}
+
+.carte-seance.passee .zone-ouverture {
+  opacity: 0.86;
+}
+
+.zone-ouverture {
+  flex: 1;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 15px 16px 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.entete-carte {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.entete-carte h3 {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.25;
+}
+
+.date-carte {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--texte-doux);
+}
+
+.date-carte em {
+  font-style: normal;
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-left: 7px;
+  font-size: 11px;
+}
+
+.note-moyenne {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.note-moyenne em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texte-doux);
+}
+
+.equipe-carte {
+  margin: 0;
+  font-size: 13px;
+  color: var(--bleu-700);
+  font-weight: 500;
+}
+
+.chiffres-carte {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  flex-wrap: wrap;
+}
+
+.chiffres-carte strong {
+  font-size: 16px;
+  color: var(--bleu-900);
+  font-weight: 700;
+}
+
+/* Repartition du temps par categorie : une barre proportionnelle. */
+.barre-repartition {
+  display: flex;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.barre-repartition .part {
+  min-width: 3px;
+}
+
+.legende-repartition {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--texte-doux);
+}
+
+.legende-repartition span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pastille-categorie {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* Une couleur par categorie, reprise par la barre et la legende. */
+.part-echauffement { background: #7fb069; }
+.part-technique { background: #4d9de0; }
+.part-attaque { background: var(--jaune); }
+.part-defense { background: var(--bleu-700); }
+.part-gardien { background: #1f7a5c; }
+.part-transition { background: #e8590c; }
+.part-physique { background: #9c6ade; }
+.part-jeu { background: #d64550; }
+
+.objectif-carte {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.signaux-carte {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  min-height: 1px;
+}
+
+.signal {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface-2);
+  color: var(--texte-doux);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.signal.alerte {
+  background: var(--danger-fond);
+  color: var(--danger);
+}
+
+.actions-carte {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--bordure);
+  background: var(--surface-2);
+}
+
+.carte-seance.passee .actions-carte {
+  background: #e7eef7;
+}
+
+.actions-carte .bouton {
+  min-height: 34px;
+  padding: 6px 11px;
+  font-size: 13px;
+}
+
+.actions-carte .bouton.discret {
+  margin-left: auto;
+}
+
+/* ------------------------------------------------------ Duplication */
+
+.dialogue-large {
+  width: min(620px, 100%);
+}
+
+.grille-duplication {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0 14px;
+}
+
+.grille-duplication .champ-large {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 620px) {
+  .grille-duplication {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================================================== Bilan de la saison */
+
+.chiffres-cles {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.chiffres-cles li {
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  padding: 13px 15px;
+  box-shadow: var(--ombre);
+}
+
+.chiffres-cles strong {
+  display: block;
+  font-size: 26px;
+  line-height: 1.1;
+  color: var(--bleu-900);
+}
+
+.chiffres-cles span {
+  font-size: 12.5px;
+  color: var(--texte-doux);
+}
+
+.barre-repartition.grande {
+  height: 18px;
+  margin-bottom: 14px;
+}
+
+.tableau-categories {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tableau-categories li {
+  display: grid;
+  grid-template-columns: 12px 1fr 70px 50px 110px;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--surface-2);
+  font-size: 13.5px;
+}
+
+.tableau-categories li:last-child {
+  border-bottom: none;
+}
+
+.nom-categorie {
+  font-weight: 500;
+}
+
+.minutes-categorie,
+.nombre-categorie {
+  color: var(--texte-doux);
+  text-align: right;
+}
+
+.part-categorie {
+  font-weight: 700;
+  color: var(--bleu-800);
+  text-align: right;
+}
+
+.categories-absentes {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--alerte);
+  background: var(--alerte-fond);
+  border-radius: var(--rayon-petit);
+  padding: 9px 12px;
+}
+
+/* Histogramme du volume mensuel : des colonnes proportionnelles, sans
+   bibliotheque de graphiques — quelques divs suffisent et restent nettes a
+   l'impression comme a l'ecran. */
+.histogramme {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  overflow-x: auto;
+}
+
+.histogramme li {
+  flex: 1;
+  min-width: 68px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 190px;
+  justify-content: flex-end;
+  gap: 3px;
+}
+
+.colonne-mois {
+  width: 100%;
+  max-width: 54px;
+  background: linear-gradient(to top, var(--bleu-700), var(--bleu-500));
+  border-radius: 5px 5px 0 0;
+  min-height: 4px;
+}
+
+.valeur-mois {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--bleu-900);
+  order: -1;
+}
+
+.libelle-mois {
+  font-size: 11.5px;
+  color: var(--texte-doux);
+  text-align: center;
+}
+
+.seances-mois {
+  font-size: 10.5px;
+  color: var(--texte-faible);
+}
+
+.tableau-usage {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.tableau-usage th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texte-doux);
+  padding: 0 10px 6px 0;
+  border-bottom: 1px solid var(--bordure);
+}
+
+.tableau-usage td {
+  padding: 7px 10px 7px 0;
+  border-bottom: 1px solid var(--surface-2);
+}
+
+.tableau-usage td.discret {
+  color: var(--texte-doux);
+}
+
+.carte-alerte {
+  border-left: 3px solid var(--alerte);
+}
+
+.chapeau-carte {
+  margin: -6px 0 12px;
+  font-size: 13px;
+  color: var(--texte-doux);
+}
+
+.liste-a-revoir {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.liste-a-revoir li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--surface-2);
+  font-size: 13.5px;
+}
+
+.liste-a-revoir li:last-child {
+  border-bottom: none;
+}
+
+.nom-a-revoir {
+  flex: 1;
+  font-weight: 500;
+}
+
+.liste-a-revoir .discret {
+  color: var(--texte-doux);
+  font-size: 12.5px;
+}
+
+/* ------------------------------------------- Propositions de mouvements */
+
+.liste-propositions {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.proposition {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--bordure);
+  border-left: 3px solid var(--bordure-forte);
+  border-radius: var(--rayon-petit);
+  margin-bottom: 7px;
+  background: var(--surface);
+}
+
+/* La couleur dit d'un coup d'oeil ce qui merite d'etre verifie. */
+.proposition.confiance-haute { border-left-color: var(--succes); }
+.proposition.confiance-moyenne { border-left-color: var(--jaune-fonce); }
+.proposition.confiance-faible { border-left-color: var(--danger); }
+
+.rang-proposition {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--texte-doux);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.corps-proposition {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13.5px;
+}
+
+.source-proposition {
+  font-style: italic;
+  color: var(--texte-doux);
+  font-size: 12.5px;
+}
+
+.indice-proposition {
+  font-style: normal;
+  color: var(--texte-faible);
+  font-size: 11.5px;
+}
+
+.etiquette-confiance {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 650;
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+.etiquette-confiance.haute { background: #e2f3ea; color: var(--succes); }
+.etiquette-confiance.moyenne { background: var(--jaune-clair); color: var(--alerte); }
+.etiquette-confiance.faible { background: var(--danger-fond); color: var(--danger); }
+
+.avertissement-proposition {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: var(--alerte-fond);
+  border-radius: var(--rayon-petit);
+  color: var(--alerte);
+  font-size: 12.5px;
+}
+
+/* ======================================================= Usage au doigt */
+
+/* Sur un ecran tactile, la cible d'un doigt fait environ 9 mm : les commandes
+   grandissent, et les gestes ne doivent jamais declencher le defilement de la
+   page ni le zoom par double tape. */
+button,
+.puce,
+.carte-modele,
+.lien-exercice {
+  touch-action: manipulation;
+}
+
+.terrain,
+.cadre-terrain {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+@media (pointer: coarse) {
+  .bouton {
+    min-height: 46px;
+    padding: 10px 16px;
+  }
+
+  .bouton.discret {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px 11px;
+  }
+
+  .bouton.segment {
+    min-height: 44px;
+    padding: 9px 14px;
+  }
+
+  .puce-etape {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .palette-item {
+    min-height: 52px;
+    font-size: 14px;
+  }
+
+  input[type='text'],
+  input[type='number'],
+  input[type='date'],
+  select,
+  textarea {
+    min-height: 46px;
+    font-size: 16px; /* en deca de 16 px, iOS zoome a la saisie */
+  }
+
+  .etoile {
+    font-size: 26px;
+    padding: 4px;
+  }
+
+  .actions-carte .bouton {
+    min-height: 44px;
+  }
+
+  .ligne-exercice .actions .bouton {
+    min-height: 44px;
+    min-width: 42px;
+  }
+}
+
+/* =============================================================== Dialogues */
+
+.voile-dialogue {
+  /* Au-dessus de la bibliotheque : une confirmation ouverte depuis une modale
+     doit rester lisible et cliquable. */
+  z-index: 20;
+  background: rgba(11, 42, 82, 0.5);
+  animation: apparition 0.12s ease-out;
+}
+
+.dialogue {
+  background: var(--surface);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre-forte);
+  padding: 22px 24px 18px;
+  width: min(460px, 100%);
+  border-top: 4px solid var(--bleu-700);
+  animation: montee 0.14s ease-out;
+}
+
+.dialogue-danger {
+  border-top-color: var(--danger);
+}
+
+.dialogue h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+
+.dialogue-message {
+  color: var(--texte-doux);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dialogue-message strong {
+  color: var(--texte);
+}
+
+.dialogue-note {
+  display: block;
+  margin-top: 9px;
+  padding-left: 10px;
+  border-left: 2px solid var(--bordure);
+  font-style: normal;
+  font-size: 12.5px;
+  color: var(--texte-faible);
+}
+
+.dialogue-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.bouton.danger-plein {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.bouton.danger-plein:hover:not(:disabled) {
+  background: #8f1e17;
+  border-color: #8f1e17;
+}
+
+@keyframes apparition {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes montee {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voile-dialogue,
+  .dialogue {
+    animation: none;
+  }
+}
+
+/* ============================================================ Impression */
+
+/* A l'ecran, les feuilles n'existent pas. */
+.impression {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 9mm;
+  }
+
+  html,
+  body,
+  #root {
+    height: auto;
+    background: #fff;
+  }
+
+  /* Seules les feuilles sont imprimees : l'interface disparait. */
+  .application > *:not(.impression) {
+    display: none !important;
+  }
+
+  .impression {
+    display: block;
+  }
+
+  .feuille {
+    /* Une fiche par page, sans jamais deborder sur la suivante. */
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    /*
+      Hauteur EXPLICITE, et non 100 %.
+      Un pourcentage se resout contre un parent de hauteur automatique : il
+      valait donc « auto », et toute la mise en page calculee par
+      src/impression/miseEnPage.ts etait ignoree — le terrain prenait sa
+      hauteur naturelle et chaque fiche debordait sur une deuxieme page.
+      210 mm de haut moins 2 x 9 mm de marges.
+    */
+    height: 192mm;
+    max-height: 192mm;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    color: #000;
+  }
+
+  .feuille:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .feuille-entete {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-bottom: 2px solid var(--bleu-900);
+    padding-bottom: 5px;
+    margin-bottom: 8px;
+  }
+
+  .feuille-entete h1 {
+    font-size: 15pt;
+    margin: 0;
+  }
+
+  .feuille-entete .numero {
+    color: var(--jaune-fonce);
+    margin-right: 6px;
+  }
+
+  .feuille-seance {
+    margin: 1px 0 0;
+    font-size: 8.5pt;
+    color: #444;
+  }
+
+  .feuille-reperes {
+    display: flex;
+    gap: 14px;
+    margin: 0 0 0 auto;
+    padding: 0;
+    list-style: none;
+    text-align: right;
+  }
+
+  .feuille-reperes span {
+    display: block;
+    font-size: 6.8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+  }
+
+  .feuille-reperes strong {
+    font-size: 10pt;
+    white-space: nowrap;
+  }
+
+  /* Les colonnes ou les lignes viennent du calcul de mise en page : le style
+     en ligne pose grid-template-columns / grid-template-rows selon que le
+     schema est place a cote du texte ou en banniere au-dessus. */
+  .feuille-corps {
+    display: grid;
+    gap: 6mm;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .feuille-schema {
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .feuille-schema .terrain {
+    /* Le schema se contente de la place qu'on lui a calculee, sans jamais
+       pousser le texte hors de la page. */
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    border: 1px solid #999;
+    border-radius: 3px;
+  }
+
+  .grille-etapes {
+    display: grid;
+    gap: 4mm;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .grille-etapes figure {
+    margin: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grille-etapes figcaption {
+    font-size: 7.5pt;
+    font-weight: 600;
+    margin-top: 1px;
+    text-align: center;
+  }
+
+  .feuille-texte {
+    line-height: 1.32;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* En banniere, le texte passe en colonnes : sur 28 cm de large, une ligne
+     unique serait illisible. */
+  .feuille[data-disposition='dessus'] .feuille-texte {
+    column-rule: 1px solid #ddd;
+  }
+
+  .feuille-texte section {
+    break-inside: avoid;
+  }
+
+  .feuille-texte h2 {
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--bleu-700);
+    margin: 7px 0 2px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .feuille-texte section:first-child h2 {
+    margin-top: 0;
+  }
+
+  .feuille-texte p {
+    margin: 0 0 2px;
+  }
+
+  .liste-etapes-impression {
+    margin: 0;
+    padding-left: 15px;
+  }
+
+  .feuille-pied p {
+    font-size: 8pt;
+    color: #444;
+  }
+
+  .feuille-bas {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #bbb;
+    margin-top: 6px;
+    padding-top: 3px;
+    font-size: 7.5pt;
+    color: #666;
+  }
+
+  /* Les aplats doivent sortir a l'impression, sinon le terrain est vide. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
