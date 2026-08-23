@@ -3061,6 +3061,27 @@ button,
   }
 }
 
+/*
+  La commande qui sert PENDANT la seance, au milieu de six commandes qui
+  servent avant ou apres. Noyee dans la rangee, elle etait introuvable : elle
+  porte donc la couleur du club plutot que le gris des autres.
+*/
+.bouton.mode-terrain-ouvrir {
+  background: var(--jaune);
+  border-color: var(--jaune-fonce);
+  color: var(--bleu-900);
+  font-weight: 650;
+}
+
+.bouton.mode-terrain-ouvrir:hover:not(:disabled) {
+  background: var(--jaune-fonce);
+}
+
+.bouton.mode-terrain-ouvrir:disabled {
+  background: var(--surface-2);
+  border-color: var(--bordure);
+}
+
 /* ------------------------------------------------------------ Mode terrain */
 /*
   La seance telle qu'on la mene. Tout est dimensionne pour une tablette tenue
