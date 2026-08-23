@@ -8,6 +8,7 @@
  */
 
 import type { Exercice, Seance } from '../domain/types'
+import { lireFavoris } from '../domain/favoris'
 
 export interface Depot {
   /** Toutes les seances, de la plus recemment modifiee a la plus ancienne. */
@@ -21,16 +22,27 @@ export interface Depot {
    */
   listerModeles(): Promise<Exercice[]>
   enregistrerModele(exercice: Exercice): Promise<void>
-  supprimerModele(id: string): Promise<void>
+ supprimerModele(id: string): Promise<void>
+  /**
+   * Favoris : les cles des fiches que l entraineur veut retrouver vite.
+   *
+   * Une preference, pas une donnee de seance. Elle est rangee a part pour ne
+   * pas alourdir chaque seance d une information qui ne la concerne pas.
+   */
+  lireFavoris(): Promise<string[]>
+  enregistrerFavoris(favoris: string[]): Promise<void>
   /** Verifie que le stockage est reellement utilisable (mode file://, navigation privee...). */
   verifierDisponibilite(): Promise<boolean>
 }
 
 const NOM_BASE = 'handball-training'
 // Version 2 : ajout du magasin de la bibliotheque personnelle.
-const VERSION_BASE = 2
+// Version 3 : ajout du magasin des preferences (favoris).
+const VERSION_BASE = 3
 const MAGASIN_SEANCES = 'seances'
 const MAGASIN_MODELES = 'modeles'
+const MAGASIN_PREFERENCES = 'preferences'
+const CLE_FAVORIS = 'favoris'
 /**
  * Au-dela, on considere qu'IndexedDB ne repondra pas et on passe au depot
  * suivant. Mieux vaut une sauvegarde en localStorage qu'une application qui
@@ -51,6 +63,11 @@ function ouvrir(): Promise<IDBDatabase> {
       // la version precedente se met a jour sans perte.
       if (!base.objectStoreNames.contains(MAGASIN_MODELES)) {
         base.createObjectStore(MAGASIN_MODELES, { keyPath: 'id' })
+      }
+      // Meme regle : la montee de version 2 vers 3 ajoute ce magasin sans
+      // toucher aux seances ni aux modeles deja enregistres.
+      if (!base.objectStoreNames.contains(MAGASIN_PREFERENCES)) {
+        base.createObjectStore(MAGASIN_PREFERENCES, { keyPath: 'cle' })
       }
     }
     requete.onsuccess = () => resoudre(requete.result)
@@ -105,6 +122,28 @@ export const depotIndexedDB: Depot = {
 
   async supprimerModele(id) {
     await transaction(MAGASIN_MODELES, 'readwrite', (m) => m.delete(id))
+  },
+
+  async lireFavoris() {
+    // Une base creee par la version 2 n'a pas ce magasin tant qu'elle n'a pas
+    // ete rouverte en version 3 ; et une lecture qui echoue ne doit jamais
+    // empecher l'application de demarrer. Sans favoris vaut mieux que rien.
+    try {
+      const enregistrement = await transaction<{ cle: string; valeur: unknown } | undefined>(
+        MAGASIN_PREFERENCES,
+        'readonly',
+        (m) => m.get(CLE_FAVORIS),
+      )
+      return lireFavoris(enregistrement?.valeur)
+    } catch {
+      return []
+    }
+  },
+
+  async enregistrerFavoris(favoris) {
+    await transaction(MAGASIN_PREFERENCES, 'readwrite', (m) =>
+      m.put({ cle: CLE_FAVORIS, valeur: favoris }),
+    )
   },
 
   async verifierDisponibilite() {

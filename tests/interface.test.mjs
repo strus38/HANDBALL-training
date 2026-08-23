@@ -206,6 +206,50 @@ pas(() => {
   const b = boutonLecture()
   r.libelle_apres_reprise = b ? b.textContent.trim() : null
 })
+
+// ------------------------------------------------------------------- Favoris
+// L'etoile est posee SUR la carte, qui est elle-meme un bouton : un bouton
+// dans un bouton n'est pas du HTML valide et le navigateur defait
+// l'imbrication. On verifie donc que l'etoile est bien restee dans sa carte,
+// qu'elle bascule, et que la puce « Favoris » filtre reellement.
+pas(() => {
+  const retour = parTexte('← Seance')
+  r.retour_seance = !!retour
+  if (retour) retour.click()
+})
+pas(() => {
+  const b = parTexte('Bibliotheque')
+  r.bouton_bibliotheque = !!b
+  if (b) b.click()
+})
+pas(() => {
+  r.cartes = tous('.liste-modeles .carte-modele').length
+  const etoiles = tous('.etoile-favori')
+  r.etoiles = etoiles.length
+  // Chaque etoile doit vivre dans la meme case de liste que sa carte.
+  r.etoiles_bien_placees = etoiles.every((e) => !!e.closest('.element-modele'))
+  r.etoiles_hors_carte = etoiles.filter((e) => e.closest('.carte-modele')).length
+  r.favoris_avant = tous('.etoile-favori.active').length
+  if (etoiles[0]) etoiles[0].click()
+})
+pas(() => {
+  r.favoris_apres = tous('.etoile-favori.active').length
+  const puce = tous('.filtres button').find((b) => /Favoris/.test(b.textContent))
+  r.puce_favoris = !!puce
+  if (puce) puce.click()
+})
+pas(() => {
+  r.cartes_filtrees = tous('.liste-modeles .carte-modele').length
+  const puce = tous('.filtres button').find((b) => /Favoris/.test(b.textContent))
+  r.puce_favoris_active = puce ? puce.getAttribute('aria-pressed') === 'true' : false
+  // On retire l'etoile : la liste filtree doit se vider.
+  const etoile = tous('.etoile-favori.active')[0]
+  if (etoile) etoile.click()
+})
+pas(() => {
+  r.cartes_apres_retrait = tous('.liste-modeles .carte-modele').length
+  r.message_vide = (par('.aucun-resultat') || {}).textContent ?? null
+})
 // Le demarrage sonde le stockage : il n'est pas instantane. On attend qu'il
 // aboutisse avant de jouer le scenario, sans quoi on mesurerait l'ecran de
 // chargement plutot que l'application.
@@ -353,6 +397,40 @@ verifier(
 )
 verifier('la puce reste allumee pendant la pause', r.puce_active_en_pause === 1)
 verifier('reprendre relance la lecture', /Pause/.test(r.libelle_apres_reprise ?? ''), r.libelle_apres_reprise)
+
+console.log('')
+console.log('3. Favoris')
+verifier('on revient a la seance depuis la fiche', r.retour_seance === true)
+verifier('la bibliotheque s ouvre', r.bouton_bibliotheque === true && r.cartes > 0, `(${r.cartes} cartes)`)
+verifier('chaque carte porte une etoile', r.etoiles === r.cartes, `(${r.etoiles} etoiles pour ${r.cartes} cartes)`)
+verifier(
+  'l etoile est restee dans sa carte',
+  r.etoiles_bien_placees === true,
+  "(un bouton dans un bouton : le navigateur defait l'imbrication)",
+)
+verifier('aucune etoile imbriquee dans le bouton de la carte', r.etoiles_hors_carte === 0)
+verifier(
+  'un clic pose une etoile',
+  r.favoris_avant === 0 && r.favoris_apres === 1,
+  `(${r.favoris_avant} avant, ${r.favoris_apres} apres)`,
+)
+verifier('la puce Favoris existe', r.puce_favoris === true)
+verifier('la puce Favoris est bien une bascule', r.puce_favoris_active === true)
+verifier(
+  'la puce Favoris ne montre que la fiche etoilee',
+  r.cartes_filtrees === 1,
+  `(${r.cartes_filtrees} carte(s) sur ${r.cartes})`,
+)
+verifier(
+  'retirer l etoile vide la liste filtree',
+  r.cartes_apres_retrait === 0,
+  `(${r.cartes_apres_retrait} carte(s) restante(s))`,
+)
+verifier(
+  'et la liste vide explique quoi faire',
+  /etoile/i.test(r.message_vide ?? ''),
+  JSON.stringify(r.message_vide),
+)
 
 console.log('')
 console.log(`=== ${ok} reussis, ${ko} echoues ===`)

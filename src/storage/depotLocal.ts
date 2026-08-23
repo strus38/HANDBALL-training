@@ -9,9 +9,11 @@
 
 import type { Depot } from './depot'
 import type { Exercice, Seance } from '../domain/types'
+import { lireFavoris } from '../domain/favoris'
 
 const CLE = 'handball-training:seances'
 const CLE_MODELES = 'handball-training:modeles'
+const CLE_FAVORIS = 'handball-training:favoris'
 const CLE_TEST = 'handball-training:test'
 
 function lireListe<T>(cle: string): T[] {
@@ -69,6 +71,19 @@ export const depotLocalStorage: Depot = {
   async supprimerModele(id) {
     const restants = lireListe<Exercice>(CLE_MODELES).filter((m) => m.id !== id)
     localStorage.setItem(CLE_MODELES, JSON.stringify(restants))
+  },
+
+  async lireFavoris() {
+    try {
+      const brut = localStorage.getItem(CLE_FAVORIS)
+      return brut ? lireFavoris(JSON.parse(brut)) : []
+    } catch {
+      return []
+    }
+  },
+
+  async enregistrerFavoris(favoris) {
+    localStorage.setItem(CLE_FAVORIS, JSON.stringify(favoris))
   },
 
   async verifierDisponibilite() {

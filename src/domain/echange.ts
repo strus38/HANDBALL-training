@@ -9,6 +9,7 @@
 
 import { clonerExercice, nouvelExercice, nouvelId, nouvelleSeance } from './fabrique'
 import { migrerSchema } from './mouvement'
+import { lireFavoris, retracerFavoris } from './favoris'
 import {
   nouvelleEvaluation,
   SCHEMA_VERSION,
@@ -31,13 +32,26 @@ export function exporterSeance(seance: Seance): string {
   return JSON.stringify(fichier, null, 2)
 }
 
-/** Sauvegarde complete : les seances et la bibliotheque personnelle. */
-export function exporterSauvegarde(seances: Seance[], modeles: Exercice[]): string {
+/**
+ * Sauvegarde complete : les seances, la bibliotheque personnelle, et les
+ * favoris.
+ *
+ * Les favoris sont une preference de l'entraineur, pas une donnee de seance :
+ * on pourrait juger qu'ils n'ont rien a faire dans ce fichier. C'est le
+ * contraire. « Sauvegarder tout » est le seul filet contre un nettoyage du
+ * navigateur, qui efface aussi les preferences. Les omettre reviendrait a
+ * promettre de tout sauver en laissant tomber une partie.
+ */
+export function exporterSauvegarde(
+  seances: Seance[],
+  modeles: Exercice[],
+  favoris: string[] = [],
+): string {
   const fichier: FichierExport = {
     format: 'handball-training',
     version: SCHEMA_VERSION,
     exporteLe: new Date().toISOString(),
-    contenu: { type: 'sauvegarde', seances, modeles },
+    contenu: { type: 'sauvegarde', seances, modeles, favoris },
   }
   return JSON.stringify(fichier, null, 2)
 }
@@ -86,7 +100,7 @@ const liste = (v: unknown): unknown[] => (Array.isArray(v) ? v : [])
 export type ContenuImporte =
   | { type: 'seance'; seance: Seance }
   | { type: 'exercice'; seance: Seance }
-  | { type: 'sauvegarde'; seances: Seance[]; modeles: Exercice[] }
+  | { type: 'sauvegarde'; seances: Seance[]; modeles: Exercice[]; favoris: string[] }
 
 export function importerFichier(contenuTexte: string): ContenuImporte {
   let brut: unknown
@@ -113,14 +127,26 @@ export function importerFichier(contenuTexte: string): ContenuImporte {
   if (contenu.type === 'sauvegarde') {
     // Les identifiants sont renouveles ici aussi : restaurer une sauvegarde
     // AJOUTE son contenu, sans jamais ecraser ce qui est deja en place.
+    //
+    // Les fiches personnelles changent donc d'identifiant, et les favoris qui
+    // les designaient pointeraient dans le vide. On garde la correspondance
+    // pour les retracer.
+    const correspondances = new Map<string, string>()
+    const modeles = liste(contenu.modeles)
+      .filter(estObjet)
+      .map((e) => {
+        const ancien = lireExercice(e)
+        const nouveau = clonerExercice(ancien, '')
+        if (ancien.id) correspondances.set(ancien.id, nouveau.id)
+        return nouveau
+      })
     return {
       type: 'sauvegarde',
       seances: liste(contenu.seances)
         .filter(estObjet)
         .map((s) => renouvelerIdentifiants(lireSeance(s))),
-      modeles: liste(contenu.modeles)
-        .filter(estObjet)
-        .map((e) => clonerExercice(lireExercice(e), '')),
+      modeles,
+      favoris: retracerFavoris(lireFavoris(contenu.favoris), correspondances),
     }
   }
 

@@ -373,5 +373,5 @@ export interface FichierExport {
      * personnelle. C'est le seul moyen de mettre l'ensemble du travail a l'abri
      * d'un nettoyage du navigateur, qui effacerait tout sans recours.
      */
-    | { type: 'sauvegarde'; seances: Seance[]; modeles: Exercice[] }
+    | { type: 'sauvegarde'; seances: Seance[]; modeles: Exercice[]; favoris: string[] }
 }

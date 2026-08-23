@@ -367,6 +367,35 @@ a une seance en fabrique un exemplaire independant, et c'est lui qu'on marque
 comme realise. Le regroupement se fait sur la reference de la fiche d'origine,
 donc **renommer un exercice dans une seance ne casse pas son compteur**.
 
+## Mettre des fiches en favori
+
+Une **etoile** en haut a droite de chaque fiche de la bibliotheque la met de
+cote. La puce **★ Favoris**, en bas de la rangee des filtres, ne montre plus
+qu'elles. Elle se combine avec les autres : « les favoris de defense », « les
+favoris sans ballon ».
+
+**Un favori n'est pas une note.** La note est un jugement porte *apres* la
+seance : cet exercice a bien marche jeudi. Le favori est une intention prise
+*avant* : celui-la, je le remonterai souvent cette saison. On peut donc mettre
+en favori une fiche jamais menee, et ne jamais mettre en favori une fiche notee
+cinq etoiles parce qu'elle ne sert qu'une fois par an. Les deux vivent cote a
+cote sur la meme carte sans se remplacer.
+
+L'etoile se pose sur la **fiche de la bibliotheque**, pas sur la copie posee
+dans une seance : c'est dans la bibliotheque qu'on choisit, c'est la qu'elle
+sert.
+
+Les favoris partent dans « Sauvegarder tout », comme le reste. Ce sont des
+preferences et non des donnees de seance, mais ce fichier est le seul filet
+contre un nettoyage du navigateur — qui efface aussi les preferences. Les
+omettre reviendrait a promettre de tout sauver en laissant tomber une partie.
+
+Une precision sur la restauration : elle **ajoute**, elle ne remplace jamais,
+et donne pour cela de nouveaux identifiants aux fiches que vous avez creees
+vous-meme. Les favoris qui les designaient sont retraces au passage, sans quoi
+vous retrouveriez vos seances en perdant la moitie de vos etoiles sans qu'on
+vous dise rien. Les favoris poses sur les fiches fournies, eux, traversent tels
+quels : leur reference est stable.
 ## Noter les exercices
 
 Chaque fiche porte une note de 1 a 5 etoiles, donnee apres la seance :

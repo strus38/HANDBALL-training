@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "npm run notice && tsc --noEmit && vite build && node outils/notice.mjs --dist && npm run presentation",
     "preview": "vite preview",
-    "test": "esbuild tests/entree.ts --bundle --format=esm --platform=neutral --outfile=.build-tests/domaine.mjs && node tests/echange.test.mjs && node tests/geometrie.test.mjs && node tests/mouvement.test.mjs && node tests/impression.test.mjs && node tests/resume.test.mjs && node tests/deplacement.test.mjs && node tests/assistance.test.mjs && node tests/bilan.test.mjs && node tests/catalogue.test.mjs && node tests/notice.test.mjs && node tests/analyse.test.mjs && node tests/interface.test.mjs && node tests/utilisation.test.mjs",
+    "test": "esbuild tests/entree.ts --bundle --format=esm --platform=neutral --outfile=.build-tests/domaine.mjs && node tests/echange.test.mjs && node tests/geometrie.test.mjs && node tests/mouvement.test.mjs && node tests/impression.test.mjs && node tests/resume.test.mjs && node tests/deplacement.test.mjs && node tests/assistance.test.mjs && node tests/bilan.test.mjs && node tests/catalogue.test.mjs && node tests/notice.test.mjs && node tests/analyse.test.mjs && node tests/interface.test.mjs && node tests/utilisation.test.mjs && node tests/favoris.test.mjs",
     "verifier": "npm run build && npm test && npm run fumee",
     "notice": "node outils/notice.mjs",
     "fumee": "node tests/fumee.test.mjs",

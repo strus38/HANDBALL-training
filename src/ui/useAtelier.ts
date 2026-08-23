@@ -12,6 +12,7 @@ import type { Depot } from '../storage/depot'
 import { nouvelleSeance } from '../domain/fabrique'
 import { normaliserExercice, normaliserSeance } from '../domain/echange'
 import type { Exercice, Seance } from '../domain/types'
+import { basculerFavori, fusionnerFavoris } from '../domain/favoris'
 
 const DELAI_SAUVEGARDE_MS = 600
 
@@ -23,6 +24,7 @@ export function useAtelier() {
   const [chargement, setChargement] = useState(true)
   const [moyenStockage, setMoyenStockage] = useState<MoyenStockage>('indexeddb')
   const [mesModeles, setMesModeles] = useState<Exercice[]>([])
+  const [favoris, setFavoris] = useState<string[]>([])
   const [etatSauvegarde, setEtatSauvegarde] = useState<EtatSauvegarde>('inactif')
 
   const minuteries = useRef(new Map<string, ReturnType<typeof setTimeout>>())
@@ -47,9 +49,11 @@ export function useAtelier() {
           // ajoute depuis manquerait a l'appel.
           const existantes = (await choix.depot.listerSeances()).map(normaliserSeance)
           const modeles = (await choix.depot.listerModeles()).map(normaliserExercice)
+          const etoiles = await choix.depot.lireFavoris()
           if (annule) return
           setSeances(existantes)
           setMesModeles(modeles)
+          setFavoris(etoiles)
           setSeanceCouranteId(existantes[0]?.id)
         } catch {
           if (!annule) {
@@ -193,6 +197,24 @@ export function useAtelier() {
   }, [])
 
   /**
+   * Met une fiche de la bibliotheque en favori, ou l'en retire.
+   *
+   * L'ecriture est immediate, sans la temporisation des seances : cocher une
+   * etoile est un geste isole, pas une frappe au clavier repetee.
+   */
+  const basculerFavoriDe = useCallback(async (cle: string) => {
+    let suivants: string[] = []
+    setFavoris((precedents) => {
+      suivants = basculerFavori(precedents, cle)
+      return suivants
+    })
+    try {
+      await depot.current?.enregistrerFavoris(suivants)
+    } catch {
+      setEtatSauvegarde('erreur')
+    }
+  }, [])
+  /**
    * Restaure une sauvegarde complete.
    *
    * Le contenu est AJOUTE a l'existant : les identifiants ont ete renouveles a
@@ -200,18 +222,29 @@ export function useAtelier() {
    * vierge redonne exactement le classeur ; restaurer par-dessus un travail en
    * cours ne le detruit pas.
    */
-  const restaurer = useCallback(async (nouvelles: Seance[], modeles: Exercice[]) => {
-    setSeances((precedentes) => [...nouvelles, ...precedentes])
-    setMesModeles((precedents) => [...modeles, ...precedents])
-    setSeanceCouranteId(nouvelles[0]?.id)
-    try {
-      for (const seance of nouvelles) await depot.current?.enregistrerSeance(seance)
-      for (const modele of modeles) await depot.current?.enregistrerModele(modele)
-      setEtatSauvegarde('enregistre')
-    } catch {
-      setEtatSauvegarde('erreur')
-    }
-  }, [])
+  const restaurer = useCallback(
+    async (nouvelles: Seance[], modeles: Exercice[], etoiles: string[] = []) => {
+      setSeances((precedentes) => [...nouvelles, ...precedentes])
+      setMesModeles((precedents) => [...modeles, ...precedents])
+      setSeanceCouranteId(nouvelles[0]?.id)
+      // Les favoris se FUSIONNENT, comme le reste : restaurer ajoute, et ne
+      // doit pas retirer une etoile posee depuis sur cette machine.
+      let fusionnes: string[] = []
+      setFavoris((precedents) => {
+        fusionnes = fusionnerFavoris(precedents, etoiles)
+        return fusionnes
+      })
+      try {
+        for (const seance of nouvelles) await depot.current?.enregistrerSeance(seance)
+        for (const modele of modeles) await depot.current?.enregistrerModele(modele)
+        await depot.current?.enregistrerFavoris(fusionnes)
+        setEtatSauvegarde('enregistre')
+      } catch {
+        setEtatSauvegarde('erreur')
+      }
+    },
+    [],
+  )
 
   const seanceCourante = seances.find((s) => s.id === seanceCouranteId)
 
@@ -227,6 +260,8 @@ export function useAtelier() {
     ajouterSeance,
     supprimerSeance,
     mesModeles,
+    favoris,
+    basculerFavori: basculerFavoriDe,
     restaurer,
     enregistrerModele,
     supprimerModele,

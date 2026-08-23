@@ -121,7 +121,7 @@ export function App() {
 
       if (contenu.type === 'sauvegarde') {
         // Une restauration AJOUTE : elle n'ecrase jamais le travail en place.
-        await atelier.restaurer(contenu.seances, contenu.modeles)
+        await atelier.restaurer(contenu.seances, contenu.modeles, contenu.favoris)
         setVue('accueil')
         setMessageImport(
           `Sauvegarde restauree : ${contenu.seances.length} seance` +
@@ -149,7 +149,7 @@ export function App() {
     fichiersNavigateur.telecharger(nomDeFichierSur(cible.titre, EXTENSION), exporterSeance(cible))
 
   /**
-   * Sauvegarde de tout le travail, seances et bibliotheque personnelle.
+   * Sauvegarde de tout le travail : seances, bibliotheque personnelle, favoris.
    *
    * Le stockage du navigateur est lie a une machine et disparait avec un
    * nettoyage des donnees de navigation. Ce fichier est la seule copie
@@ -159,12 +159,13 @@ export function App() {
     const jour = new Date().toISOString().slice(0, 10)
     fichiersNavigateur.telecharger(
       `hbpsm-sauvegarde-${jour}${EXTENSION}`,
-      exporterSauvegarde(atelier.seances, atelier.mesModeles),
+      exporterSauvegarde(atelier.seances, atelier.mesModeles, atelier.favoris),
     )
     setMessageImport(
       `Sauvegarde de ${atelier.seances.length} seance${atelier.seances.length > 1 ? 's' : ''} ` +
         `et ${atelier.mesModeles.length} exercice${atelier.mesModeles.length > 1 ? 's' : ''} ` +
-        'de votre bibliotheque. Conservez ce fichier ailleurs que sur cette machine.',
+        `de votre bibliotheque, avec vos ${atelier.favoris.length} favori` +
+        `${atelier.favoris.length > 1 ? 's' : ''}. Conservez ce fichier ailleurs que sur cette machine.`,
     )
   }
 
@@ -345,6 +346,8 @@ export function App() {
         <Bibliotheque
           mesModeles={atelier.mesModeles}
           seances={atelier.seances}
+          favoris={atelier.favoris}
+          onBasculerFavori={(cle) => void atelier.basculerFavori(cle)}
           onFermer={() => setBibliothequeOuverte(false)}
           onSupprimerModele={(id) => void atelier.supprimerModele(id)}
           onAjouter={(exercice) => {

@@ -258,6 +258,14 @@ textarea {
   font-weight: 650;
 }
 
+/* Un bouton qui porte un etat, comme « ★ En favori ». */
+.bouton.actif {
+  background: var(--jaune-clair);
+  border-color: var(--jaune-fonce);
+  color: var(--bleu-900);
+  font-weight: 650;
+}
+
 .champ {
   display: flex;
   flex-direction: column;
@@ -1469,6 +1477,58 @@ textarea:focus {
   padding: 24px 12px;
   text-align: center;
   color: var(--texte-doux);
+}
+
+/*
+  L'etoile des favoris est POSEE SUR la carte, qui est elle-meme un bouton :
+  un bouton dans un bouton n'est pas du HTML valide, le navigateur defait
+  l'imbrication et l'etoile finirait hors de la carte.
+*/
+.element-modele {
+  position: relative;
+}
+
+.etoile-favori {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--rayon-petit);
+  background: transparent;
+  color: var(--texte-doux);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.etoile-favori:hover {
+  border-color: var(--jaune-fonce);
+  color: var(--jaune-fonce);
+  background: var(--surface);
+}
+
+.etoile-favori.active {
+  color: var(--jaune-fonce);
+}
+
+.etoile-favori:focus-visible {
+  outline: 2px solid var(--bleu-500);
+  outline-offset: 1px;
+}
+
+/*
+  La place de l'etoile est reservee sur la carte : sans cela un titre long
+  passe dessous et devient illisible des qu'on met la fiche en favori.
+*/
+.carte-modele .titre-modele {
+  padding-right: 30px;
 }
 
 .carte-modele {

@@ -26,6 +26,7 @@ import {
   type Seance,
 } from '../domain/types'
 import { cleUtilisation, indexerUtilisations, resumeUtilisation } from '../domain/utilisation'
+import { estFavori } from '../domain/favoris'
 
 export const CATALOGUE: ModeleExercice[] = [...SENIORS_MASCULINS, ...GARDIENS, ...SANS_BALLON, ...HBPSM]
 
@@ -92,6 +93,15 @@ interface Props {
    * fiches : sans cette liste, une fiche menee dix fois afficherait zero.
    */
   seances: Seance[]
+  /**
+   * Cles des fiches mises en favori.
+   *
+   * Un favori n est pas une note : la note juge APRES coup ce qui a bien
+   * marche, le favori marque AVANT ce qu on veut remonter souvent. Les deux
+   * cohabitent sur la meme carte sans se remplacer.
+   */
+  favoris: string[]
+  onBasculerFavori: (cle: string) => void
   onAjouter: (exercice: Exercice) => void
   onSupprimerModele: (id: string) => void
   onFermer: () => void
@@ -100,6 +110,8 @@ interface Props {
 export function Bibliotheque({
   mesModeles,
   seances,
+  favoris,
+  onBasculerFavori,
   onAjouter,
   onSupprimerModele,
   onFermer,
@@ -118,6 +130,8 @@ export function Bibliotheque({
   const [animesSeuls, setAnimesSeuls] = useState(false)
   /** Meme logique que la bascule precedente : elle s'ajoute, elle ne remplace pas. */
   const [sansBallonSeuls, setSansBallonSeuls] = useState(false)
+  /** Meme logique encore : la puce des favoris s ajoute aux autres filtres. */
+  const [favorisSeuls, setFavorisSeuls] = useState(false)
   const [recherche, setRecherche] = useState('')
   const [choisi, setChoisi] = useState<string | undefined>()
   const confirmer = useConfirmation()
@@ -136,7 +150,8 @@ export function Bibliotheque({
 
   const resultats = useMemo(() => {
     const mots = sansAccent(recherche).split(/\s+/).filter(Boolean)
-    return entrees.filter(({ exercice }) => {
+    return entrees.filter(({ exercice, cle }) => {
+      if (favorisSeuls && !estFavori(favoris, cle)) return false
       if (animesSeuls && nombreEtapes(exercice) <= 1) return false
       if (sansBallonSeuls && !sansAucunBallon(exercice)) return false
       if (filtre === 'gardiens' && exercice.categorie !== 'gardien') return false
@@ -150,7 +165,10 @@ export function Bibliotheque({
       )
       return mots.every((mot) => texte.includes(mot))
     })
-  }, [animesSeuls, entrees, filtre, recherche, sansBallonSeuls])
+    // favoris ET favorisSeuls doivent figurer ici : sans la premiere, cocher
+    // une etoile ne rafraichit pas la liste filtree, et la puce semble ne
+    // rien faire.
+  }, [animesSeuls, entrees, favoris, favorisSeuls, filtre, recherche, sansBallonSeuls])
 
   const apercu = resultats.find((e) => e.cle === choisi) ?? resultats[0]
 
@@ -234,13 +252,26 @@ export function Bibliotheque({
           >
             Sans ballon
           </button>
+          <button
+            className={`puce bascule${favorisSeuls ? ' active' : ''}`}
+            aria-pressed={favorisSeuls}
+            title="Ne montrer que les fiches que vous avez mises en favori"
+            onClick={() => {
+              setFavorisSeuls((actif) => !actif)
+              setChoisi(undefined)
+            }}
+          >
+            ★ Favoris
+          </button>
         </div>
 
         <div className="corps-bibliotheque">
           <ul className="liste-modeles">
             {resultats.length === 0 && (
               <li className="aucun-resultat">
-                {source === 'personnelle' && mesModeles.length === 0
+                {favorisSeuls
+                  ? "Aucun favori ici. L etoile en haut a droite d une fiche la met de cote."
+                  : source === 'personnelle' && mesModeles.length === 0
                   ? "Vos exercices apparaitront ici : chaque fiche que vous creez rejoint automatiquement la bibliotheque."
                   : animesSeuls && sansBallonSeuls
                     ? "Aucune fiche ne cumule les deux : les enchainements animes se jouent tous avec un ballon."
@@ -252,7 +283,7 @@ export function Bibliotheque({
               </li>
             )}
             {resultats.map((entree) => (
-              <li key={entree.cle}>
+              <li key={entree.cle} className="element-modele">
                 <button
                   className={`carte-modele${entree.cle === apercu?.cle ? ' active' : ''}`}
                   onClick={() => setChoisi(entree.cle)}
@@ -290,6 +321,25 @@ export function Bibliotheque({
                       <span className="creux">{'●'.repeat(3 - entree.exercice.difficulte)}</span>
                     </em>
                   </span>
+                </button>
+                {/*
+                  L'etoile est POSEE SUR la carte, pas dedans : la carte est
+                  elle-meme un bouton, et un bouton dans un bouton n'est pas du
+                  HTML valide - le navigateur defait l'imbrication et l'etoile
+                  se retrouve hors de la carte, ou elle ne veut plus rien dire.
+                */}
+                <button
+                  type="button"
+                  className={`etoile-favori${estFavori(favoris, entree.cle) ? ' active' : ''}`}
+                  aria-pressed={estFavori(favoris, entree.cle)}
+                  title={
+                    estFavori(favoris, entree.cle)
+                      ? 'Retirer des favoris'
+                      : 'Mettre en favori pour la retrouver vite'
+                  }
+                  onClick={() => onBasculerFavori(entree.cle)}
+                >
+                  {estFavori(favoris, entree.cle) ? '★' : '☆'}
                 </button>
               </li>
             ))}
@@ -354,6 +404,13 @@ export function Bibliotheque({
                   onClick={() => onAjouter(clonerExercice(apercu.exercice, ''))}
                 >
                   Ajouter a la seance
+                </button>
+                <button
+                  className={`bouton${estFavori(favoris, apercu.cle) ? ' actif' : ''}`}
+                  aria-pressed={estFavori(favoris, apercu.cle)}
+                  onClick={() => onBasculerFavori(apercu.cle)}
+                >
+                  {estFavori(favoris, apercu.cle) ? '★ En favori' : '☆ Mettre en favori'}
                 </button>
                 {apercu.personnelle && (
                   <button
