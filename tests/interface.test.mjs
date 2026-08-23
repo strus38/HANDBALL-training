@@ -250,6 +250,78 @@ pas(() => {
   r.cartes_apres_retrait = tous('.liste-modeles .carte-modele').length
   r.message_vide = (par('.aucun-resultat') || {}).textContent ?? null
 })
+
+// -------------------------------------------------------------- Mode terrain
+// L'entraineur avait signale ne pas trouver comment l'activer : le premier
+// point verifie ici est donc que la commande EXISTE et est atteignable depuis
+// la seance, avant meme ce qu'elle affiche.
+pas(() => {
+  // Refermer la bibliotheque, restee ouverte par la section precedente.
+  const fermer = tous('.modale-entete button').find((b) => b.textContent.trim() === '✕')
+  if (fermer) fermer.click()
+})
+pas(() => {
+  r.bibliotheque_fermee = !par('.modale.bibliotheque')
+  // Une seconde fiche : sans elle, « Suivant » est desactive et l on ne peut
+  // pas verifier que la case cochee suit bien l exercice affiche.
+  const ajouter = parTexte('+ Exercice')
+  if (ajouter) ajouter.click()
+})
+pas(() => {
+  // Ajouter un exercice ouvre sa fiche : on revient a la seance, c est de
+  // la que part le mode terrain.
+  const retour = parTexte('← Seance')
+  if (retour) retour.click()
+})
+pas(() => {
+  const b = tous('button').find((x) => /Mode terrain/.test(x.textContent))
+  r.commande_mode_terrain = !!b
+  r.mode_terrain_atteignable = b ? !b.disabled : false
+  if (b) b.click()
+})
+pas(() => {
+  const vue = par('.mode-terrain')
+  r.mode_terrain_ouvert = !!vue
+  if (vue) {
+    const p = rect(vue)
+    // Plein ecran : sinon l'interface d'edition reste visible autour et invite
+    // a modifier la seance pendant qu'on la mene.
+    r.mode_terrain_plein_ecran = p.width >= window.innerWidth - 2 && p.height >= window.innerHeight - 2
+  }
+  r.terrain_titre = (par('.terrain-texte h1') || {}).textContent ?? null
+  r.terrain_taille_titre = par('.terrain-texte h1')
+    ? Math.round(parseFloat(getComputedStyle(par('.terrain-texte h1')).fontSize))
+    : 0
+  r.terrain_horaire = (par('.terrain-horaire strong') || {}).textContent ?? null
+  r.terrain_position = (par('.terrain-position strong') || {}).textContent ?? null
+  r.terrain_schema = !!par('.terrain-schema svg')
+  const cocher = tous('.terrain-pied button').find((x) => /Marquer mene/.test(x.textContent))
+  r.terrain_case = !!cocher
+  if (cocher) cocher.click()
+})
+pas(() => {
+  const cocher = tous('.terrain-pied button').find((x) => /Mene|Marquer/.test(x.textContent))
+  r.terrain_coche = cocher ? cocher.getAttribute('aria-pressed') === 'true' : false
+  r.terrain_libelle_coche = cocher ? cocher.textContent.trim() : null
+  const suivant = tous('.terrain-pied button').find((x) => /Suivant/.test(x.textContent))
+  r.terrain_suivant = !!suivant
+  if (suivant) suivant.click()
+})
+pas(() => {
+  r.terrain_position_2 = (par('.terrain-position strong') || {}).textContent ?? null
+  const cocher = tous('.terrain-pied button').find((x) => /Mene|Marquer/.test(x.textContent))
+  // L'exercice suivant n'est pas coche : la case suit l'exercice affiche, elle
+  // n'est pas un reglage global.
+  r.terrain_coche_2 = cocher ? cocher.getAttribute('aria-pressed') === 'true' : null
+  const fermer = par('.terrain-entete button')
+  if (fermer) fermer.click()
+})
+pas(() => {
+  r.mode_terrain_ferme = !par('.mode-terrain')
+  // De retour dans la seance, le plan doit etre intact : la duree prevue du
+  // premier exercice ne doit pas avoir ete remplacee par un temps mesure.
+  r.seance_retrouvee = !!par('.liste-exercices, .lien-exercice')
+})
 // Le demarrage sonde le stockage : il n'est pas instantane. On attend qu'il
 // aboutisse avant de jouer le scenario, sans quoi on mesurerait l'ecran de
 // chargement plutot que l'application.
@@ -431,6 +503,45 @@ verifier(
   /etoile/i.test(r.message_vide ?? ''),
   JSON.stringify(r.message_vide),
 )
+
+console.log('')
+console.log('4. Mode terrain')
+verifier('la bibliotheque se referme', r.bibliotheque_fermee === true)
+verifier(
+  'la commande « Mode terrain » existe dans la seance',
+  r.commande_mode_terrain === true,
+  "(elle etait introuvable : c'est le premier point a garder)",
+)
+verifier('elle est active quand la seance a des exercices', r.mode_terrain_atteignable === true)
+verifier('le mode terrain s ouvre', r.mode_terrain_ouvert === true)
+verifier(
+  'il occupe tout l ecran',
+  r.mode_terrain_plein_ecran === true,
+  "(sinon l'interface d'edition reste visible autour)",
+)
+verifier('un titre d exercice est affiche', !!r.terrain_titre, JSON.stringify(r.terrain_titre))
+verifier(
+  'il est ecrit en grand',
+  r.terrain_taille_titre >= 24,
+  `(${r.terrain_taille_titre} px : on lit cet ecran a bout de bras)`,
+)
+verifier('le schema est affiche', r.terrain_schema === true)
+verifier(
+  'le temps restant est annonce',
+  /min|heure/.test(r.terrain_horaire ?? ''),
+  JSON.stringify(r.terrain_horaire),
+)
+verifier('la position dans la seance est annoncee', /1 \/ \d/.test(r.terrain_position ?? ''), JSON.stringify(r.terrain_position))
+verifier('la case a cocher est presente', r.terrain_case === true)
+verifier('cocher change son etat', r.terrain_coche === true, JSON.stringify(r.terrain_libelle_coche))
+verifier('on passe a l exercice suivant', /2 \/ \d/.test(r.terrain_position_2 ?? ''), JSON.stringify(r.terrain_position_2))
+verifier(
+  'la case suit l exercice affiche',
+  r.terrain_coche_2 === false,
+  "(sinon elle serait un reglage global et non un releve par exercice)",
+)
+verifier('on peut quitter le mode terrain', r.mode_terrain_ferme === true)
+verifier('et l on retrouve la seance', r.seance_retrouvee === true)
 
 console.log('')
 console.log(`=== ${ok} reussis, ${ko} echoues ===`)

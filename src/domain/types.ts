@@ -252,6 +252,20 @@ export function nouvelleEvaluation(): Evaluation {
   return { note: 0, commentaire: '', nombreUtilisations: 0, derniereUtilisation: '' }
 }
 
+/**
+ * Ce qui s'est reellement passe pendant la seance, releve en mode terrain.
+ *
+ * Pose A COTE du plan, jamais a sa place : la duree prevue reste la duree
+ * prevue. C'est la comparaison des deux qui a de la valeur - « j'avais prevu
+ * 15 minutes, j'en ai passe 22 » est une lecon pour la seance suivante, alors
+ * qu'ecraser le plan par la realite l'effacerait.
+ */
+export interface Deroule {
+  /** Coche sur le terrain : l'exercice a ete mene. */
+  fait: boolean
+  /** Minutes reellement passees, absentes si l'exercice n'a pas ete mene. */
+  dureeReelle?: number
+}
 export interface Exercice {
   id: string
   titre: string
@@ -292,6 +306,8 @@ export interface Exercice {
    */
   enParallele: boolean
   evaluation: Evaluation
+  /** Releve du terrain, absent tant que la seance n a pas ete menee. */
+  deroule?: Deroule
   /** Vrai pour les fiches issues de la bibliotheque fournie avec l'application. */
   issuDeLaBibliotheque?: boolean
   /**
@@ -322,6 +338,15 @@ export interface Seance {
   /** Gardiens presents ce jour-la. 0 = non renseigne. */
   effectifGardiens: number
   exercices: Exercice[]
+  /**
+   * Instant ISO ou le mode terrain a ete lance, absent sinon.
+   *
+   * C est l ancre de tout l horaire : les creneaux se calculent a partir
+   * de la, et non d un compte a rebours qui repartirait a zero a chaque
+   * exercice. Le conserver permet de rouvrir l application en cours de
+   * seance sans perdre le retard deja pris.
+   */
+  demarreLe?: string
   creeLe: string
   modifieLe: string
 }

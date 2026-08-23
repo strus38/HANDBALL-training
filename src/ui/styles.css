@@ -3060,3 +3060,209 @@ button,
     print-color-adjust: exact;
   }
 }
+
+/* ------------------------------------------------------------ Mode terrain */
+/*
+  La seance telle qu'on la mene. Tout est dimensionne pour une tablette tenue
+  a bout de bras dans un gymnase : rien en dessous de 17 pixels, des boutons
+  qu'on atteint sans viser, et un seul exercice a l'ecran.
+*/
+.mode-terrain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--fond);
+}
+
+.mode-terrain.vide {
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  font-size: 20px;
+  color: var(--texte-doux);
+}
+
+.terrain-entete {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--bleu-900);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.terrain-horaire {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.terrain-horaire strong {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/*
+  Le retard change de couleur au lieu de s'ecrire en negatif : « -4 min » se
+  lit mal en courant, « 4 min de retard » en rouge se lit d'un coup d'oeil.
+*/
+.terrain-horaire strong.en-retard {
+  color: var(--jaune);
+}
+
+.terrain-horaire span {
+  font-size: 15px;
+  opacity: 0.82;
+}
+
+.terrain-position {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.25;
+}
+
+.terrain-position strong {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.terrain-position span {
+  font-size: 14px;
+  opacity: 0.82;
+}
+
+.terrain-corps {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.terrain-schema {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.terrain-schema .cadre-terrain,
+.terrain-schema svg {
+  width: 100%;
+  height: auto;
+}
+
+.terrain-texte {
+  min-width: 0;
+  overflow-y: auto;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--texte);
+}
+
+.terrain-texte h1 {
+  margin: 0 0 4px;
+  font-size: 30px;
+  line-height: 1.2;
+  color: var(--bleu-900);
+}
+
+.terrain-texte h2 {
+  margin: 18px 0 4px;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.terrain-texte p {
+  margin: 0 0 8px;
+}
+
+.terrain-texte ul {
+  margin: 0 0 8px;
+  padding-left: 22px;
+}
+
+.terrain-texte li {
+  margin-bottom: 6px;
+}
+
+.terrain-meta {
+  color: var(--texte-doux);
+  font-size: 17px;
+}
+
+.terrain-objectif {
+  border-left: 4px solid var(--jaune);
+  padding-left: 12px;
+  font-weight: 600;
+  color: var(--bleu-800);
+}
+
+.terrain-materiel {
+  margin-top: 18px;
+  font-size: 17px;
+  color: var(--texte-doux);
+}
+
+.terrain-pied {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--bordure);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.terrain-pied .bouton {
+  flex: 1;
+}
+
+.bouton.geant {
+  min-height: 58px;
+  font-size: 19px;
+  font-weight: 650;
+}
+
+.terrain-entete .bouton.geant {
+  flex: 0 0 auto;
+  min-width: 58px;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+  background: transparent;
+}
+
+.bouton.marquer-mene.actif {
+  background: var(--succes);
+  border-color: var(--succes);
+  color: #fff;
+}
+
+/*
+  En hauteur - tablette verticale, telephone - le schema passe au-dessus du
+  texte plutot que de partager la largeur : deux colonnes de 300 pixels ne
+  servent ni l'une ni l'autre.
+*/
+@media (max-width: 900px), (orientation: portrait) {
+  .terrain-corps {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow-y: auto;
+  }
+
+  .terrain-schema {
+    max-height: 40vh;
+  }
+
+  .terrain-texte {
+    overflow: visible;
+  }
+}
+

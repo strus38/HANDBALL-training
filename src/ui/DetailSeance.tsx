@@ -20,6 +20,7 @@ interface Props {
   onImprimerSeance: () => void
   onRetourAccueil: () => void
   onDupliquer: () => void
+  onModeTerrain: () => void
 }
 
 export function DetailSeance({
@@ -33,6 +34,7 @@ export function DetailSeance({
   onImprimerSeance,
   onRetourAccueil,
   onDupliquer,
+  onModeTerrain,
 }: Props) {
   const confirmer = useConfirmation()
 
@@ -153,6 +155,20 @@ export function DetailSeance({
           {enParallele > 0 && ` · ${enParallele} en parallele`}
         </span>
         <div className="pousse">
+          {/*
+            Le mode terrain est en premier et en evidence : c est la seule
+            commande de cette rangee qui sert PENDANT la seance, les autres
+            servent avant ou apres. Elle etait introuvable tant qu elle
+            ressemblait aux autres.
+          */}
+          <button
+            className="bouton mode-terrain-ouvrir"
+            onClick={onModeTerrain}
+            disabled={seance.exercices.length === 0}
+            title="Afficher la seance en grand, un exercice a la fois, pour la mener"
+          >
+            ▶ Mode terrain
+          </button>
           <button className="bouton" onClick={onDupliquer}>
             Dupliquer
           </button>

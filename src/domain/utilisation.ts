@@ -46,12 +46,21 @@ export function indexerUtilisations(seances: Seance[]): Map<string, Utilisation>
 
   for (const seance of seances) {
     for (const exercice of seance.exercices) {
-      const fois = exercice.evaluation.nombreUtilisations
+      // Deux sources disent qu un exercice a ete mene : le bouton
+      // « Marquer comme realise » de la fiche, et la case cochee en mode
+      // terrain. On prend le MAXIMUM, pas la somme : une copie posee dans
+      // une seance est UNE occurrence, et cocher sur le terrain ce qu on
+      // avait deja marque a la main la compterait deux fois.
+      const fois = Math.max(exercice.evaluation.nombreUtilisations, exercice.deroule?.fait ? 1 : 0)
       if (fois <= 0) continue
 
       const cle = cleUtilisation(exercice)
       const deja = index.get(cle)
-      const derniere = exercice.evaluation.derniereUtilisation
+      // Une case cochee sur le terrain date de la SEANCE : c est ce jour-la
+      // qu on l a menee, meme si on ouvre le releve le lendemain.
+      const marquee = exercice.evaluation.derniereUtilisation
+      const surLeTerrain = exercice.deroule?.fait ? seance.date || '' : ''
+      const derniere = marquee > surLeTerrain ? marquee : surLeTerrain
       index.set(cle, {
         fois: (deja?.fois ?? 0) + fois,
         // Les dates sont au format AAAA-MM-JJ : l'ordre alphabetique est

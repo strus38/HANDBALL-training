@@ -218,6 +218,19 @@ const SCENARIOS = [
     `,
   },
   {
+    nom: 'mode-terrain',
+    taille: '1500,950',
+    etapes: `
+      pas(() => clicContenant('.liste-seances button', 'attaque placee'))
+      pas(() => clic('▶ Mode terrain'))
+      pas(() => {
+        // Un exercice deja mene : la case cochee doit se voir sur la capture.
+        const b = tous('.terrain-pied button').find((x) => /Marquer mene/.test(x.textContent))
+        if (b) b.click()
+      })
+    `,
+  },
+  {
     nom: 'bilan',
     taille: '1400,655',
     etapes: `

@@ -275,6 +275,41 @@ droit court vers tel point, puis passe a l'ailier ») et construits par le meme
 moteur que le trace d'un entraineur a la souris. Positions, ballon qui suit et
 orientations en decoulent, au lieu d'etre recopies a la main dans les donnees.
 
+## Mener la seance : le mode terrain
+
+<!-- notice:capture mode-terrain -->
+
+Le bouton **▶ Mode terrain**, au-dessus de la liste des exercices, affiche la
+seance telle qu'on la mene : un exercice a la fois, en grand, sur toute la
+largeur de l'ecran. Les fleches ← et → du clavier changent d'exercice, la
+touche Echap ferme.
+
+**Le temps restant est calcule sur l'heure reelle.** L'horaire s'ancre au
+moment ou vous ouvrez le mode terrain : chaque exercice recoit un creneau, et
+l'ecran annonce ce qu'il reste sur celui en cours, l'heure de fin prevue, et
+l'avance ou le retard.
+
+C'est le point important : un minuteur qui repartirait a zero a chaque exercice
+afficherait toujours « 15 minutes disponibles », y compris quand la seance a
+vingt minutes de retard et qu'il faudra sauter un atelier. Ici le retard
+s'accumule et se voit **pendant que vous pouvez encore y faire quelque chose**.
+
+L'heure de debut est retenue dans la seance : si la tablette se verrouille ou
+que le navigateur se recharge au milieu de l'entrainement, vous retrouvez votre
+horaire et non un chronometre remis a zero.
+
+**Cocher « Marquer mene »** enregistre que l'exercice a bien ete fait. Cette
+case alimente les compteurs d'utilisation de la bibliotheque : ce que vous
+cochez au gymnase se retrouve sous les fiches quand vous preparez la seance
+suivante. Un exercice deja marque a la main depuis sa fiche n'est pas compte
+deux fois.
+
+**Le temps reellement passe est mesure** et note a cote de la duree prevue,
+quand vous passez a l'exercice suivant. Le plan n'est jamais modifie : la fiche
+continue d'afficher « 15 min prevues » et ajoute « 22 min passees ». C'est la
+comparaison des deux qui apprend quelque chose pour la fois d'apres — ecraser
+le plan par la realite l'effacerait.
+
 ## Effectif de la seance
 
 La seance porte le nombre de joueurs de champ et de gardiens presents ce

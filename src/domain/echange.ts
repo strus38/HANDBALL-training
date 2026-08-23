@@ -14,6 +14,7 @@ import {
   nouvelleEvaluation,
   SCHEMA_VERSION,
   type Position,
+  type Deroule,
   type Evaluation,
   type Exercice,
   type FichierExport,
@@ -194,6 +195,7 @@ function lireSeance(brut: Objet): Seance {
     objectifSeance: texte(brut.objectifSeance),
     effectifJoueurs: Math.max(0, nombre(brut.effectifJoueurs, 0)),
     effectifGardiens: Math.max(0, nombre(brut.effectifGardiens, 0)),
+    demarreLe: brut.demarreLe ? texte(brut.demarreLe) : undefined,
     exercices,
   }
 }
@@ -289,6 +291,7 @@ function lireExercice(brut: Objet): Exercice {
     // donc etre ajoute ici, sous peine de disparaitre sans bruit.
     refModele: brut.refModele ? texte(brut.refModele) : undefined,
     evaluation: lireEvaluation(brut.evaluation),
+    deroule: lireDeroule(brut.deroule),
     schema: migrerSchema({
       vue: (['demi', 'complet', 'zone'].includes(texte(schemaBrut.vue))
         ? texte(schemaBrut.vue)
@@ -298,6 +301,18 @@ function lireExercice(brut: Objet): Exercice {
     }),
   }
   return exercice
+}
+
+/**
+ * Releve du terrain. Absent tant que la seance n a pas ete menee : on ne
+ * fabrique pas un deroule vide, qui ferait croire a un exercice non fait
+ * alors qu il n a simplement jamais ete question de le mener.
+ */
+function lireDeroule(brut: unknown): Deroule | undefined {
+  if (!estObjet(brut)) return undefined
+  const fait = brut.fait === true
+  const mesure = Math.round(nombre(brut.dureeReelle, 0))
+  return { fait, dureeReelle: mesure > 0 ? mesure : undefined }
 }
 
 function lireEvaluation(brut: unknown): Evaluation {

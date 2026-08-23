@@ -96,5 +96,54 @@ verifier(
 )
 
 console.log('')
+console.log('4. Ce qui est coche en mode terrain')
+// Deux sources disent qu'un exercice a ete mene : le bouton « Marquer comme
+// realise » de la fiche, et la case cochee sur le terrain. Les additionner
+// compterait deux fois la meme seance ; les ignorer l'une ou l'autre ferait
+// mentir le compteur. On prend donc le maximum par copie.
+const surLeTerrain = (titre, { ref, fait = false, fois = 0, derniere = '' } = {}) => ({
+  ...exercice(titre, { ref, fois, derniere }),
+  deroule: { fait },
+})
+
+const menees = indexerUtilisations([
+  { date: '2026-10-01', exercices: [surLeTerrain('Croise', { ref: 'croise', fait: true })] },
+  { date: '2026-10-08', exercices: [surLeTerrain('Croise', { ref: 'croise', fait: true })] },
+])
+verifier('une case cochee suffit a compter une utilisation', menees.get('croise')?.fois === 2)
+verifier(
+  'la date retenue est celle de la seance',
+  menees.get('croise')?.derniere === '2026-10-08',
+  "(c'est ce jour-la qu'on l'a menee, meme si on ouvre le releve le lendemain)",
+)
+
+const pasCoche = indexerUtilisations([
+  { date: '2026-10-01', exercices: [surLeTerrain('Croise', { ref: 'croise', fait: false })] },
+])
+verifier('une case decochee ne compte rien', pasCoche.get('croise') === undefined)
+
+const lesDeux = indexerUtilisations([
+  {
+    date: '2026-10-01',
+    exercices: [surLeTerrain('Croise', { ref: 'croise', fait: true, fois: 1, derniere: '2026-10-01' })],
+  },
+])
+verifier(
+  'cocher ce qui etait deja marque a la main ne compte pas double',
+  lesDeux.get('croise')?.fois === 1,
+  `(${lesDeux.get('croise')?.fois} : une copie posee dans une seance est UNE occurrence)`,
+)
+
+const marqueePlusieursFois = indexerUtilisations([
+  {
+    date: '2026-10-01',
+    exercices: [surLeTerrain('Croise', { ref: 'croise', fait: true, fois: 3, derniere: '2026-10-01' })],
+  },
+])
+verifier(
+  'un compteur manuel plus eleve n est pas ecrase par la case',
+  marqueePlusieursFois.get('croise')?.fois === 3,
+)
+console.log('')
 console.log(`=== ${ok} reussis, ${ko} echoues ===`)
 process.exit(ko === 0 ? 0 : 1)

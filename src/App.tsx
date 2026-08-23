@@ -12,6 +12,7 @@ import { useConfirmation } from './ui/Dialogue'
 import { dupliquerSeance, type OptionsDuplication } from './domain/resume'
 import { Bibliotheque } from './bibliotheque/Bibliotheque'
 import { useAtelier, type EtatSauvegarde } from './ui/useAtelier'
+import { ModeTerrain } from './ui/ModeTerrain'
 import { fichiersNavigateur, nomDeFichierSur } from './platform/fichiers'
 import {
   EXTENSION,
@@ -30,6 +31,7 @@ export function App() {
   const [messageImport, setMessageImport] = useState<string | undefined>()
   const [exerciceOuvertId, setExerciceOuvertId] = useState<string | undefined>()
   const [bibliothequeOuverte, setBibliothequeOuverte] = useState(false)
+  const [modeTerrain, setModeTerrain] = useState(false)
   const [colonneRepliee, setColonneRepliee] = useState(false)
   /** Vrai quand le navigateur a bloque la fenetre de la notice. */
   const [messageNotice, setMessageNotice] = useState(false)
@@ -337,6 +339,7 @@ export function App() {
             onExporterExercice={exporterUneFiche}
             onOuvrirExercice={setExerciceOuvertId}
             onOuvrirBibliotheque={() => setBibliothequeOuverte(true)}
+            onModeTerrain={() => setModeTerrain(true)}
             onImprimerSeance={() => imprimerSeance(seance)}
           />
         )}
@@ -354,6 +357,20 @@ export function App() {
             modifierSeance((s) => ({ ...s, exercices: [...s.exercices, exercice] }))
             setBibliothequeOuverte(false)
           }}
+        />
+      )}
+
+      {/*
+        Le mode terrain occupe tout l ecran et remplace l interface : c est
+        volontaire. Une barre d outils visible inviterait a modifier la
+        seance pendant qu on la mene, alors qu on veut la MENER, pas la
+        preparer.
+      */}
+      {modeTerrain && seance && (
+        <ModeTerrain
+          seance={seance}
+          onModifier={modifierSeance}
+          onFermer={() => setModeTerrain(false)}
         />
       )}
 

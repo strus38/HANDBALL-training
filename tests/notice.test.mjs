@@ -157,11 +157,47 @@ verifier(
   !/npm run|npm install|npm test/.test(notice),
 )
 verifier('les sections d usage sont bien la', notice.includes('Raccourcis clavier'))
+// Compter un nombre fixe rendait ce test faux des qu on illustrait une
+// section de plus. Ce qui compte vraiment est qu AUCUNE marque ne se perde en
+// chemin : chaque <!-- notice:capture X --> doit devenir un emplacement.
+// Sur le texte DESTINE aux coachs : le Markdown complet mentionne aussi la
+// syntaxe de la marque dans sa partie developpeur, qui n est pas une demande.
+const marques = (pourLesCoachs(source).match(/<!-- notice:capture /g) || []).length
+const emplacements = (notice.match(/data-capture=/g) || []).length
 verifier(
   'le document demande bien des captures',
-  (notice.match(/data-capture=/g) || []).length === 4,
-  `(${(notice.match(/data-capture=/g) || []).length} emplacements)`,
+  marques >= 4,
+  `(${marques} marques dans le Markdown)`,
 )
+verifier(
+  'aucune marque de capture ne se perd a la conversion',
+  emplacements === marques,
+  `(${marques} demandees, ${emplacements} posees)`,
+)
+
+// Une capture nommee dans le Markdown ne suffit pas : elle doit AUSSI etre
+// demandee au navigateur et avoir une legende, dans outils/notice.mjs. Les
+// trois listes vivent a des endroits differents, et en illustrer une section
+// de plus sans toucher aux deux autres laisse un emplacement vide, sans
+// erreur ni message - la notice part alors amputee d une image.
+const outil = readFileSync(new URL('../outils/notice.mjs', import.meta.url), 'utf8')
+const ouvre = outil.indexOf('await capturer([')
+const demandees = ouvre < 0 ? '' : outil.slice(ouvre, outil.indexOf(']', ouvre))
+const noms = [...pourLesCoachs(source).matchAll(/<!-- notice:capture ([a-z-]+) -->/g)].map(
+  (m) => m[1],
+)
+for (const nom of noms) {
+  verifier(
+    `la capture « ${nom} » est demandee au navigateur`,
+    demandees.includes(`'${nom}'`),
+    '(a ajouter dans capturer([...]) de outils/notice.mjs)',
+  )
+  verifier(
+    `la capture « ${nom} » a une legende`,
+    outil.includes(`${nom}:`) || outil.includes(`'${nom}':`),
+    '(a ajouter dans LEGENDES de outils/notice.mjs)',
+  )
+}
 verifier('un seul titre de niveau 1', (notice.match(/<h1>/g) || []).length === 1)
 verifier('des tableaux sont produits', (notice.match(/<table>/g) || []).length >= 3)
 verifier('les tableaux de raccourcis passent', notice.includes('<td><code>Ctrl+Z</code></td>'))
