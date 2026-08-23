@@ -520,9 +520,10 @@ l'autre ce qui a fonctionne et ce qu'il vaut mieux ne pas reprogrammer.
 ## Bibliotheque fournie
 <!-- notice:capture bibliotheque -->
 
-59 fiches sont livrees avec l'application : 29 pour un groupe seniors masculins
-(+18 ans), 12 specifiques aux gardiens de but, 12 qui se passent de ballon, et 6
-transcrites des seances du club.
+62 fiches sont livrees avec l'application : 29 pour un groupe seniors masculins
+(+18 ans), 12 specifiques aux gardiens de but, 12 qui se passent de ballon, 6
+transcrites des seances du club, et 3 combinaisons nommees du repertoire
+classique.
 
 Les fiches joueurs de champ couvrent toutes les categories de la seance :
 echauffement et prevention, technique individuelle, attaque placee (croise,
@@ -592,6 +593,30 @@ Choisir une fiche en ajoute une **copie independante** a la seance. L'adapter
 pour un soir ne touche jamais au modele, et les seances passees gardent la
 version avec laquelle elles ont ete jouees. Quand une modification merite d'etre
 conservee, le bouton « Vers la bibliotheque » met le modele a jour.
+
+## Les combinaisons nommees
+
+Certaines fiches ne decrivent pas un exercice a repeter, mais un
+**enchainement qui porte un nom** : l'Espagnole, le double croise, le Pondus.
+Sur le terrain on dit « on joue l'Espagnole », et la bibliotheque doit donc la
+retrouver sous ce nom-la.
+
+La puce **Combinaisons**, en bas des filtres, ne montre plus qu'elles. Comme
+« Avec animation » et « Sans ballon », elle s'ajoute aux autres au lieu de les
+remplacer.
+
+Trois regles tiennent ces fiches :
+
+- **Le nom ouvre le titre**, la description suit : « Espagnole — croise
+  central ». La recherche trouve alors le nom parle, et la suite du titre
+  explique de quoi il s'agit a celui qui ne le connait pas.
+- **Les variantes ne font pas des fiches.** Une combinaison en a souvent trois
+  ou quatre. Elles vont dans « Evolution » : autant de fiches quasi identiques
+  noieraient la bibliotheque et scinderaient les compteurs d'utilisation.
+- **Le schema est refait ici.** Un enchainement tactique — qui court ou, qui
+  passe a qui — est un fait de handball, pas une oeuvre. Les positions, les
+  temps de jeu et les textes sont ecrits pour cette application ; la provenance
+  de l'idee est citee dans la fiche.
 
 ## Partager des seances et des exercices
 

@@ -6,8 +6,9 @@ veut, on double-clique, il s'ouvre dans le navigateur. Pas d'installation, pas
 de compte, pas de connexion internet — y compris dans un gymnase.
 
 Chaque exercice est une fiche autonome : un schema de terrain aux cotes
-officielles a gauche, le detail de l'exercice a droite. 59 fiches sont livrees
-avec l'application, de l'echauffement au bilan de saison.
+officielles a gauche, le detail de l'exercice a droite. 62 fiches sont livrees
+avec l'application, de l'echauffement au bilan de saison, dont les combinaisons
+nommees du repertoire classique.
 
 ## Documentation
 

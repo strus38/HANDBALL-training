@@ -18,6 +18,7 @@ defense-3-2-1-etagement-sortie-et-couverture
 defense-5-1-le-pointe-et-la-relation-avec-les-demi-c
 defense-6-0-glissement-et-aide-sur-le-pivot
 deplacements-et-reactivite-sur-la-ligne
+double-croise-arrieres-et-demi-centre
 duel-defensif-contest-contre-et-recuperation
 duel-un-contre-un-a-9-metres-depart-decale
 duels-croises-entre-gardiens
@@ -27,6 +28,7 @@ echauffement-gardien-appuis-mains-et-prise-de-balle
 echauffement-gardien-trois-colonnes-et-travail-inter
 echauffement-prophylactique-epaules-genoux-chevilles
 ecran-du-pivot-pour-le-tir-a-9-metres
+espagnole-croise-central
 feinte-de-tir-et-changement-de-main-dans-l-intervall
 force-des-membres-inferieurs-au-poids-de-corps
 gainage-handball-les-trois-chaines-en-circuit
@@ -47,6 +49,7 @@ match-a-theme-dernieres-minutes-un-but-d-ecart
 match-a-theme-deux-passes-minimum-apres-recuperation
 montee-de-balle-4-contre-3-face-au-repli
 passe-et-va-avec-le-pivot
+pondus-renversement-et-entree-d-ailier
 projet-de-jeu-en-transition-montee-de-balle
 proprioception-de-la-cheville-et-du-genou
 protocole-d-echauffement-en-quatre-temps

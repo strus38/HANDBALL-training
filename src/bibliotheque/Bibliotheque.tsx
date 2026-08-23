@@ -10,11 +10,8 @@
 
 import { useMemo, useState } from 'react'
 import { Terrain } from '../terrain/Terrain'
-import { construireExercice, type ModeleExercice } from './modeles'
-import { SENIORS_MASCULINS } from './seniorsMasculins'
-import { GARDIENS } from './gardiens'
-import { SANS_BALLON } from './sansBallon'
-import { HBPSM } from './hbpsm'
+import { construireExercice } from './modeles'
+import { CATALOGUE, REFS_COMBINAISONS } from './catalogue'
 import { clonerExercice } from '../domain/fabrique'
 import { NoteEtoiles } from '../ui/NoteEtoiles'
 import { useConfirmation } from '../ui/Dialogue'
@@ -28,7 +25,10 @@ import {
 import { cleUtilisation, indexerUtilisations, resumeUtilisation } from '../domain/utilisation'
 import { estFavori } from '../domain/favoris'
 
-export const CATALOGUE: ModeleExercice[] = [...SENIORS_MASCULINS, ...GARDIENS, ...SANS_BALLON, ...HBPSM]
+// Le catalogue et l ensemble des combinaisons vivent dans catalogue.ts : les
+// tests ne peuvent pas importer ce composant, et en recopiaient une seconde
+// liste qui derivait en silence.
+export { CATALOGUE }
 
 /** Fiche affichee dans la liste, quelle que soit son origine. */
 interface Entree {
@@ -132,6 +132,8 @@ export function Bibliotheque({
   const [sansBallonSeuls, setSansBallonSeuls] = useState(false)
   /** Meme logique encore : la puce des favoris s ajoute aux autres filtres. */
   const [favorisSeuls, setFavorisSeuls] = useState(false)
+  /** Meme logique : la puce des combinaisons s ajoute, elle ne remplace pas. */
+  const [combinaisonsSeules, setCombinaisonsSeules] = useState(false)
   const [recherche, setRecherche] = useState('')
   const [choisi, setChoisi] = useState<string | undefined>()
   const confirmer = useConfirmation()
@@ -151,6 +153,7 @@ export function Bibliotheque({
   const resultats = useMemo(() => {
     const mots = sansAccent(recherche).split(/\s+/).filter(Boolean)
     return entrees.filter(({ exercice, cle }) => {
+      if (combinaisonsSeules && !REFS_COMBINAISONS.has(cle)) return false
       if (favorisSeuls && !estFavori(favoris, cle)) return false
       if (animesSeuls && nombreEtapes(exercice) <= 1) return false
       if (sansBallonSeuls && !sansAucunBallon(exercice)) return false
@@ -168,7 +171,16 @@ export function Bibliotheque({
     // favoris ET favorisSeuls doivent figurer ici : sans la premiere, cocher
     // une etoile ne rafraichit pas la liste filtree, et la puce semble ne
     // rien faire.
-  }, [animesSeuls, entrees, favoris, favorisSeuls, filtre, recherche, sansBallonSeuls])
+  }, [
+    animesSeuls,
+    combinaisonsSeules,
+    entrees,
+    favoris,
+    favorisSeuls,
+    filtre,
+    recherche,
+    sansBallonSeuls,
+  ])
 
   const apercu = resultats.find((e) => e.cle === choisi) ?? resultats[0]
 
@@ -253,6 +265,17 @@ export function Bibliotheque({
             Sans ballon
           </button>
           <button
+            className={`puce bascule${combinaisonsSeules ? ' active' : ''}`}
+            aria-pressed={combinaisonsSeules}
+            title="Ne montrer que les combinaisons nommees : Espagnole, Pondus, double croise..."
+            onClick={() => {
+              setCombinaisonsSeules((actif) => !actif)
+              setChoisi(undefined)
+            }}
+          >
+            Combinaisons
+          </button>
+          <button
             className={`puce bascule${favorisSeuls ? ' active' : ''}`}
             aria-pressed={favorisSeuls}
             title="Ne montrer que les fiches que vous avez mises en favori"
@@ -269,7 +292,9 @@ export function Bibliotheque({
           <ul className="liste-modeles">
             {resultats.length === 0 && (
               <li className="aucun-resultat">
-                {favorisSeuls
+                {combinaisonsSeules && filtre !== 'tous' && filtre !== 'attaque'
+                  ? "Les combinaisons nommees sont des exercices d attaque : levez le filtre de categorie pour les voir."
+                  : favorisSeuls
                   ? "Aucun favori ici. L etoile en haut a droite d une fiche la met de cote."
                   : source === 'personnelle' && mesModeles.length === 0
                   ? "Vos exercices apparaitront ici : chaque fiche que vous creez rejoint automatiquement la bibliotheque."

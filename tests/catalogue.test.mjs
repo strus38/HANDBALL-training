@@ -10,10 +10,8 @@
  */
 
 import {
-  SENIORS_MASCULINS,
-  GARDIENS,
-  SANS_BALLON,
-  HBPSM,
+  CATALOGUE,
+  REFS_COMBINAISONS,
   construireExercice,
   distanceALaSurface,
   resoudreFleches,
@@ -28,12 +26,14 @@ const verifier = (nom, condition, detail = '') => {
   else { ko++; console.log('  ECHEC ' + nom + ' ' + detail) }
 }
 
-const CATALOGUE = [...SENIORS_MASCULINS, ...GARDIENS, ...SANS_BALLON, ...HBPSM]
+// La liste etait recopiee ici. Elle a derive : un fichier de fiches ajoute
+// d un cote laissait ses fiches entierement hors tests, sans rien signaler.
+// On importe desormais celle que l application utilise vraiment.
 const JOUEURS_DE_CHAMP = ['attaquant', 'defenseur']
 
 console.log('')
 console.log('1. Integrite des modeles')
-verifier('le catalogue est complet', CATALOGUE.length === 59, '(' + CATALOGUE.length + ')')
+verifier('le catalogue est complet', CATALOGUE.length === 62, '(' + CATALOGUE.length + ')')
 verifier('chaque fiche a un titre', CATALOGUE.every((m) => m.titre.trim().length > 0))
 verifier('chaque fiche a au moins un jeton', CATALOGUE.every((m) => m.jetons.length > 0))
 
@@ -196,6 +196,30 @@ for (const modele of avecEtapes) {
 verifier('chaque fiche chorégraphiée produit un deroulement', muettes.length === 0,
   JSON.stringify(muettes))
 
+
+console.log('')
+console.log('6. Les tirs finissent dans le but')
+// Le but fait 3 metres, centre sur la largeur : un tir doit donc arriver entre
+// 8,5 et 11,5. Rien ne l'imposait, et deux fiches neuves visaient a cote sans
+// que rien ne le signale. Le schema montrait alors une fleche qui sort du
+// cadre - et c'est ce schema qu'un entraineur projette a ses joueurs.
+const DEMI_BUT = 1.5
+let tirs = 0
+const horsCadre = []
+for (const modele of CATALOGUE) {
+  for (const etape of modele.etapes ?? []) {
+    for (const m of etape.mouvements) {
+      if (m.type !== 'tir' || !m.vers) continue
+      tirs++
+      // On regarde l'ecart lateral, quel que soit le but vise : une fiche peut
+      // attaquer d'un cote comme de l'autre.
+      if (Math.abs(m.vers.y - 10) > DEMI_BUT) horsCadre.push(`${modele.ref} (y=${m.vers.y})`)
+    }
+  }
+}
+console.log(`        ${tirs} tirs decrits dans le catalogue`)
+verifier('des tirs sont bien decrits', tirs > 0)
+verifier('aucun tir ne sort du cadre', horsCadre.length === 0, '(' + horsCadre.join(', ') + ')')
 console.log('')
 console.log('=== ' + ok + ' reussis, ' + ko + ' echoues ===')
 process.exit(ko === 0 ? 0 : 1)

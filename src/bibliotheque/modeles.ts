@@ -80,6 +80,17 @@ export interface ModeleExercice {
    */
   ref: string
   categorie: Categorie
+  /**
+   * Vrai pour les combinaisons NOMMEES du repertoire : Espagnole, Pondus,
+   * double croise...
+   *
+   * Ce n est pas une categorie de plus - une combinaison est un exercice
+   * d attaque, et en faire une categorie obligerait l entraineur a deviner ou
+   * chercher. C est un axe transverse, comme « avec animation » ou « sans
+   * ballon » : la puce de la bibliotheque s ajoute aux filtres au lieu de les
+   * remplacer.
+   */
+  combinaison?: boolean
   duree: number
   nombreJoueurs: number
   nombreGardiens: number
