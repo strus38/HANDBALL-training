@@ -321,6 +321,14 @@ pas(() => {
   // De retour dans la seance, le plan doit etre intact : la duree prevue du
   // premier exercice ne doit pas avoir ete remplacee par un temps mesure.
   r.seance_retrouvee = !!par('.liste-exercices, .lien-exercice')
+  // La rangee d actions : on releve son ordre pour verifier que la seule
+  // commande irreversible ne touche pas les plus frequentes.
+  const rangee = par('.entete-section .pousse')
+  r.actions = rangee
+    ? [...rangee.children].map((e) =>
+        e.className.includes('separateur-actions') ? '|' : e.textContent.trim(),
+      )
+    : null
 })
 
 // ------------------------------------------------------------------ Dictee
@@ -338,6 +346,12 @@ pas(() => {
   // ensemble : un bouton present sans support serait un bouton mort.
   r.moteur_vocal = !!(window.SpeechRecognition || window.webkitSpeechRecognition)
   r.micros = tous('.bouton-dictee').length
+  const microSur = (etiquette) => {
+    const champ = tous('label').find((l) => new RegExp(etiquette, 'i').test(l.textContent))
+    return champ ? !!champ.querySelector('.bouton-dictee') : false
+  }
+  r.micro_consigne = microSur('^Consigne')
+  r.micro_forme = microSur('Forme d')
   const micro = par('.bouton-dictee')
   r.micro_dans_etiquette = micro ? !!micro.closest('.champ > span, span.avec-dictee') : false
   // Un micro dans un <label> ne doit pas emporter le clic vers le champ.
@@ -622,6 +636,30 @@ verifier(
 verifier('on peut quitter le mode terrain', r.mode_terrain_ferme === true)
 verifier('et l on retrouve la seance', r.seance_retrouvee === true)
 
+// L ordre exact des commandes est un choix de conception, il peut changer.
+// Ce qui ne doit pas changer, c est que la seule action IRREVERSIBLE de la
+// rangee ne soit pas collee aux plus frequentes : elle etait auparavant
+// coincee entre « Exporter » et « Bibliotheque ».
+const actions = r.actions ?? []
+const rangSupprimer = actions.findIndex((t) => /Supprimer/.test(t))
+const rangPrincipal = actions.findIndex((t) => /\+ Exercice/.test(t))
+verifier('la rangee d actions est lisible', actions.length >= 6, JSON.stringify(actions))
+verifier(
+  'la commande principale ferme la rangee',
+  rangPrincipal === actions.length - 1,
+  JSON.stringify(actions),
+)
+verifier(
+  'la suppression est isolee par un separateur',
+  actions[rangSupprimer + 1] === '|' || actions[rangSupprimer - 1] === '|',
+  JSON.stringify(actions),
+)
+verifier(
+  'la suppression ne touche pas la commande principale',
+  rangSupprimer >= 0 && Math.abs(rangPrincipal - rangSupprimer) >= 3,
+  `(rangs ${rangSupprimer} et ${rangPrincipal} : la seule action irreversible etait a un pixel des plus frequentes)`,
+)
+
 console.log('')
 console.log('5. Dictee')
 verifier('on rouvre une fiche', r.fiche_rouverte === true)
@@ -637,6 +675,14 @@ if (r.moteur_vocal) {
     r.micro_est_bouton === true,
     "(sinon il envoie le formulaire ou double le clic depuis son <label>)",
   )
+}
+if (r.moteur_vocal) {
+  verifier(
+    'la consigne d une etape se dicte',
+    r.micro_consigne === true,
+    '(champ d une ligne : le micro doit y etre aussi)',
+  )
+  verifier('la forme d intervention se dicte', r.micro_forme === true)
 }
 verifier('« Coller un texte dicte » est atteignable', r.bouton_coller === true)
 verifier('la fenetre de collage s ouvre', r.fenetre_collage === true)

@@ -44,7 +44,12 @@ import { proposerMouvements, type EtapeProposee } from '../domain/analyseTexte'
 import { PropositionMouvements } from './PropositionMouvements'
 import { EtiquetteAvecDictee } from './Dictee'
 import { CollerDictee } from './CollerDictee'
-import { ajouterFragment, type ChampDicte, type TexteReparti } from '../domain/dictee'
+import {
+  ajouterFragment,
+  ajouterFragmentEnLigne,
+  type ChampDicte,
+  type TexteReparti,
+} from '../domain/dictee'
 import { redactionPossible, redigerConsigne, redigerDeroulement } from '../domain/redaction'
 import { useConfirmation } from './Dialogue'
 import { useHistorique } from './useHistorique'
@@ -743,7 +748,16 @@ export function FicheExercice({
               />
             </label>
             <label className="champ-en-ligne large">
-              <span>Consigne</span>
+              <EtiquetteAvecDictee
+                libelle="Consigne"
+                quoi="la consigne de cette etape"
+                onTexte={(f) =>
+                  modifierEtape((et) => ({
+                    ...et,
+                    consigne: ajouterFragmentEnLigne(et.consigne, f),
+                  }))
+                }
+              />
               <input
                 type="text"
                 value={etape.consigne}
@@ -989,7 +1003,15 @@ export function FicheExercice({
             <textarea rows={2} placeholder="Ce que les joueurs doivent progresser" {...champ('objectifs')} />
           </label>
           <label className="champ">
-            <span>Forme d'intervention</span>
+            <EtiquetteAvecDictee
+              libelle="Forme d'intervention"
+              quoi="la forme d'intervention"
+              onTexte={(f) =>
+                onModifier({
+                  formeIntervention: ajouterFragmentEnLigne(exercice.formeIntervention, f),
+                })
+              }
+            />
             <input
               type="text"
               placeholder="Approche inductive, consigne directe, couverture pivot..."

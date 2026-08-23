@@ -156,18 +156,25 @@ export function DetailSeance({
         </span>
         <div className="pousse">
           {/*
-            Le mode terrain est en premier et en evidence : c est la seule
-            commande de cette rangee qui sert PENDANT la seance, les autres
-            servent avant ou apres. Elle etait introuvable tant qu elle
-            ressemblait aux autres.
+            L'ordre suit la VIE d'une seance, lue depuis la droite : on ajoute
+            des exercices, on va en chercher dans la bibliotheque, on mene la
+            seance, on l'imprime, on la duplique pour la semaine suivante, on
+            l'exporte, et un jour on la supprime. Cette lecture met aussi les
+            commandes les plus utilisees au plus pres du bouton principal, la
+            ou la main revient.
+
+            La suppression est a l'autre bout, derriere un separateur. Elle
+            etait auparavant coincee entre « Exporter » et « Bibliotheque »,
+            deux commandes anodines : la seule action irreversible de la rangee
+            se trouvait a un pixel des plus frequentes.
           */}
-          <button
-            className="bouton mode-terrain-ouvrir"
-            onClick={onModeTerrain}
-            disabled={seance.exercices.length === 0}
-            title="Afficher la seance en grand, un exercice a la fois, pour la mener"
-          >
-            ▶ Mode terrain
+
+          <button className="bouton danger" onClick={onSupprimerSeance}>
+            Supprimer la seance
+          </button>
+          <span className="separateur-actions" aria-hidden="true" />
+          <button className="bouton" onClick={onExporterSeance}>
+            Exporter
           </button>
           <button className="bouton" onClick={onDupliquer}>
             Dupliquer
@@ -175,11 +182,13 @@ export function DetailSeance({
           <button className="bouton" onClick={onImprimerSeance} disabled={seance.exercices.length === 0}>
             Imprimer la seance
           </button>
-          <button className="bouton" onClick={onExporterSeance}>
-            Exporter
-          </button>
-          <button className="bouton danger" onClick={onSupprimerSeance}>
-            Supprimer la seance
+          <button
+            className="bouton mode-terrain-ouvrir"
+            onClick={onModeTerrain}
+            disabled={seance.exercices.length === 0}
+            title="Afficher la seance en grand, un exercice a la fois, pour la mener"
+          >
+            ▶ Mode terrain
           </button>
           <button className="bouton" onClick={onOuvrirBibliotheque}>
             Bibliotheque

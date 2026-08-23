@@ -305,7 +305,10 @@ Le texte colle **s'ajoute** a ce qui est deja ecrit, il ne le remplace jamais.
 
 ### Le micro a cote des champs — un complement, la ou il marche
 
-Un bouton 🎤 apparait a droite de l'etiquette des champs longs. Il dicte
+Un bouton 🎤 apparait a droite de l'etiquette des champs de texte — y compris
+la **consigne d'une etape** et la **forme d'intervention**, qui tiennent sur une
+ligne : la, les phrases dictees se suivent separees d'une espace, au lieu d'aller a la
+ligne. Il dicte
 directement dans le champ, phrase par phrase, chacune sur sa ligne.
 
 **Il exige une connexion internet.** La reconnaissance vocale du navigateur
@@ -362,6 +365,18 @@ quand vous passez a l'exercice suivant. Le plan n'est jamais modifie : la fiche
 continue d'afficher « 15 min prevues » et ajoute « 22 min passees ». C'est la
 comparaison des deux qui apprend quelque chose pour la fois d'apres — ecraser
 le plan par la realite l'effacerait.
+
+### L'ordre des commandes d'une seance
+
+La rangee au-dessus des exercices se lit **depuis la droite**, et suit la vie
+d'une seance : on ajoute des exercices, on va en chercher dans la bibliotheque,
+on mene la seance, on l'imprime, on la duplique pour la semaine suivante, on
+l'exporte, et un jour on la supprime. Les commandes les plus utilisees se
+trouvent ainsi au plus pres du bouton principal, la ou la main revient.
+
+**Supprimer la seance** est a l'autre bout, derriere un separateur. Elle etait
+auparavant coincee entre « Exporter » et « Bibliotheque » : la seule action
+irreversible de la rangee se trouvait a un pixel des plus frequentes.
 
 ## Effectif de la seance
 

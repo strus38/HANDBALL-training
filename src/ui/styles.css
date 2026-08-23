@@ -3061,6 +3061,14 @@ button,
   }
 }
 
+/* Met la seule action irreversible de la rangee a distance des autres. */
+.separateur-actions {
+  width: 1px;
+  align-self: stretch;
+  margin: 2px 7px;
+  background: var(--bordure);
+}
+
 /*
   La commande qui sert PENDANT la seance, au milieu de six commandes qui
   servent avant ou apres. Noyee dans la rangee, elle etait introuvable : elle
@@ -3088,8 +3096,10 @@ button,
   jamais affiche grise avec une explication : un bouton mort a cote de chaque
   champ est un reproche permanent, alors qu'absent il ne coute rien.
 */
-/* L etiquette accueille le micro a sa droite ; un message d erreur passe a la ligne. */
-.champ > span.avec-dictee {
+/* L etiquette accueille le micro a sa droite ; un message d erreur passe a la ligne.
+   Le selecteur ne vise pas .champ : les champs d une ligne - consigne d etape,
+   forme d intervention - portent .champ-en-ligne et ont le meme besoin. */
+span.avec-dictee {
   display: flex;
   align-items: center;
   gap: 8px;

@@ -168,6 +168,22 @@ export function ajouterFragment(actuel: string, fragment: string): string {
 }
 
 /**
+ * Meme chose, pour un champ qui tient sur UNE ligne.
+ *
+ * La consigne d une etape et la forme d intervention sont des champs a une
+ * ligne : un retour a la ligne y serait invisible a l ecran et ressortirait
+ * a l impression, ou dans la vue terrain, comme une coupure inexplicable au
+ * milieu d une phrase. Les fragments se suivent donc, separes d une espace.
+ */
+export function ajouterFragmentEnLigne(actuel: string, fragment: string): string {
+  const ajout = fragment.trim()
+  if (!ajout) return actuel
+  const debut = actuel.trim()
+  if (!debut) return ajout
+  return `${debut} ${ajout}`
+}
+
+/**
  * Le navigateur sait-il transcrire la parole ?
  *
  * La portee est un parametre pour que la regle soit eprouvable des DEUX cotes :
