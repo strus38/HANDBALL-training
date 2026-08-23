@@ -41,14 +41,25 @@ const verifier = (nom, condition, detail = '') => {
   }
 }
 
-const CHROMES = [
+/**
+ * Un chemin fourni par l'environnement passe avant la liste : une machine
+ * d'integration continue designe ainsi son navigateur au lieu qu'on le devine.
+ */
+const DEPUIS_ENV = [process.env.CHROME_PATH, process.env.CHROME_BIN].filter(Boolean)
+
+const CHROMES_CONNUS = [
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
   '/usr/bin/google-chrome',
   '/usr/bin/chromium',
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  '/usr/bin/google-chrome-stable',
+  '/usr/bin/chromium-browser',
+  '/snap/bin/chromium',
 ]
+
+const CHROMES = [...DEPUIS_ENV, ...CHROMES_CONNUS]
 
 /**
  * Le scenario joue dans la page. Il progresse par etapes espacees : React rend

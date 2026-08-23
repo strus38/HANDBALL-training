@@ -15,14 +15,25 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const EXECUTABLES = [
+/**
+ * Un chemin fourni par l'environnement passe avant la liste : une machine
+ * d'integration continue designe ainsi son navigateur au lieu qu'on le devine.
+ */
+const DEPUIS_ENV = [process.env.CHROME_PATH, process.env.CHROME_BIN].filter(Boolean)
+
+const EXECUTABLES_CONNUS = [
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
   'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
   '/usr/bin/google-chrome',
   '/usr/bin/chromium',
+  '/usr/bin/google-chrome-stable',
+  '/usr/bin/chromium-browser',
+  '/snap/bin/chromium',
 ]
+
+const EXECUTABLES = [...DEPUIS_ENV, ...EXECUTABLES_CONNUS]
 
 async function trouverExecutable() {
   const { access } = await import('node:fs/promises')

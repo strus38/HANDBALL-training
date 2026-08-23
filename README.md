@@ -49,3 +49,9 @@ prises en pilotant le livrable lui-meme.
 
 Le detail de ces principes, et les raisons derriere, sont dans
 [LISEZMOI.md](LISEZMOI.md).
+
+## Licence
+
+[MIT](LICENSE). Vous pouvez utiliser, modifier et redistribuer ce logiciel,
+y compris pour votre propre club, a condition de conserver la mention de
+copyright et la licence.

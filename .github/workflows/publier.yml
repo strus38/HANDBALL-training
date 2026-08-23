@@ -1,0 +1,75 @@
+# Publication d'une version : sur une etiquette v1.2.3, ou a la demande.
+#
+# Les trois fichiers sont attaches a la Release GitHub. C'est ce lien qu'on
+# envoie aux entraineurs : ils telechargent index.html, double-cliquent, et
+# c'est fini. Pas de compte, pas d'installation, pas de depot a cloner.
+name: Publier
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Nom de la version, par exemple v1.0.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Localiser le navigateur
+        run: |
+          for chemin in \
+            /usr/bin/google-chrome \
+            /usr/bin/google-chrome-stable \
+            /usr/bin/chromium-browser \
+            /usr/bin/chromium \
+            /snap/bin/chromium
+          do
+            if [ -x "$chemin" ]; then
+              echo "CHROME_PATH=$chemin" >> "$GITHUB_ENV"
+              exit 0
+            fi
+          done
+          echo "::error::Aucun navigateur trouve sur le runner."
+          exit 1
+
+      - run: npm ci
+
+      # On ne publie que ce qui passe : le build seul ne lance pas les tests.
+      - run: npm run verifier
+
+      - name: Publier la version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          # Les notes sont ecrites par echo plutot que par un document en ligne :
+          # indente pour rester dans le bloc YAML, un heredoc produirait un
+          # fichier decale de dix espaces, que Markdown rendrait en bloc de code.
+          {
+            echo "Telechargez **index.html** et double-cliquez dessus : l'application s'ouvre"
+            echo "dans votre navigateur, sans installation et sans connexion."
+            echo
+            echo "- **LISEZMOI.html** : le mode d'emploi, illustre"
+            echo "- **PRESENTATION.html** : ce que fait le logiciel, en images"
+          } > notes.md
+          gh release create "$VERSION" \
+            dist/index.html \
+            dist/LISEZMOI.html \
+            dist/PRESENTATION.html \
+            --title "$VERSION" \
+            --notes-file notes.md
