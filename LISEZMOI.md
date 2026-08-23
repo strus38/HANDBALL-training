@@ -843,6 +843,19 @@ au premier renommage - et un titre finit toujours par etre renomme.
 reste possible : il faut alors retirer aussi sa ligne de l'inventaire, ce qui
 rend la decision explicite dans la revue plutot qu'invisible dans un diff.
 
+### Ou poser le ballon sur un schema
+
+Le moteur reconnait comme porteur **tout joueur a moins de 1,9 metre du
+ballon**, le plus proche l'emportant. Poser le ballon exactement sur son
+porteur fonctionne donc — mais le **masque entierement** : le jeton du ballon
+recouvre celui du joueur, et l'on voit une passe partir de personne. Vingt-huit
+fiches livrees etaient dans ce cas.
+
+La regle est desormais : le ballon se pose **a environ un metre** de son
+porteur, du cote oppose au but, et `tests/catalogue.test.mjs` echoue si un
+ballon revient sur un joueur, ou s'il se retrouve a mi-chemin entre deux
+joueurs — auquel cas le voisin peut lui voler la balle a la relecture.
+
 ### La lecture des fichiers est une liste blanche
 
 `lireExercice`, dans `src/domain/echange.ts`, reconstruit chaque exercice champ

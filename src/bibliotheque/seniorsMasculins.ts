@@ -47,7 +47,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'attaquant', etiquette: '1', x: 6, y: 17 },
       { type: 'attaquant', etiquette: '2', x: 6, y: 10 },
       { type: 'attaquant', etiquette: '3', x: 6, y: 3 },
-      { type: 'ballon', x: 6, y: 10 },
+      { type: 'ballon', x: 7.26, y: 10.34 },
       { type: 'plot', x: 20, y: 17 },
       { type: 'plot', x: 20, y: 3 },
     ],
@@ -136,7 +136,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
         mouvements: [{ jeton: 'ald', type: 'tir', vers: { x: 40, y: 9.4 } }],
       },
     ],
-    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_6_0, { type: 'ballon', x: 31.5, y: 5.5 }],
+    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_6_0, { type: 'ballon', x: 30.58, y: 6.42 }],
   },
 
   {
@@ -189,7 +189,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
         ],
       },
     ],
-    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_6_0, { type: 'ballon', x: 30.5, y: 10 }],
+    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_6_0, { type: 'ballon', x: 29.58, y: 10.92 }],
   },
 
   {
@@ -232,7 +232,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
         ],
       },
     ],
-    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_6_0, { type: 'ballon', x: 31.5, y: 14.5 }],
+    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_6_0, { type: 'ballon', x: 30.58, y: 15.42 }],
   },
 
   {
@@ -266,7 +266,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'defenseur', etiquette: '4', x: 33.4, y: 11 },
       { type: 'defenseur', etiquette: '5', x: 33.9, y: 13 },
       { type: 'defenseur', etiquette: '6', x: 35.18, y: 15.4 },
-      { type: 'ballon', x: 30.5, y: 10 },
+      { type: 'ballon', x: 29.58, y: 10.92 },
     ],
   },
 
@@ -323,7 +323,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
         ],
       },
     ],
-    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_6_0, { type: 'ballon', x: 36.5, y: 18.3 }],
+    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_6_0, { type: 'ballon', x: 36.16, y: 17.04 }],
   },
 
   {
@@ -377,7 +377,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
         ],
       },
     ],
-    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_5_1, { type: 'ballon', x: 30.5, y: 10 }],
+    jetons: [GARDIEN_DROITE, ...ATTAQUE_PLACEE, ...DEFENSE_5_1, { type: 'ballon', x: 29.58, y: 10.92 }],
   },
 
   {
@@ -447,7 +447,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'attaquant', etiquette: 'AlG', ref: 'alg', x: 4, y: 18.3 },
       { type: 'attaquant', etiquette: 'AlD', ref: 'ald', x: 4, y: 1.7 },
       { type: 'defenseur', etiquette: 'D', ref: 'def', x: 8, y: 10 },
-      { type: 'ballon', x: 31, y: 10 },
+      { type: 'ballon', x: 30.08, y: 10.92 },
     ],
   },
 
@@ -480,7 +480,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'attaquant', etiquette: '3', x: 11, y: 10 },
       { type: 'defenseur', etiquette: 'A', x: 22, y: 12 },
       { type: 'defenseur', etiquette: 'B', x: 22, y: 8 },
-      { type: 'ballon', x: 16, y: 13 },
+      { type: 'ballon', x: 17.26, y: 13.34 },
     ],
   },
 
@@ -614,7 +614,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'defenseur', etiquette: '1', x: 14, y: 6 },
       { type: 'defenseur', etiquette: '2', x: 20, y: 15 },
       { type: 'defenseur', etiquette: '3', x: 26, y: 11 },
-      { type: 'ballon', x: 16, y: 13 },
+      { type: 'ballon', x: 17.26, y: 13.34 },
     ],
   },
 
@@ -718,7 +718,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'plot', x: 29, y: 10 },
       { type: 'plot', x: 31, y: 11.5 },
       { type: 'plot', x: 32.5, y: 9 },
-      { type: 'ballon', x: 26, y: 10 },
+      { type: 'ballon', x: 25.08, y: 10.92 },
     ],
   },
 
@@ -778,7 +778,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       GARDIEN_DROITE,
       ...ATTAQUE_PLACEE,
       ...DEFENSE_6_0,
-      { type: 'ballon', x: 36.5, y: 18.3 },
+      { type: 'ballon', x: 36.16, y: 17.04 },
     ],
   },
 
@@ -846,7 +846,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       GARDIEN_DROITE,
       ...ATTAQUE_DEUX_PIVOTS,
       ...DEFENSE_5_1,
-      { type: 'ballon', x: 30.5, y: 10 },
+      { type: 'ballon', x: 29.58, y: 10.92 },
     ],
   },
 
@@ -920,7 +920,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'defenseur', etiquette: '3', ref: 'd3', x: 33.4, y: 10 },
       { type: 'defenseur', etiquette: '4', ref: 'd4', x: 33.8, y: 12.6 },
       { type: 'defenseur', etiquette: '5', ref: 'd5', x: 35.18, y: 15.4 },
-      { type: 'ballon', x: 30.5, y: 10 },
+      { type: 'ballon', x: 29.58, y: 10.92 },
     ],
   },
 
@@ -957,7 +957,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'attaquant', etiquette: 'PIV', x: 33.8, y: 10 },
       { type: 'attaquant', etiquette: '2', x: 27, y: 16 },
       { type: 'attaquant', etiquette: '2', x: 27, y: 4 },
-      { type: 'ballon', x: 30.5, y: 10 },
+      { type: 'ballon', x: 29.58, y: 10.92 },
     ],
   },
 
@@ -1018,7 +1018,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       GARDIEN_DROITE,
       ...ATTAQUE_PLACEE,
       ...DEFENSE_3_2_1,
-      { type: 'ballon', x: 30.5, y: 10 },
+      { type: 'ballon', x: 31.53, y: 10.79 },
     ],
   },
 
@@ -1051,7 +1051,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       GARDIEN_DROITE,
       { type: 'attaquant', etiquette: 'A', x: 29, y: 10 },
       { type: 'defenseur', etiquette: 'D', x: 32.5, y: 10 },
-      { type: 'ballon', x: 29, y: 10 },
+      { type: 'ballon', x: 28.08, y: 10.92 },
       { type: 'plot', x: 29, y: 12 },
       { type: 'plot', x: 29, y: 8 },
       { type: 'plot', x: 34, y: 12 },
@@ -1117,7 +1117,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'defenseur', etiquette: '3', ref: 'd3', x: 33.4, y: 10 },
       { type: 'defenseur', etiquette: '4', ref: 'd4', x: 33.6, y: 12 },
       { type: 'defenseur', etiquette: '5', ref: 'd5', x: 34.33, y: 14 },
-      { type: 'ballon', x: 31.5, y: 14.5 },
+      { type: 'ballon', x: 30.58, y: 15.42 },
     ],
   },
 
@@ -1155,7 +1155,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'attaquant', etiquette: 'ArD', x: 6.02, y: 7 },
       { type: 'defenseur', etiquette: '1', x: 26, y: 12 },
       { type: 'defenseur', etiquette: '2', x: 26, y: 8 },
-      { type: 'ballon', x: 1.1, y: 10 },
+      { type: 'ballon', x: 2.4, y: 10 },
     ],
   },
 
@@ -1194,7 +1194,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'defenseur', etiquette: 'D', x: 22, y: 14 },
       { type: 'defenseur', etiquette: 'D', x: 22, y: 10 },
       { type: 'defenseur', etiquette: 'D', x: 22, y: 6 },
-      { type: 'ballon', x: 10, y: 12 },
+      { type: 'ballon', x: 11.13, y: 12.65 },
     ],
   },
 
@@ -1302,7 +1302,7 @@ export const SENIORS_MASCULINS: ModeleExercice[] = [
       { type: 'defenseur', etiquette: 'D', x: 33.4, y: 10.5 },
       { type: 'defenseur', etiquette: 'D', x: 33.8, y: 7 },
       { type: 'defenseur', etiquette: 'D', x: 34.88, y: 15 },
-      { type: 'ballon', x: 29.5, y: 10 },
+      { type: 'ballon', x: 28.58, y: 10.92 },
     ],
   },
 ]

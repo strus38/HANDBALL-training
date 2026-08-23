@@ -12,6 +12,7 @@
 import {
   CATALOGUE,
   REFS_COMBINAISONS,
+  DISTANCE_PORTEUR,
   construireExercice,
   distanceALaSurface,
   resoudreFleches,
@@ -220,6 +221,39 @@ for (const modele of CATALOGUE) {
 console.log(`        ${tirs} tirs decrits dans le catalogue`)
 verifier('des tirs sont bien decrits', tirs > 0)
 verifier('aucun tir ne sort du cadre', horsCadre.length === 0, '(' + horsCadre.join(', ') + ')')
+
+console.log('')
+console.log('7. Le ballon ne cache pas son porteur')
+// Un ballon pose EXACTEMENT sur son porteur le masque entierement : on voyait
+// une passe partir d'un joueur absent du schema. C'etait le cas de 28 fiches.
+// Le moteur reconnait le porteur jusqu'a 1,9 m : un decalage d'un metre rend
+// les deux visibles sans rien changer a l'enchainement.
+const JOUEURS = ['attaquant', 'defenseur', 'gardien']
+const MASQUE = 0.6
+const caches = []
+const orphelins = []
+for (const modele of CATALOGUE) {
+  for (const ballon of modele.jetons.filter((j) => j.type === 'ballon')) {
+    const joueurs = modele.jetons
+      .filter((j) => j !== ballon && JOUEURS.includes(j.type))
+      .map((j) => ({ j, d: Math.hypot(j.x - ballon.x, j.y - ballon.y) }))
+      .sort((a, b) => a.d - b.d)
+    if (joueurs.length === 0) continue
+    if (joueurs[0].d < MASQUE) caches.push(`${modele.ref} (${joueurs[0].j.etiquette})`)
+    // Un ballon pose loin de tout le monde est un ballon au sol : c'est licite,
+    // on ne le signale pas. Ce qu'on verifie, c'est qu'un porteur DESIGNE le
+    // reste vraiment, sans ambiguite avec son voisin.
+    if (joueurs[0].d <= DISTANCE_PORTEUR && joueurs[1] && joueurs[1].d - joueurs[0].d < 0.25) {
+      orphelins.push(`${modele.ref} (${joueurs[0].j.etiquette} / ${joueurs[1].j.etiquette})`)
+    }
+  }
+}
+verifier('aucun ballon ne masque son porteur', caches.length === 0, '(' + caches.join(', ') + ')')
+verifier(
+  'aucun ballon a mi-chemin entre deux joueurs',
+  orphelins.length === 0,
+  '(' + orphelins.join(', ') + ')',
+)
 console.log('')
 console.log('=== ' + ok + ' reussis, ' + ko + ' echoues ===')
 process.exit(ko === 0 ? 0 : 1)

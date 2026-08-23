@@ -40,7 +40,7 @@ export const GARDIENS: ModeleExercice[] = [
     jetons: [
       GARDIEN_DROITE,
       { type: 'gardien', etiquette: 'GB2', x: 33, y: 10 },
-      { type: 'ballon', x: 33, y: 10 },
+      { type: 'ballon', x: 32.08, y: 10.92 },
     ],
   },
 
@@ -141,7 +141,7 @@ export const GARDIENS: ModeleExercice[] = [
       { type: 'attaquant', etiquette: 'DC', x: 30.5, y: 10 },
       { type: 'attaquant', etiquette: 'ArD', x: 31, y: 5.5 },
       { type: 'defenseur', etiquette: 'D', x: 33.4, y: 10 },
-      { type: 'ballon', x: 30.5, y: 10 },
+      { type: 'ballon', x: 29.58, y: 10.92 },
     ],
   },
 
@@ -174,7 +174,7 @@ export const GARDIENS: ModeleExercice[] = [
       { type: 'attaquant', etiquette: 'AlG', x: 36.5, y: 18.3 },
       { type: 'attaquant', etiquette: 'AlD', x: 36.5, y: 1.7 },
       { type: 'attaquant', etiquette: '1', x: 30.5, y: 10 },
-      { type: 'ballon', x: 36.5, y: 18.3 },
+      { type: 'ballon', x: 36.16, y: 17.04 },
       { type: 'plot', x: 34, y: 16 },
       { type: 'plot', x: 34, y: 4 },
     ],
@@ -207,7 +207,7 @@ export const GARDIENS: ModeleExercice[] = [
     jetons: [
       GARDIEN_DROITE,
       { type: 'attaquant', etiquette: 'T', x: 33, y: 10 },
-      { type: 'ballon', x: 33, y: 10 },
+      { type: 'ballon', x: 32.08, y: 10.92 },
       { type: 'attaquant', etiquette: '2', x: 30, y: 12 },
       { type: 'attaquant', etiquette: '3', x: 30, y: 8 },
     ],
@@ -314,7 +314,7 @@ export const GARDIENS: ModeleExercice[] = [
       { type: 'attaquant', etiquette: 'DC', x: 30.5, y: 10 },
       { type: 'attaquant', etiquette: 'ArD', x: 31.5, y: 5.5 },
       { type: 'entraineur', etiquette: 'E', x: 28, y: 10 },
-      { type: 'ballon', x: 30.5, y: 10 },
+      { type: 'ballon', x: 29.58, y: 10.92 },
     ],
   },
 
@@ -347,7 +347,7 @@ export const GARDIENS: ModeleExercice[] = [
       GARDIEN_DROITE,
       { type: 'attaquant', etiquette: 'A', x: 20, y: 10 },
       { type: 'attaquant', etiquette: 'S', x: 18, y: 15 },
-      { type: 'ballon', x: 20, y: 10 },
+      { type: 'ballon', x: 21.26, y: 10.34 },
       { type: 'plot', x: 28, y: 16 },
       { type: 'plot', x: 28, y: 4 },
     ],
@@ -383,7 +383,7 @@ export const GARDIENS: ModeleExercice[] = [
     jetons: [
       { type: 'gardien', etiquette: 'GB1', x: 31, y: 13 },
       { type: 'gardien', etiquette: 'GB2', x: 33, y: 13 },
-      { type: 'ballon', x: 33, y: 13 },
+      { type: 'ballon', x: 32.5, y: 11.8 },
     ],
   },
 
