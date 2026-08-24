@@ -11,11 +11,14 @@ import { NoteEtoiles } from './NoteEtoiles'
 import { dateEnToutesLettres, resumerSeance, situerDansLeTemps } from '../domain/resume'
 import { dateDuJour } from '../domain/fabrique'
 import { LIBELLES_CATEGORIE, type Seance } from '../domain/types'
+import { equipeInhabituelle, libelleEquipe, type MonEquipe } from '../domain/equipe'
 
 type Tri = 'date-desc' | 'date-asc' | 'titre'
 
 interface Props {
   seances: Seance[]
+  /** L'equipe de l'entraineur : les cartes ne signalent que ce qui en sort. */
+  monEquipe: MonEquipe
   onOuvrir: (id: string) => void
   onNouvelle: () => void
   onImporter: () => void
@@ -28,6 +31,7 @@ interface Props {
 
 export function TableauSeances({
   seances,
+  monEquipe,
   onOuvrir,
   onNouvelle,
   onImporter,
@@ -146,6 +150,7 @@ export function TableauSeances({
             <CarteSeance
               key={seance.id}
               seance={seance}
+              monEquipe={monEquipe}
               aujourdHui={aujourdHui}
               onOuvrir={() => onOuvrir(seance.id)}
               onDupliquer={() => onDupliquer(seance)}
@@ -162,6 +167,7 @@ export function TableauSeances({
 
 function CarteSeance({
   seance,
+  monEquipe,
   aujourdHui,
   onOuvrir,
   onDupliquer,
@@ -170,6 +176,7 @@ function CarteSeance({
   onSupprimer,
 }: {
   seance: Seance
+  monEquipe: MonEquipe
   aujourdHui: string
   onOuvrir: () => void
   onDupliquer: () => void
@@ -206,10 +213,14 @@ function CarteSeance({
           )}
         </div>
 
-        {(seance.equipe || seance.categorieAge) && (
-          <p className="equipe-carte">
-            {[seance.equipe, seance.categorieAge].filter(Boolean).join(' · ')}
-          </p>
+        {/*
+          L'equipe ne s'affiche que si la seance en porte une AUTRE que celle de
+          l'entraineur. Repetee a l'identique sur chaque carte, elle n'apprenait
+          rien et occupait une ligne ; signalee seulement quand elle sort de
+          l'ordinaire, elle redevient une information.
+        */}
+        {equipeInhabituelle(seance, monEquipe) && (
+          <p className="equipe-carte">{libelleEquipe(seance)}</p>
         )}
 
         <ul className="chiffres-carte">

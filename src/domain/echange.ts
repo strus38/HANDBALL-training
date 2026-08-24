@@ -11,6 +11,7 @@ import { clonerExercice, nouvelExercice, nouvelId, nouvelleSeance } from './fabr
 import { migrerSchema } from './mouvement'
 import { lireFavoris, retracerFavoris } from './favoris'
 import { lireMasquees } from './masquees'
+import { AUCUNE_EQUIPE, lireMonEquipe, type MonEquipe } from './equipe'
 import { versionComplete } from './version'
 import {
   nouvelleEvaluation,
@@ -37,12 +38,12 @@ export function exporterSeance(seance: Seance): string {
 }
 
 /**
- * Sauvegarde complete : les seances, la bibliotheque personnelle, et les
- * favoris.
+ * Sauvegarde complete : les seances, la bibliotheque personnelle, les favoris,
+ * les fiches masquees et l'equipe de l'entraineur.
  *
- * Les favoris sont une preference de l'entraineur, pas une donnee de seance :
- * on pourrait juger qu'ils n'ont rien a faire dans ce fichier. C'est le
- * contraire. « Sauvegarder tout » est le seul filet contre un nettoyage du
+ * Ces quatre dernieres sont des preferences de l'entraineur, pas des donnees de
+ * seance : on pourrait juger qu'elles n'ont rien a faire dans ce fichier. C'est
+ * le contraire. « Sauvegarder tout » est le seul filet contre un nettoyage du
  * navigateur, qui efface aussi les preferences. Les omettre reviendrait a
  * promettre de tout sauver en laissant tomber une partie.
  */
@@ -51,13 +52,14 @@ export function exporterSauvegarde(
   modeles: Exercice[],
   favoris: string[] = [],
   masquees: string[] = [],
+  monEquipe: MonEquipe = AUCUNE_EQUIPE,
 ): string {
   const fichier: FichierExport = {
     format: 'handball-training',
     version: SCHEMA_VERSION,
     exporteLe: new Date().toISOString(),
     application: versionComplete(),
-    contenu: { type: 'sauvegarde', seances, modeles, favoris, masquees },
+    contenu: { type: 'sauvegarde', seances, modeles, favoris, masquees, monEquipe },
   }
   return JSON.stringify(fichier, null, 2)
 }
@@ -113,6 +115,7 @@ export type ContenuImporte =
       modeles: Exercice[]
       favoris: string[]
       masquees: string[]
+      monEquipe: MonEquipe
     }
 
 export function importerFichier(contenuTexte: string): ContenuImporte {
@@ -163,6 +166,9 @@ export function importerFichier(contenuTexte: string): ContenuImporte {
       // Les fiches masquees ne designent que des fiches FOURNIES, dont la
       // reference est stable : rien a retracer, contrairement aux favoris.
       masquees: lireMasquees(contenu.masquees),
+      // Absente des sauvegardes ecrites avant que la preference n'existe : on
+      // retombe alors sur « aucune equipe », et l'entraineur la saisit.
+      monEquipe: lireMonEquipe(contenu.monEquipe),
     }
   }
 

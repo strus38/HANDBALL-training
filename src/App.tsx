@@ -13,6 +13,8 @@ import { dupliquerSeance, type OptionsDuplication } from './domain/resume'
 import { Bibliotheque } from './bibliotheque/Bibliotheque'
 import { useAtelier, type EtatSauvegarde } from './ui/useAtelier'
 import { ModeTerrain } from './ui/ModeTerrain'
+import { ReglageEquipe } from './ui/ReglageEquipe'
+import { equipeRenseignee, libelleEquipe } from './domain/equipe'
 import { fichiersNavigateur, nomDeFichierSur } from './platform/fichiers'
 import {
   EXTENSION,
@@ -42,6 +44,7 @@ export function App() {
   const [vue, setVue] = useState<'accueil' | 'bilan' | 'seance'>('accueil')
   const surAccueil = vue === 'accueil'
   const [aDupliquer, setADupliquer] = useState<Seance | undefined>()
+  const [reglageEquipe, setReglageEquipe] = useState(false)
   // La seance a imprimer n'est pas forcement celle qui est ouverte : depuis
   // l'accueil, on imprime une seance sans y entrer.
   const [seanceImprimee, setSeanceImprimee] = useState<Seance | undefined>()
@@ -124,7 +127,13 @@ export function App() {
 
       if (contenu.type === 'sauvegarde') {
         // Une restauration AJOUTE : elle n'ecrase jamais le travail en place.
-        await atelier.restaurer(contenu.seances, contenu.modeles, contenu.favoris, contenu.masquees)
+        await atelier.restaurer(
+          contenu.seances,
+          contenu.modeles,
+          contenu.favoris,
+          contenu.masquees,
+          contenu.monEquipe,
+        )
         setVue('accueil')
         setMessageImport(
           `Sauvegarde restaurée : ${contenu.seances.length} séance` +
@@ -134,7 +143,14 @@ export function App() {
         return
       }
 
-      atelier.ajouterSeance(contenu.seance)
+      // Un fichier ne contenant qu'un exercice est enveloppe dans une seance
+      // NEUVE, creee ici : elle prend donc l'equipe de l'entraineur. Une seance
+      // importee, elle, garde celle de son auteur — c'est son histoire.
+      atelier.ajouterSeance(
+        contenu.type === 'exercice'
+          ? { ...contenu.seance, ...atelier.monEquipe }
+          : contenu.seance,
+      )
       setVue('seance')
       setMessageImport(
         contenu.type === 'seance'
@@ -162,7 +178,13 @@ export function App() {
     const jour = new Date().toISOString().slice(0, 10)
     fichiersNavigateur.telecharger(
       `hbpsm-sauvegarde-${jour}${EXTENSION}`,
-      exporterSauvegarde(atelier.seances, atelier.mesModeles, atelier.favoris, atelier.masquees),
+      exporterSauvegarde(
+        atelier.seances,
+        atelier.mesModeles,
+        atelier.favoris,
+        atelier.masquees,
+        atelier.monEquipe,
+      ),
     )
     setMessageImport(
       `Sauvegarde de ${atelier.seances.length} séance${atelier.seances.length > 1 ? 's' : ''} ` +
@@ -207,6 +229,22 @@ export function App() {
         </div>
         <div className="pousse" />
         <EtiquetteVersion />
+        {/*
+          L'equipe s'affiche la, dans l'en-tete, et nulle part ailleurs en
+          permanence : c'est le propre d'une donnee qui ne change pas d'une
+          seance a l'autre. Un clic la corrige.
+        */}
+        <button
+          className={`bouton discret bouton-equipe${equipeRenseignee(atelier.monEquipe) ? '' : ' a-renseigner'}`}
+          onClick={() => setReglageEquipe(true)}
+          title={
+            equipeRenseignee(atelier.monEquipe)
+              ? "Changer l'équipe reprise sur les nouvelles séances"
+              : 'Indiquer votre équipe une fois pour toutes'
+          }
+        >
+          {equipeRenseignee(atelier.monEquipe) ? libelleEquipe(atelier.monEquipe) : 'Mon équipe'}
+        </button>
         <button
           className="bouton discret"
           onClick={() => {
@@ -290,6 +328,7 @@ export function App() {
         ) : surAccueil || !seance ? (
           <TableauSeances
             seances={atelier.seances}
+            monEquipe={atelier.monEquipe}
             onOuvrir={(id) => {
               atelier.setSeanceCouranteId(id)
               setExerciceOuvertId(undefined)
@@ -333,6 +372,7 @@ export function App() {
         ) : (
           <DetailSeance
             seance={seance}
+            monEquipe={atelier.monEquipe}
             onModifier={modifierSeance}
             onSupprimerSeance={() => void demanderSuppression(seance)}
             onExporterSeance={() => exporterUneSeance(seance)}
@@ -376,6 +416,17 @@ export function App() {
           seance={seance}
           onModifier={modifierSeance}
           onFermer={() => setModeTerrain(false)}
+        />
+      )}
+
+      {reglageEquipe && (
+        <ReglageEquipe
+          monEquipe={atelier.monEquipe}
+          onAnnuler={() => setReglageEquipe(false)}
+          onValider={(mienne) => {
+            void atelier.definirMonEquipe(mienne)
+            setReglageEquipe(false)
+          }}
         />
       )}
 

@@ -14,6 +14,7 @@ import { normaliserExercice, normaliserSeance } from '../domain/echange'
 import type { Exercice, Seance } from '../domain/types'
 import { basculerFavori, fusionnerFavoris } from '../domain/favoris'
 import { basculerMasquee, fusionnerMasquees } from '../domain/masquees'
+import { AUCUNE_EQUIPE, equipeRenseignee, type MonEquipe } from '../domain/equipe'
 
 const DELAI_SAUVEGARDE_MS = 600
 
@@ -27,6 +28,7 @@ export function useAtelier() {
   const [mesModeles, setMesModeles] = useState<Exercice[]>([])
   const [favoris, setFavoris] = useState<string[]>([])
   const [masquees, setMasquees] = useState<string[]>([])
+  const [monEquipe, setMonEquipe] = useState<MonEquipe>(AUCUNE_EQUIPE)
   const [etatSauvegarde, setEtatSauvegarde] = useState<EtatSauvegarde>('inactif')
 
   const minuteries = useRef(new Map<string, ReturnType<typeof setTimeout>>())
@@ -35,6 +37,10 @@ export function useAtelier() {
   // le temps d'attendre un rendu pour retrouver la derniere version.
   const dernieresSeances = useRef<Seance[]>([])
   dernieresSeances.current = seances
+  // Meme raison : creer une seance doit lire l'equipe courante sans attendre
+  // un rendu, y compris dans la foulee d'un changement d'equipe.
+  const equipeCourante = useRef<MonEquipe>(AUCUNE_EQUIPE)
+  equipeCourante.current = monEquipe
 
   // Chargement initial : choix du moyen de stockage puis lecture des seances.
   useEffect(() => {
@@ -53,11 +59,13 @@ export function useAtelier() {
           const modeles = (await choix.depot.listerModeles()).map(normaliserExercice)
           const etoiles = await choix.depot.lireFavoris()
           const retirees = await choix.depot.lireMasquees()
+          const mienne = await choix.depot.lireMonEquipe()
           if (annule) return
           setSeances(existantes)
           setMesModeles(modeles)
           setFavoris(etoiles)
           setMasquees(retirees)
+          setMonEquipe(mienne)
           setSeanceCouranteId(existantes[0]?.id)
         } catch {
           if (!annule) {
@@ -139,12 +147,19 @@ export function useAtelier() {
     [planifierSauvegarde],
   )
 
+  /**
+   * Ajoute une seance — celle qu'on lui donne, ou une neuve.
+   *
+   * Une seance neuve nait avec l'equipe de l'entraineur deja inscrite : c'est
+   * tout l'interet de la preference, ne plus jamais reposer la question.
+   */
   const ajouterSeance = useCallback(
-    (seance: Seance = nouvelleSeance()) => {
-      setSeances((precedentes) => [seance, ...precedentes])
-      setSeanceCouranteId(seance.id)
-      planifierSauvegarde(seance)
-      return seance
+    (seance?: Seance) => {
+      const ajoutee = seance ?? nouvelleSeance('Nouvelle séance', equipeCourante.current)
+      setSeances((precedentes) => [ajoutee, ...precedentes])
+      setSeanceCouranteId(ajoutee.id)
+      planifierSauvegarde(ajoutee)
+      return ajoutee
     },
     [planifierSauvegarde],
   )
@@ -238,6 +253,25 @@ export function useAtelier() {
     }
   }, [])
   /**
+   * Enregistre l'equipe de l'entraineur.
+   *
+   * Ecriture immediate, sans la temporisation des seances : c'est un geste
+   * isole, fait une fois par saison, et il doit survivre a une fermeture dans
+   * la foulee. Les seances DEJA creees ne sont pas retouchees — elles gardent
+   * l'equipe avec laquelle elles ont ete menees.
+   */
+  const definirMonEquipe = useCallback(async (mienne: MonEquipe) => {
+    setMonEquipe(mienne)
+    equipeCourante.current = mienne
+    try {
+      await depot.current?.enregistrerMonEquipe(mienne)
+      setEtatSauvegarde('enregistre')
+    } catch {
+      setEtatSauvegarde('erreur')
+    }
+  }, [])
+
+  /**
    * Restaure une sauvegarde complete.
    *
    * Le contenu est AJOUTE a l'existant : les identifiants ont ete renouveles a
@@ -251,6 +285,7 @@ export function useAtelier() {
       modeles: Exercice[],
       etoiles: string[] = [],
       retirees: string[] = [],
+      mienne: MonEquipe = AUCUNE_EQUIPE,
     ) => {
       setSeances((precedentes) => [...nouvelles, ...precedentes])
       setMesModeles((precedents) => [...modeles, ...precedents])
@@ -269,11 +304,21 @@ export function useAtelier() {
         masqueesFusionnees = fusionnerMasquees(precedentes, retirees)
         return masqueesFusionnees
       })
+      // L'equipe ne se fusionne pas : elle se prend seulement si cette machine
+      // n'en a pas. Restaurer AJOUTE, ici comme ailleurs — et une sauvegarde
+      // rapportee d'un ancien poste ne doit pas renommer l'equipe en cours.
+      let equipeRetenue = equipeCourante.current
+      if (!equipeRenseignee(equipeRetenue) && equipeRenseignee(mienne)) {
+        equipeRetenue = mienne
+        equipeCourante.current = mienne
+        setMonEquipe(mienne)
+      }
       try {
         for (const seance of nouvelles) await depot.current?.enregistrerSeance(seance)
         for (const modele of modeles) await depot.current?.enregistrerModele(modele)
         await depot.current?.enregistrerFavoris(fusionnes)
         await depot.current?.enregistrerMasquees(masqueesFusionnees)
+        await depot.current?.enregistrerMonEquipe(equipeRetenue)
         setEtatSauvegarde('enregistre')
       } catch {
         setEtatSauvegarde('erreur')
@@ -300,6 +345,8 @@ export function useAtelier() {
     basculerFavori: basculerFavoriDe,
     masquees,
     basculerMasquee: basculerMasqueeDe,
+    monEquipe,
+    definirMonEquipe,
     restaurer,
     enregistrerModele,
     supprimerModele,

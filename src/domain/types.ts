@@ -419,5 +419,10 @@ export interface FichierExport {
         modeles: Exercice[]
         favoris: string[]
         masquees?: string[]
+        /**
+         * L'equipe de l'entraineur. Absente des fichiers ecrits avant que la
+         * preference n'existe : la restauration retombe alors sur « aucune ».
+         */
+        monEquipe?: { equipe: string; categorieAge: string }
       }
 }

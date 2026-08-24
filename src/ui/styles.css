@@ -145,6 +145,29 @@ textarea {
   min-width: 36px;
 }
 
+/* L'equipe de l'entraineur, dans l'entete. Elle se lit comme une etiquette,
+   pas comme une action : le cadre n'apparait qu'au survol. */
+.bouton-equipe {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* Tant qu'elle n'est pas renseignee, elle appelle le clic : le jaune du club
+   sur le bleu de l'entete, le seul contraste que l'oeil y trouve. */
+.entete .bouton.discret.bouton-equipe.a-renseigner {
+  color: var(--bleu-900);
+  background: var(--jaune);
+  font-weight: 600;
+}
+
+.entete .bouton.discret.bouton-equipe.a-renseigner:hover:not(:disabled) {
+  background: var(--jaune-fonce);
+  color: var(--bleu-900);
+}
+
 .corps {
   display: flex;
   flex: 1;
@@ -533,7 +556,54 @@ textarea:focus {
 
 .grille-seance {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+/* L'equipe repliee : une ligne de lecture, et un lien pour la depiler. */
+.equipe-seance {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--bleu-700);
+  font-weight: 500;
+}
+
+.equipe-seance span:empty::before {
+  content: '—';
+}
+
+.lien-discret {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 400;
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.lien-discret:hover {
+  color: var(--bleu-700);
+}
+
+.grille-equipe-seance {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.grille-equipe {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
@@ -1825,7 +1895,9 @@ textarea:focus {
     padding: 16px 14px 50px;
   }
 
-  .grille-seance {
+  .grille-seance,
+  .grille-equipe-seance,
+  .grille-equipe {
     grid-template-columns: 1fr;
   }
 

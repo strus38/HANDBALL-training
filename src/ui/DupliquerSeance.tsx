@@ -4,6 +4,11 @@
  * Dupliquer sert surtout a rejouer une seance qui a bien marche, a une autre
  * date et souvent avec un autre effectif : ces deux champs sont donc au premier
  * plan, deja pre-remplis avec des valeurs plausibles.
+ *
+ * L'equipe et la categorie ne sont pas redemandees : la copie reprend celles de
+ * l'originale, qui sont presque toujours celles de l'entraineur. Le cas rare —
+ * rejouer la seance avec un autre groupe — se regle dans la seance elle-meme,
+ * ou les deux champs restent accessibles.
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -31,8 +36,6 @@ function dateProposee(iso: string): string {
 export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
   const [titre, setTitre] = useState(seance.titre)
   const [date, setDate] = useState(() => dateProposee(seance.date))
-  const [equipe, setEquipe] = useState(seance.equipe)
-  const [categorieAge, setCategorieAge] = useState(seance.categorieAge)
   const [effectifJoueurs, setEffectifJoueurs] = useState(seance.effectifJoueurs)
   const [effectifGardiens, setEffectifGardiens] = useState(seance.effectifGardiens)
   const [reinitialiserEvaluations, setReinitialiser] = useState(false)
@@ -88,8 +91,6 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
           onValider({
             titre: titre.trim() || seance.titre,
             date,
-            equipe,
-            categorieAge,
             effectifJoueurs,
             effectifGardiens,
             reinitialiserEvaluations,
@@ -116,24 +117,6 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
           <label className="champ">
             <span>Date</span>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-          </label>
-          <label className="champ">
-            <span>Équipe</span>
-            <input
-              type="text"
-              value={equipe}
-              placeholder="Seniors garçons"
-              onChange={(e) => setEquipe(e.target.value)}
-            />
-          </label>
-          <label className="champ">
-            <span>Catégorie</span>
-            <input
-              type="text"
-              value={categorieAge}
-              placeholder="+18 ans"
-              onChange={(e) => setCategorieAge(e.target.value)}
-            />
           </label>
           <label className="champ">
             <span>Joueurs présents</span>

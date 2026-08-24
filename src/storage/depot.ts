@@ -10,6 +10,7 @@
 import type { Exercice, Seance } from '../domain/types'
 import { lireFavoris } from '../domain/favoris'
 import { lireMasquees } from '../domain/masquees'
+import { AUCUNE_EQUIPE, lireMonEquipe, type MonEquipe } from '../domain/equipe'
 
 export interface Depot {
   /** Toutes les seances, de la plus recemment modifiee a la plus ancienne. */
@@ -40,6 +41,15 @@ export interface Depot {
    */
   lireMasquees(): Promise<string[]>
   enregistrerMasquees(masquees: string[]): Promise<void>
+  /**
+   * L equipe que l entraineur suit cette saison.
+   *
+   * Troisieme preference rangee ici, pour la meme raison que les deux autres :
+   * elle appartient a l entraineur, pas a une seance, et n a donc rien a faire
+   * repetee dans chacune d elles.
+   */
+  lireMonEquipe(): Promise<MonEquipe>
+  enregistrerMonEquipe(equipe: MonEquipe): Promise<void>
   /** Verifie que le stockage est reellement utilisable (mode file://, navigation privee...). */
   verifierDisponibilite(): Promise<boolean>
 }
@@ -53,6 +63,7 @@ const MAGASIN_MODELES = 'modeles'
 const MAGASIN_PREFERENCES = 'preferences'
 const CLE_FAVORIS = 'favoris'
 const CLE_MASQUEES = 'fiches-masquees'
+const CLE_EQUIPE = 'mon-equipe'
 /**
  * Au-dela, on considere qu'IndexedDB ne repondra pas et on passe au depot
  * suivant. Mieux vaut une sauvegarde en localStorage qu'une application qui
@@ -174,6 +185,27 @@ export const depotIndexedDB: Depot = {
   async enregistrerMasquees(masquees) {
     await transaction(MAGASIN_PREFERENCES, 'readwrite', (m) =>
       m.put({ cle: CLE_MASQUEES, valeur: masquees }),
+    )
+  },
+
+  async lireMonEquipe() {
+    // Meme tolerance que les favoris : une lecture qui echoue ne doit jamais
+    // empecher l'application de demarrer. Sans equipe vaut mieux que rien.
+    try {
+      const enregistrement = await transaction<{ cle: string; valeur: unknown } | undefined>(
+        MAGASIN_PREFERENCES,
+        'readonly',
+        (m) => m.get(CLE_EQUIPE),
+      )
+      return lireMonEquipe(enregistrement?.valeur)
+    } catch {
+      return AUCUNE_EQUIPE
+    }
+  },
+
+  async enregistrerMonEquipe(equipe) {
+    await transaction(MAGASIN_PREFERENCES, 'readwrite', (m) =>
+      m.put({ cle: CLE_EQUIPE, valeur: equipe }),
     )
   },
 

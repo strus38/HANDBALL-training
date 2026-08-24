@@ -1,5 +1,6 @@
 /** Creation des objets du modele avec leurs valeurs par defaut. */
 
+import { AUCUNE_EQUIPE, type MonEquipe } from './equipe'
 import { nouvelleEvaluation, type Etape, type Exercice, type Seance, type Schema } from './types'
 
 /** Identifiant unique, sans dependance externe et sans acces reseau. */
@@ -55,14 +56,21 @@ export function nouvelExercice(titre = 'Nouvel exercice'): Exercice {
   }
 }
 
-export function nouvelleSeance(titre = 'Nouvelle séance'): Seance {
+/**
+ * Nouvelle seance, pre-remplie avec l'equipe de l'entraineur.
+ *
+ * L'equipe est une preference, passee ici plutot que lue depuis le stockage :
+ * la fabrique reste pure, et les tests n'ont pas besoin d'un depot pour
+ * fabriquer une seance.
+ */
+export function nouvelleSeance(titre = 'Nouvelle séance', mienne: MonEquipe = AUCUNE_EQUIPE): Seance {
   const date = maintenant()
   return {
     id: nouvelId(),
     titre,
     date: dateDuJour(),
-    equipe: '',
-    categorieAge: '',
+    equipe: mienne.equipe,
+    categorieAge: mienne.categorieAge,
     objectifSeance: '',
     effectifJoueurs: 0,
     effectifGardiens: 0,

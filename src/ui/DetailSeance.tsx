@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { clonerExercice, nouvelExercice } from '../domain/fabrique'
+import { equipeInhabituelle, equipeRenseignee, libelleEquipe, type MonEquipe } from '../domain/equipe'
 import {
   dureeTotale,
   LIBELLES_CATEGORIE,
@@ -13,6 +15,8 @@ import { ajouterFragment } from '../domain/dictee'
 
 interface Props {
   seance: Seance
+  /** L'equipe de l'entraineur, pour signaler quand la seance en porte une autre. */
+  monEquipe: MonEquipe
   onModifier: (transformation: (seance: Seance) => Seance) => void
   onSupprimerSeance: () => void
   onExporterSeance: () => void
@@ -27,6 +31,7 @@ interface Props {
 
 export function DetailSeance({
   seance,
+  monEquipe,
   onModifier,
   onSupprimerSeance,
   onExporterSeance,
@@ -39,6 +44,18 @@ export function DetailSeance({
   onModeTerrain,
 }: Props) {
   const confirmer = useConfirmation()
+  /**
+   * Les champs d'equipe sont replies par defaut.
+   *
+   * Un entraineur suit une equipe : la question est reglee une fois pour toutes
+   * dans l'en-tete. Le cas contraire existe — un tournoi, un collegue remplace
+   * — mais il est rare, et le rare se paie d'un clic, pas d'un champ permanent.
+   * Ils s'ouvrent d'emblee si la seance porte une equipe inattendue : c'est
+   * alors qu'il y a quelque chose a voir.
+   */
+  const [equipeDepliee, setEquipeDepliee] = useState(() =>
+    equipeInhabituelle(seance, monEquipe),
+  )
 
   const majExercices = (transformation: (exercices: Exercice[]) => Exercice[]) =>
     onModifier((s) => ({ ...s, exercices: transformation(s.exercices) }))
@@ -86,25 +103,53 @@ export function DetailSeance({
               onChange={(e) => onModifier((s) => ({ ...s, date: e.target.value }))}
             />
           </label>
-          <label className="champ">
-            <span>Équipe</span>
-            <input
-              type="text"
-              value={seance.equipe}
-              placeholder="Seniors garçons"
-              onChange={(e) => onModifier((s) => ({ ...s, equipe: e.target.value }))}
-            />
-          </label>
-          <label className="champ">
-            <span>Catégorie</span>
-            <input
-              type="text"
-              value={seance.categorieAge}
-              placeholder="+18 ans"
-              onChange={(e) => onModifier((s) => ({ ...s, categorieAge: e.target.value }))}
-            />
-          </label>
         </div>
+
+        {equipeDepliee ? (
+          <div className="grille-equipe-seance">
+            <label className="champ">
+              <span>Équipe</span>
+              <input
+                type="text"
+                value={seance.equipe}
+                placeholder="Seniors garçons"
+                onChange={(e) => onModifier((s) => ({ ...s, equipe: e.target.value }))}
+              />
+            </label>
+            <label className="champ">
+              <span>Catégorie</span>
+              <input
+                type="text"
+                value={seance.categorieAge}
+                placeholder="+18 ans"
+                onChange={(e) => onModifier((s) => ({ ...s, categorieAge: e.target.value }))}
+              />
+            </label>
+            {equipeInhabituelle(seance, monEquipe) && equipeRenseignee(monEquipe) && (
+              <button
+                type="button"
+                className="bouton discret"
+                onClick={() =>
+                  onModifier((s) => ({
+                    ...s,
+                    equipe: monEquipe.equipe,
+                    categorieAge: monEquipe.categorieAge,
+                  }))
+                }
+                title="Reprendre l'équipe indiquée dans l'en-tête"
+              >
+                Reprendre {libelleEquipe(monEquipe)}
+              </button>
+            )}
+          </div>
+        ) : (
+          <p className="equipe-seance">
+            <span>{libelleEquipe(seance) || 'Aucune équipe indiquée'}</span>
+            <button type="button" className="lien-discret" onClick={() => setEquipeDepliee(true)}>
+              Autre équipe pour cette séance
+            </button>
+          </p>
+        )}
         <div className="grille-effectif">
           <label className="champ">
             <span>Joueurs de champ présents</span>

@@ -90,6 +90,11 @@ Selon le navigateur et la manière d'ouvrir le fichier, le stockage utilisé est
 IndexedDB, ou à défaut localStorage. Si aucun des deux n'est autorisé, un
 bandeau jaune prévient que le travail sera perdu à la fermeture.
 
+« Sauvegarder tout » emporte les séances, votre bibliothèque personnelle, vos
+favoris, les fiches fournies que vous avez masquées et votre équipe : tout ce
+qu'un nettoyage du navigateur effacerait. Restaurer **ajoute** ce contenu sans
+rien écraser — et ne remplace votre équipe que si cette machine n'en a pas.
+
 **Dans tous les cas, la sauvegarde de référence reste le fichier exporté.**
 Le stockage du navigateur est lié à la machine et au navigateur utilisés : il
 n'est pas transportable et peut être effacé par un nettoyage du navigateur.
@@ -123,8 +128,9 @@ retrouver « la séance où on avait travaillé le croisé » fonctionne.
 ### Dupliquer une séance
 
 Le bouton **Dupliquer** de chaque carte ouvre un formulaire pré-rempli : le
-titre, la date proposée une semaine plus tard, l'équipe, la catégorie et
-l'effectif. C'est la manière normale de rejouer une séance qui a bien marché.
+titre, la date proposée une semaine plus tard et l'effectif. C'est la manière
+normale de rejouer une séance qui a bien marché. L'équipe n'y est pas
+redemandée : la copie reprend celle de l'originale.
 
 La copie est **totalement indépendante** : la modifier ne touche jamais
 l'originale, qui garde la version avec laquelle elle a été jouée.
@@ -381,7 +387,33 @@ trouvent ainsi au plus près du bouton principal, là où la main revient.
 auparavant coincee entre « Exporter » et « Bibliothèque » : la seule action
 irréversible de la rangee se trouvait à un pixel des plus frequentes.
 
+## Mon équipe
+
+Un entraîneur suit **une** équipe. La question n'est donc posée qu'**une fois** :
+le bouton de l'en-tête, à droite du numéro de version, ouvre « Mon équipe » et
+demande le nom de l'équipe et la catégorie d'âge. Tant qu'elle n'est pas
+renseignée, ce bouton est jaune.
+
+Ensuite, chaque nouvelle séance naît avec cette équipe déjà inscrite, et chaque
+feuille imprimée la porte dans son en-tête. Elle n'est **jamais redemandée** —
+ni à la création d'une séance, ni à la duplication.
+
+Les séances déjà écrites ne sont pas retouchées : elles gardent l'équipe avec
+laquelle elles ont été menées. Changer d'équipe en janvier ne réécrit pas les
+séances de novembre.
+
+Le cas rare — un tournoi, un collègue remplacé — se règle dans la séance :
+sous le titre et la date, le lien **« Autre équipe pour cette séance »** rouvre
+les deux champs. Une séance qui porte alors une équipe différente de la vôtre
+est signalée sur sa carte, et ses champs s'ouvrent d'emblée quand on l'ouvre —
+c'est justement là qu'il y a quelque chose à voir. Un bouton **« Reprendre… »**
+la ramène à votre équipe habituelle.
+
 ## Effectif de la séance
+
+L'effectif, lui, **reste demandé à chaque séance** : il change réellement d'une
+fois à l'autre. Le pré-remplir affirmerait une présence que personne n'a
+comptée, et éteindrait des alertes à tort.
 
 La séance porte le nombre de joueurs de champ et de gardiens presents ce
 jour-la. Tout exercice qui demande plus de monde est alors signale, dans la

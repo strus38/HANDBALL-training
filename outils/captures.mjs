@@ -282,6 +282,13 @@ const CADRE = (etapes) => `
 <script>
 try {
   localStorage.setItem('handball-training:seances', DONNEES)
+  // L'equipe de l'entraineur est une preference : sans elle, l'en-tete des
+  // captures afficherait le bouton jaune « Mon equipe » a renseigner, et les
+  // cartes signaleraient une equipe inhabituelle sur chaque seance.
+  localStorage.setItem(
+    'handball-training:mon-equipe',
+    JSON.stringify({ equipe: 'Seniors garçons', categorieAge: '+18 ans' }),
+  )
 } catch (e) {}
 </script>
 <script>
