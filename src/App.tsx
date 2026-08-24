@@ -355,6 +355,7 @@ export function App() {
           onBasculerFavori={(cle) => void atelier.basculerFavori(cle)}
           masquees={atelier.masquees}
           onBasculerMasquee={(ref) => void atelier.basculerMasquee(ref)}
+          onEnregistrerModele={(exercice) => void atelier.enregistrerModele(exercice)}
           onFermer={() => setBibliothequeOuverte(false)}
           onSupprimerModele={(id) => void atelier.supprimerModele(id)}
           onAjouter={(exercice) => {

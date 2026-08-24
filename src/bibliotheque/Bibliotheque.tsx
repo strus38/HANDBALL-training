@@ -113,6 +113,16 @@ interface Props {
    */
   masquees: string[]
   onBasculerMasquee: (ref: string) => void
+  /**
+   * Range une fiche dans la bibliotheque personnelle.
+   *
+   * C est ce qui fait de la bibliotheque de base un SOCLE et non un catalogue
+   * fige : on reprend une fiche livree, on l ajuste a son groupe, et c est la
+   * sienne qu on retrouve ensuite. Le detour existait deja - poser la fiche
+   * dans une seance, la corriger, « Vers la bibliotheque » - mais il passait
+   * par un objet qui n a rien a voir, et personne ne le devinait.
+   */
+  onEnregistrerModele: (exercice: Exercice) => void
   onAjouter: (exercice: Exercice) => void
   onSupprimerModele: (id: string) => void
   onFermer: () => void
@@ -125,6 +135,7 @@ export function Bibliotheque({
   onBasculerFavori,
   masquees,
   onBasculerMasquee,
+  onEnregistrerModele,
   onAjouter,
   onSupprimerModele,
   onFermer,
@@ -237,7 +248,7 @@ export function Bibliotheque({
                 setChoisi(undefined)
               }}
             >
-              Fiches fournies ({CATALOGUE.length - masqueesConnues})
+              Bibliothèque de base ({CATALOGUE.length - masqueesConnues})
             </button>
             <button
               className={`bouton segment${source === 'personnelle' ? ' actif' : ''}`}
@@ -246,7 +257,7 @@ export function Bibliotheque({
                 setChoisi(undefined)
               }}
             >
-              Mes exercices ({mesModeles.length})
+              Ma bibliothèque ({mesModeles.length})
             </button>
           </div>
           <input
@@ -345,7 +356,7 @@ export function Bibliotheque({
                   : favorisSeuls
                   ? "Aucun favori ici. L étoile en haut à droite d une fiche la met de côté."
                   : source === 'personnelle' && mesModeles.length === 0
-                  ? "Vos exercices apparaîtront ici : chaque fiche que vous créez rejoint automatiquement la bibliothèque."
+                  ? "Ma bibliothèque est vide. Deux façons de la remplir : créer une fiche, ou en reprendre une de la bibliothèque de base pour l'ajuster à votre groupe."
                   : animesSeuls && sansBallonSeuls
                     ? "Aucune fiche ne cumule les deux : les enchaînements animés se jouent tous avec un ballon."
                     : animesSeuls
@@ -478,6 +489,45 @@ export function Bibliotheque({
                 >
                   Ajouter à la séance
                 </button>
+                {/*
+                  Reprendre une fiche de base : c'est le geste qui fait de la
+                  bibliotheque de base un socle. Il etait jusqu'ici impossible
+                  autrement qu'en passant par une seance - un detour par un
+                  objet sans rapport, que personne ne trouvait seul.
+                */}
+                {!apercu.personnelle && !masqueesSeules && (
+                  <button
+                    className="bouton"
+                    title="En faire votre version, que vous pourrez ajuster à votre groupe"
+                    onClick={async () => {
+                      const copie = clonerExercice(apercu.exercice, '')
+                      onEnregistrerModele(copie)
+                      // On PROPOSE de retirer l'originale, on ne le decide pas :
+                      // garder les deux est un choix legitime - la fiche livree
+                      // comme reference, la sienne comme version du soir.
+                      const retirer = await confirmer({
+                        titre: "Retirer la fiche d'origine ?",
+                        message: (
+                          <>
+                            <strong>{apercu.exercice.titre || 'Sans titre'}</strong> est maintenant
+                            dans votre bibliothèque, où vous pouvez la modifier librement.
+                            <em className="dialogue-note">
+                              La version livrée reste dans la bibliothèque de base. La retirer
+                              évite de voir deux fois la même fiche ; elle restera récupérable
+                              derrière la puce « Retirées ».
+                            </em>
+                          </>
+                        ),
+                        libelleConfirmer: 'Retirer la version livrée',
+                      })
+                      if (retirer) onBasculerMasquee(apercu.cle)
+                      setSource('personnelle')
+                      setChoisi(copie.id)
+                    }}
+                  >
+                    Reprendre dans ma bibliothèque
+                  </button>
+                )}
                 <button
                   className={`bouton${estFavori(favoris, apercu.cle) ? ' actif' : ''}`}
                   aria-pressed={estFavori(favoris, apercu.cle)}
@@ -490,7 +540,7 @@ export function Bibliotheque({
                     className="bouton danger"
                     onClick={async () => {
                       const accepte = await confirmer({
-                        titre: 'Retirer de la bibliothèque ?',
+                        titre: 'Retirer de ma bibliothèque ?',
                         message: (
                           <>
                             <strong>{apercu.exercice.titre || 'Sans titre'}</strong> ne sera plus
@@ -510,7 +560,7 @@ export function Bibliotheque({
                       }
                     }}
                   >
-                    Retirer de la bibliothèque
+                    Retirer de ma bibliothèque
                   </button>
                 )}
                 {/*
@@ -527,7 +577,7 @@ export function Bibliotheque({
                       setChoisi(undefined)
                     }}
                   >
-                    Remettre dans la bibliothèque
+                    Remettre dans la base
                   </button>
                 )}
                 {!apercu.personnelle && !masqueesSeules && (
@@ -535,7 +585,7 @@ export function Bibliotheque({
                     className="bouton danger"
                     onClick={async () => {
                       const accepte = await confirmer({
-                        titre: 'Retirer cette fiche fournie ?',
+                        titre: 'Retirer cette fiche de la base ?',
                         message: (
                           <>
                             <strong>{apercu.exercice.titre || 'Sans titre'}</strong> ne sera plus
@@ -555,7 +605,7 @@ export function Bibliotheque({
                       }
                     }}
                   >
-                    Retirer de la bibliothèque
+                    Retirer de la base
                   </button>
                 )}
               </div>

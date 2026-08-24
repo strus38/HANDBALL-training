@@ -391,7 +391,7 @@ export interface FichierExport {
   version: number
   exporteLe: string
   /**
-   * Version de l'application qui a produit ce fichier - « v1.0.0 · 2026-08-24 ·
+   * Version de l'application qui a produit ce fichier - « v1.1.0 · 2026-08-24 ·
    * d5dc31b ».
    *
    * Une trace de provenance, pas une donnee : rien ne la relit. Elle sert le

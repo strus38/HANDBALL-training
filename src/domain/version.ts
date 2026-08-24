@@ -43,7 +43,7 @@ export const REVISION = injectee(
 export const EN_DEVELOPPEMENT = DATE_BUILD === ''
 
 /**
- * Version courte, telle qu'affichée dans l'en-tête : « v1.0.0 ».
+ * Version courte, telle qu'affichée dans l'en-tête : « v1.1.0 ».
  *
  * Hors build, on annonce « version de travail » : afficher « v0.0.0 » ferait
  * croire à une vraie version et enverrait chercher un défaut là où il n'est pas.

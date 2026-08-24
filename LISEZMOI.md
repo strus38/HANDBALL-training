@@ -259,13 +259,13 @@ arrête la lecture et rend la main à l'edition.
 
 ### Fiches chorégraphiées
 
-Onze des 41 fiches fournies decrivent un **enchaînement complet**, étape par
+Quinze des 62 fiches livrées decrivent un **enchaînement complet**, étape par
 étape : croise arrière-ailier, passe et va, écran du pivot, renversement en
 trois passes, attaque à deux pivots, supériorité et infériorité numérique,
 glissement 6-0, 5-1, 3-2-1, contre-attaque directe. Sur celles-la, le bouton
 « Lire » anime réellement le mouvement et l'impression sort plusieurs schémas.
 
-Les trente autres — circuits, gammes, matchs à thème, jeu en continu, fiches
+Les quarante-sept autres — circuits, gammes, matchs à thème, jeu en continu, fiches
 gardien — restent volontairement à une seule mise en place. Elles decrivent une
 **organisation ou une répétition**, pas une chorégraphie : leur imposer une
 animation figee donnerait une fausse idée de ce qu'elles sont.
@@ -590,16 +590,51 @@ Les fiches gardiens se repartissent en deux familles :
   le decompte de la séance reste juste.
 
 Choisir une fiche en ajoute une **copie indépendante** à la séance. L'adapter
-pour un soir ne touche jamais au modèle, et les séances passees gardent la
-version avec laquelle elles ont été jouees. Quand une modification merite d'être
-conservée, le bouton « Vers la bibliothèque » met le modèle a jour.
+pour un soir ne touche jamais au modèle, et les séances passées gardent la
+version avec laquelle elles ont été jouées. Quand une modification mérite d'être
+conservée, le bouton « Vers la bibliothèque » met le modèle à jour.
+
+## Deux bibliothèques : la base et la vôtre
+
+La fenêtre **Bibliothèque** a deux onglets, et ce ne sont pas un catalogue et
+un fourre-tout : ce sont deux bibliothèques.
+
+**Bibliothèque de base** rassemble les fiches livrées avec l'application.
+Elles sont identiques chez tous les entraîneurs, ce qui permet d'en parler
+entre soi, et une nouvelle version du fichier les corrige pour tout le monde à
+la fois.
+
+**Ma bibliothèque** est la vôtre : les fiches que vous créez, et celles que
+vous avez reprises de la base pour les ajuster à votre groupe. Elle vous suit
+d'une saison à l'autre et part dans « Sauvegarder tout ».
+
+### Reprendre une fiche de base
+
+Le bouton **Reprendre dans ma bibliothèque**, sur chaque fiche de base, en
+dépose une copie de votre côté et vous y emmène. À partir de là, elle est à
+vous : changez les consignes, déplacez les joueurs, ajoutez des étapes. La
+version livrée n'en sait rien et ne bougera jamais.
+
+C'est le geste qui fait de la bibliothèque de base **un point de départ plutôt
+qu'un catalogue figé**. Il existait déjà, mais il fallait poser la fiche dans
+une séance, la corriger là, puis la renvoyer par « Vers la bibliothèque » — un
+détour par un objet qui n'avait rien à y voir, et que personne ne trouvait
+seul.
+
+L'application propose ensuite de retirer la version livrée, pour ne pas voir
+deux fois la même fiche. Elle le **propose** : garder les deux est un choix
+légitime — la version livrée comme référence, la vôtre comme celle du soir.
+
+Une fiche reprise garde le lien vers son modèle d'origine : son **compteur
+d'utilisation ne repart pas de zéro**, et le bilan de saison continue de la
+compter avec les séances où vous aviez mené la version livrée.
 
 ### Retirer des fiches fournies
 
-Toutes les fiches livrées ne conviennent pas a tous les groupes. Le bouton
-**Retirer de la bibliothèque**, sur chaque fiche fournie, la fait disparaitre
+Toutes les fiches livrées ne conviennent pas à tous les groupes. Le bouton
+**Retirer de la base**, sur chaque fiche de base, la fait disparaître
 de la liste : la bibliothèque de base se taille ainsi à la mesure de l'équipe,
-et le compteur « Fiches fournies » ne compte plus que ce qui reste.
+et son compteur ne compte plus que ce qui reste.
 
 Retirer n'est pas supprimer. Les fiches fournies font partie de l'application,
 et une nouvelle version du fichier les ramenerait de toute façon. Une fiche
@@ -654,9 +689,9 @@ fichier crée deux copies indépendantes, sans jamais écraser un exercice exist
 ## Quelle version ai-je entre les mains ?
 
 La version du fichier est affichée **en haut à droite**, à gauche du bouton
-Notice : `v1.0.0`. Un clic dessus copie la ligne complète — numéro, date de
+Notice : `v1.1.0`. Un clic dessus copie la ligne complète — numéro, date de
 fabrication et révision du code, par exemple
-`v1.0.0 · 2026-08-24 · d5dc31b`.
+`v1.1.0 · 2026-08-24 · d5dc31b`.
 
 C'est le renseignement à joindre à tout signalement de défaut. L'application
 voyage en un seul fichier, sans mise à jour automatique : plusieurs versions
