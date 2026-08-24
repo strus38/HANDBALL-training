@@ -490,6 +490,31 @@ textarea:focus {
   color: #86d6a5;
 }
 
+/*
+ * La version du fichier, dans l'entete.
+ *
+ * Discrete par defaut - ce n'est pas une commande, c'est un repere qu'on va
+ * chercher le jour ou l'on signale un defaut. Elle s'eclaire au survol pour
+ * annoncer qu'un clic la copie.
+ */
+.version {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 11px;
+  color: #7d94b2;
+  padding: 4px 8px;
+  border-radius: var(--rayon);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.version:hover,
+.version:focus-visible {
+  color: var(--jaune);
+  background: rgba(255, 255, 255, 0.06);
+}
+
 /* ================================================================== Cartes */
 
 .carte {

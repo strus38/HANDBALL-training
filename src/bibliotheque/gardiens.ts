@@ -13,30 +13,30 @@ import { GARDIEN_DROITE, GARDIEN_GAUCHE, type ModeleExercice } from './modeles'
 
 export const GARDIENS: ModeleExercice[] = [
   {
-    titre: 'Echauffement gardien : appuis, mains et prise de balle',
+    titre: 'Échauffement gardien : appuis, mains et prise de balle',
     ref: 'echauffement-gardien-appuis-mains-et-prise-de-balle',
     categorie: 'gardien',
     duree: 12,
     nombreJoueurs: 0,
     nombreGardiens: 2,
     difficulte: 1,
-    materiel: ['4 ballons', '2 ballons lestes'],
+    materiel: ['4 ballons', '2 ballons lestés'],
     formatGardiens: 'gardiens-seuls',
     enParallele: true,
     vue: 'zone',
     objectifs:
-      'Preparer les epaules, les hanches et les mains avant les tirs, et retrouver les reperes de placement sur la ligne.',
+      'Préparer les épaules, les hanches et les mains avant les tirs, et retrouver les repères de placement sur la ligne.',
     fonctionnement:
-      "Les deux gardiens travaillent face a face, a six metres, pendant que le groupe s'echauffe de son cote.\n" +
-      'Sequence : mobilisation des hanches et des epaules, puis passes a deux mains, puis un gardien envoie des ballons a mi-hauteur que l autre bloque en position de garde.\n' +
-      'Terminer par 20 ballons au sol et 20 ballons a hauteur de tete, en alternance gauche - droite.',
+      "Les deux gardiens travaillent face à face, à six mètres, pendant que le groupe s'échauffe de son côté.\n" +
+      'Séquence : mobilisation des hanches et des épaules, puis passes à deux mains, puis un gardien envoie des ballons à mi-hauteur que l autre bloque en position de garde.\n' +
+      'Terminer par 20 ballons au sol et 20 ballons à hauteur de tête, en alternance gauche - droite.',
     pointsCles:
-      "Rester en appui sur l'avant des pieds, genoux flechis, mains a hauteur des epaules.\n" +
-      "Aller chercher le ballon, ne jamais l'attendre bras colles au corps.\n" +
+      "Rester en appui sur l'avant des pieds, genoux fléchis, mains à hauteur des épaules.\n" +
+      "Aller chercher le ballon, ne jamais l'attendre bras collés au corps.\n" +
       'Le regard reste sur le ballon jusqu au contact avec les mains.',
     evolution:
-      'Complexifier : ajouter un ballon leste sur la derniere serie pour renforcer les epaules.\n' +
-      'Sans deuxieme gardien : un joueur ou un entraineur peut servir les ballons.',
+      'Complexifier : ajouter un ballon lesté sur la dernière série pour renforcer les épaules.\n' +
+      'Sans deuxième gardien : un joueur ou un entraîneur peut servir les ballons.',
     jetons: [
       GARDIEN_DROITE,
       { type: 'gardien', etiquette: 'GB2', x: 33, y: 10 },
@@ -45,7 +45,7 @@ export const GARDIENS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Deplacements et reactivite sur la ligne',
+    titre: 'Déplacements et réactivité sur la ligne',
     ref: 'deplacements-et-reactivite-sur-la-ligne',
     categorie: 'gardien',
     duree: 10,
@@ -57,18 +57,18 @@ export const GARDIENS: ModeleExercice[] = [
     enParallele: true,
     vue: 'zone',
     objectifs:
-      'Automatiser le deplacement lateral en arc de cercle et raccourcir le temps de reaction sur un tir proche.',
+      'Automatiser le déplacement latéral en arc de cercle et raccourcir le temps de réaction sur un tir proche.',
     fonctionnement:
-      "A mener pendant que le groupe travaille la preparation physique ou un atelier sans but.\n" +
-      "Le gardien se deplace d'un poteau a l'autre en suivant un arc, en pas chasses, sans croiser les appuis. A chaque arret, un ballon est envoye au hasard d'un cote.\n" +
-      'Series de 30 secondes, 6 repetitions, avec 30 secondes de recuperation. Les deux gardiens alternent servant et travaillant.',
+      "À mener pendant que le groupe travaille la préparation physique ou un atelier sans but.\n" +
+      "Le gardien se déplace d'un poteau à l'autre en suivant un arc, en pas chassés, sans croiser les appuis. À chaque arrêt, un ballon est envoyé au hasard d'un côté.\n" +
+      'Séries de 30 secondes, 6 répétitions, avec 30 secondes de récupération. Les deux gardiens alternent servant et travaillant.',
     pointsCles:
-      "Le buste reste face au ballon, les epaules ne tournent pas dans le deplacement.\n" +
-      "Toujours revenir au centre de l'angle apres chaque intervention.\n" +
+      "Le buste reste face au ballon, les épaules ne tournent pas dans le déplacement.\n" +
+      "Toujours revenir au centre de l'angle après chaque intervention.\n" +
       'Un seul appui de replacement, pas trois petits pas.',
     evolution:
-      'Complexifier : annoncer le cote au dernier moment, ou envoyer deux ballons de suite.\n' +
-      'Simplifier : rythme impose plus lent, ballons annonces a l avance.',
+      'Complexifier : annoncer le côté au dernier moment, ou envoyer deux ballons de suite.\n' +
+      'Simplifier : rythme imposé plus lent, ballons annoncés à l avance.',
     jetons: [
       GARDIEN_DROITE,
       { type: 'entraineur', etiquette: 'S', x: 33, y: 10 },
@@ -79,7 +79,7 @@ export const GARDIENS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Duels croises entre gardiens',
+    titre: 'Duels croisés entre gardiens',
     ref: 'duels-croises-entre-gardiens',
     categorie: 'gardien',
     duree: 12,
@@ -91,18 +91,18 @@ export const GARDIENS: ModeleExercice[] = [
     enParallele: true,
     vue: 'complet',
     objectifs:
-      'Travailler la lecture du tir et la relance, en autonomie complete, sans mobiliser de joueur de champ.',
+      'Travailler la lecture du tir et la relance, en autonomie complète, sans mobiliser de joueur de champ.',
     fonctionnement:
-      "Les deux gardiens occupent chacun un but et se tirent dessus a tour de role depuis la ligne des 9 metres.\n" +
-      'Le gardien qui vient d arreter relance immediatement en course vers l autre but, ce qui enchaine arret et premiere passe.\n' +
-      'Match en 10 points : un but marque vaut un point, un arret suivi d une relance precise vaut un point.',
+      "Les deux gardiens occupent chacun un but et se tirent dessus à tour de rôle depuis la ligne des 9 mètres.\n" +
+      'Le gardien qui vient d arrêter relance immédiatement en course vers l autre but, ce qui enchaîne arrêt et première passe.\n' +
+      'Match en 10 points : un but marqué vaut un point, un arrêt suivi d une relance précise vaut un point.',
     pointsCles:
       "Se placer avant l'armé du tireur, pas pendant.\n" +
-      "Ne pas anticiper systematiquement : lire l'epaule et la hanche du tireur.\n" +
-      'La relance part des la recuperation du ballon, sans temps mort.',
+      "Ne pas anticiper systématiquement : lire l'épaule et la hanche du tireur.\n" +
+      'La relance part dès la récupération du ballon, sans temps mort.',
     evolution:
-      "Complexifier : interdire de tirer deux fois de suite au meme endroit.\n" +
-      "Avec un seul gardien : l'entraineur remplace le second poste.",
+      "Complexifier : interdire de tirer deux fois de suite au même endroit.\n" +
+      "Avec un seul gardien : l'entraîneur remplace le second poste.",
     jetons: [
       GARDIEN_GAUCHE,
       GARDIEN_DROITE,
@@ -112,7 +112,7 @@ export const GARDIENS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Gardien face aux tirs a 9 metres',
+    titre: 'Gardien face aux tirs à 9 mètres',
     ref: 'gardien-face-aux-tirs-a-9-metres',
     categorie: 'gardien',
     duree: 15,
@@ -123,18 +123,18 @@ export const GARDIENS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'demi',
     objectifs:
-      "Installer le placement sur l'angle et la lecture des tirs longs, en situation reelle de tir en suspension.",
+      "Installer le placement sur l'angle et la lecture des tirs longs, en situation réelle de tir en suspension.",
     fonctionnement:
-      "Trois postes de tir : arriere gauche, demi-centre, arriere droit. Les tireurs alternent, un ballon toutes les cinq secondes.\n" +
-      'Serie 1 : tirs annonces, le gardien travaille son placement. Serie 2 : tirs libres. Serie 3 : avec un defenseur qui ferme un cote, obligeant le gardien a couvrir l autre.\n' +
-      "Trois series de 12 ballons, avec une pause entre chaque.",
+      "Trois postes de tir : arrière gauche, demi-centre, arrière droit. Les tireurs alternent, un ballon toutes les cinq secondes.\n" +
+      'Série 1 : tirs annoncés, le gardien travaille son placement. Série 2 : tirs libres. Série 3 : avec un défenseur qui ferme un côté, obligeant le gardien à couvrir l autre.\n' +
+      "Trois séries de 12 ballons, avec une pause entre chaque.",
     pointsCles:
-      "Le gardien avance d'un pas sur l'angle a chaque changement de poste de tir.\n" +
-      'Sur un tir avec defenseur, le gardien couvre le cote laisse libre par la defense : le placement se decide a deux.\n' +
-      'Rester grand : les bras montent avant le tir, pas apres.',
+      "Le gardien avance d'un pas sur l'angle à chaque changement de poste de tir.\n" +
+      'Sur un tir avec défenseur, le gardien couvre le côté laissé libre par la défense : le placement se décide à deux.\n' +
+      'Rester grand : les bras montent avant le tir, pas après.',
     evolution:
-      "Simplifier : sans defenseur, tirs a cadence lente.\n" +
-      'Complexifier : ajouter un rebond au sol impose sur un tir sur trois.',
+      "Simplifier : sans défenseur, tirs à cadence lente.\n" +
+      'Complexifier : ajouter un rebond au sol imposé sur un tir sur trois.',
     jetons: [
       GARDIEN_DROITE,
       { type: 'attaquant', etiquette: 'ArG', x: 31, y: 14.5 },
@@ -159,13 +159,13 @@ export const GARDIENS: ModeleExercice[] = [
     objectifs:
       "Fermer l'angle court sur les tirs d'aile et tenir la position sur le un contre un.",
     fonctionnement:
-      "Alternance de tirs venant de l'aile gauche et de l'aile droite. Le gardien sort a la rencontre du tireur pour fermer le premier poteau, sans se coucher trop tot.\n" +
-      'Deuxieme partie : un contre un depuis 9 metres, le gardien doit tenir jusqu au dernier moment.\n' +
+      "Alternance de tirs venant de l'aile gauche et de l'aile droite. Le gardien sort à la rencontre du tireur pour fermer le premier poteau, sans se coucher trop tôt.\n" +
+      'Deuxième partie : un contre un depuis 9 mètres, le gardien doit tenir jusqu au dernier moment.\n' +
       '10 ballons par aile, puis 10 duels.',
     pointsCles:
-      "Sortir en ligne droite vers le ballon, pas en arc : chaque metre gagne ferme l'angle.\n" +
-      'Le premier poteau se protege en priorite, le gardien ne le laisse jamais ouvert.\n' +
-      'Sur le duel, rester debout : se coucher tot donne la lucarne au tireur.',
+      "Sortir en ligne droite vers le ballon, pas en arc : chaque mètre gagné ferme l'angle.\n" +
+      'Le premier poteau se protège en priorité, le gardien ne le laisse jamais ouvert.\n' +
+      'Sur le duel, rester debout : se coucher tôt donne la lucarne au tireur.',
     evolution:
       "Simplifier : tirs d'aile seuls, sans la partie duel.\n" +
       "Complexifier : le tireur d'aile a le droit de faire une passe au pivot.",
@@ -181,7 +181,7 @@ export const GARDIENS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Jets de 7 metres',
+    titre: 'Jets de 7 mètres',
     ref: 'jets-de-7-metres',
     categorie: 'gardien',
     duree: 10,
@@ -192,17 +192,17 @@ export const GARDIENS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'zone',
     objectifs:
-      'Travailler la prise de decision sur le penalty et installer une routine avant le tir.',
+      'Travailler la prise de décision sur le penalty et installer une routine avant le tir.',
     fonctionnement:
-      "Chaque joueur tire trois jets de 7 metres. Le gardien annonce a l'entraineur, avant chaque tir, le cote qu'il a choisi de proteger.\n" +
-      'On comptabilise arrets et buts pour identifier les tendances de chaque tireur.\n' +
-      'Deuxieme tour : les tireurs connaissent leurs statistiques et doivent varier.',
+      "Chaque joueur tire trois jets de 7 mètres. Le gardien annonce à l'entraîneur, avant chaque tir, le côté qu'il a choisi de protéger.\n" +
+      'On comptabilise arrêts et buts pour identifier les tendances de chaque tireur.\n' +
+      'Deuxième tour : les tireurs connaissent leurs statistiques et doivent varier.',
     pointsCles:
-      "Prendre une information sur la course d'elan et l'appui d'impulsion du tireur.\n" +
-      "Ne pas partir avant l'armé : un gardien immobile arrete plus qu'un gardien lance trop tot.\n" +
-      "Assumer un choix : l'indecision couvre les deux cotes a moitie.",
+      "Prendre une information sur la course d'élan et l'appui d'impulsion du tireur.\n" +
+      "Ne pas partir avant l'armé : un gardien immobile arrête plus qu'un gardien lancé trop tôt.\n" +
+      "Assumer un choix : l'indécision couvre les deux côtés à moitié.",
     evolution:
-      "Complexifier : le tireur a le droit a une feinte.\n" +
+      "Complexifier : le tireur a le droit à une feinte.\n" +
       'Mettre un enjeu : le perdant du duel gardien - tireur fait un gage collectif.',
     jetons: [
       GARDIEN_DROITE,
@@ -214,7 +214,7 @@ export const GARDIENS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Relance et premiere passe de contre-attaque',
+    titre: 'Relance et première passe de contre-attaque',
     ref: 'relance-et-premiere-passe-de-contre-attaque',
     categorie: 'gardien',
     duree: 12,
@@ -225,18 +225,18 @@ export const GARDIENS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'complet',
     objectifs:
-      'Faire du gardien le premier relanceur : voir avant de recevoir, et transmettre juste sur 20 a 30 metres.',
+      'Faire du gardien le premier relanceur : voir avant de recevoir, et transmettre juste sur 20 à 30 mètres.',
     fonctionnement:
-      "Le gardien arrete ou recupere un ballon, puis relance immediatement sur un ailier parti en course.\n" +
-      "Trois cibles possibles : ailier gauche, ailier droit, ou joueur au centre en appui. L'entraineur designe la cible au dernier moment, apres l'arret.\n" +
+      "Le gardien arrête ou récupère un ballon, puis relance immédiatement sur un ailier parti en course.\n" +
+      "Trois cibles possibles : ailier gauche, ailier droit, ou joueur au centre en appui. L'entraîneur désigne la cible au dernier moment, après l'arrêt.\n" +
       '15 relances par gardien, en alternant les cibles.',
     pointsCles:
-      "Prendre l'information sur le terrain pendant que le ballon arrive, pas apres l'avoir bloque.\n" +
+      "Prendre l'information sur le terrain pendant que le ballon arrive, pas après l'avoir bloqué.\n" +
       'Relance tendue devant le joueur, jamais dans son dos ni en cloche.\n' +
-      "Se replacer immediatement apres la relance : le ballon peut revenir.",
+      "Se replacer immédiatement après la relance : le ballon peut revenir.",
     evolution:
-      "Simplifier : cible annoncee a l'avance.\n" +
-      "Complexifier : ajouter un defenseur sur la ligne de passe de la cible principale.",
+      "Simplifier : cible annoncée à l'avance.\n" +
+      "Complexifier : ajouter un défenseur sur la ligne de passe de la cible principale.",
     jetons: [
       GARDIEN_DROITE,
       { type: 'attaquant', etiquette: 'AlG', x: 24, y: 18.3 },
@@ -250,7 +250,7 @@ export const GARDIENS: ModeleExercice[] = [
   // --------------------------------------------------- Complements de reference
 
   {
-    titre: 'Gardien face au pivot et aux ballons a rebond',
+    titre: 'Gardien face au pivot et aux ballons à rebond',
     ref: 'gardien-face-au-pivot-et-aux-ballons-a-rebond',
     categorie: 'gardien',
     duree: 12,
@@ -261,19 +261,19 @@ export const GARDIENS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'zone',
     objectifs:
-      "Traiter les tirs les plus proches : sortir vite sur le pivot pour reduire l'angle, et rester sur ses appuis sur les ballons a rebond.",
+      "Traiter les tirs les plus proches : sortir vite sur le pivot pour réduire l'angle, et rester sur ses appuis sur les ballons à rebond.",
     fonctionnement:
-      "Deux passeurs a 9 metres servent un pivot qui recoit dos au but, se retourne et tire immediatement a 6 metres.\n" +
-      "Une serie sur deux, le pivot a consigne de tirer a rebond, devant la ligne de surface.\n" +
-      "Le gardien alterne : sortie franche a un metre de la ligne sur le tir direct, position basse et jambes fermees sur le ballon a rebond.\n" +
-      "12 tirs par gardien et par serie, en variant le cote de la remise.",
+      "Deux passeurs à 9 mètres servent un pivot qui reçoit dos au but, se retourne et tire immédiatement à 6 mètres.\n" +
+      "Une série sur deux, le pivot a consigne de tirer à rebond, devant la ligne de surface.\n" +
+      "Le gardien alterne : sortie franche à un mètre de la ligne sur le tir direct, position basse et jambes fermées sur le ballon à rebond.\n" +
+      "12 tirs par gardien et par série, en variant le côté de la remise.",
     pointsCles:
-      "Sur le pivot, la sortie doit etre finie avant le tir : un gardien qui avance encore au moment du tir n'a plus de base.\n" +
+      "Sur le pivot, la sortie doit être finie avant le tir : un gardien qui avance encore au moment du tir n'a plus de base.\n" +
       "Sur le rebond, ne pas plonger : les jambes se ferment et le corps reste haut, sinon le ballon passe dessous.\n" +
-      "Lire l'epaule du pivot des sa rotation : elle indique le cote avant le bras.",
+      "Lire l'épaule du pivot dès sa rotation : elle indique le côté avant le bras.",
     evolution:
-      "Simplifier : le pivot annonce a l'avance direct ou rebond.\n" +
-      "Complexifier : ajouter un defenseur dans le dos du pivot, ce qui masque le depart du tir.",
+      "Simplifier : le pivot annonce à l'avance direct ou rebond.\n" +
+      "Complexifier : ajouter un défenseur dans le dos du pivot, ce qui masque le départ du tir.",
     jetons: [
       GARDIEN_DROITE,
       { type: 'attaquant', etiquette: 'PIV', x: 33.8, y: 10 },
@@ -295,19 +295,19 @@ export const GARDIENS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'demi',
     objectifs:
-      "Decider a partir d'indices, pas au hasard : position des appuis, hauteur du coude, orientation des hanches du tireur.",
+      "Decider à partir d'indices, pas au hasard : position des appuis, hauteur du coude, orientation des hanches du tireur.",
     fonctionnement:
-      "Les tireurs se succedent depuis les trois postes arriere, sans consigne de zone imposee.\n" +
-      "Le gardien annonce a voix haute, juste apres chaque tir, l'indice sur lequel il a decide : appui, epaule, coude ou hanche.\n" +
-      "L'entraineur note les tirs ou l'indice etait juste, meme si le ballon est entre : c'est la lecture qui est evaluee, pas le resultat.\n" +
-      "Trois series de 10 tirs, avec un point d'etape entre chaque serie.",
+      "Les tireurs se succedent depuis les trois postes arrière, sans consigne de zone imposee.\n" +
+      "Le gardien annonce à voix haute, juste après chaque tir, l'indice sur lequel il a decide : appui, épaule, coude ou hanche.\n" +
+      "L'entraîneur note les tirs ou l'indice etait juste, même si le ballon est entre : c'est la lecture qui est evaluee, pas le résultat.\n" +
+      "Trois séries de 10 tirs, avec un point d'étape entre chaque série.",
     pointsCles:
       "Un gardien qui devine part avant le tir ; un gardien qui lit part avec le tir. La difference se voit sur le premier appui.\n" +
-      "L'appui d'impulsion du tireur donne le cote bien avant le bras.\n" +
-      "Verbaliser l'indice apres coup fixe l'apprentissage : sans cela, le gardien reproduit ses reflexes sans les corriger.",
+      "L'appui d'impulsion du tireur donne le côté bien avant le bras.\n" +
+      "Verbaliser l'indice après coup fixe l'apprentissage : sans cela, le gardien reproduit ses réflexes sans les corriger.",
     evolution:
-      "Simplifier : les tireurs ne visent que deux zones, annoncees a l'avance au gardien.\n" +
-      "Complexifier : ajouter un defenseur qui masque partiellement, obligeant a lire uniquement les appuis.",
+      "Simplifier : les tireurs ne visent que deux zones, annoncees à l'avance au gardien.\n" +
+      "Complexifier : ajouter un défenseur qui masque partiellement, obligeant a lire uniquement les appuis.",
     jetons: [
       GARDIEN_DROITE,
       { type: 'attaquant', etiquette: 'ArG', x: 31.5, y: 14.5 },
@@ -319,7 +319,7 @@ export const GARDIENS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Gardien : sortie et duel face au joueur lance',
+    titre: 'Gardien : sortie et duel face au joueur lancé',
     ref: 'gardien-sortie-et-duel-face-au-joueur-lance',
     categorie: 'gardien',
     duree: 12,
@@ -330,16 +330,16 @@ export const GARDIENS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'complet',
     objectifs:
-      "Traiter la contre-attaque : choisir entre rester sur la ligne et sortir a la rencontre du joueur lance, puis tenir le duel sans reculer.",
+      "Traiter la contre-attaque : choisir entre rester sur la ligne et sortir à la rencontre du joueur lance, puis tenir le duel sans reculer.",
     fonctionnement:
-      "Un joueur part de mi-terrain en dribble, seul face au gardien, avec un angle different a chaque passage : central, cote aile gauche, cote aile droite.\n" +
-      "Le gardien avance a la rencontre du joueur des que celui-ci franchit les 12 metres, puis se stabilise avant le tir.\n" +
-      "Sur un passage sur trois, un deuxieme attaquant suit en soutien : le gardien doit alors couvrir le tir sans se jeter, pour ne pas offrir la passe.\n" +
+      "Un joueur part de mi-terrain en dribble, seul face au gardien, avec un angle différent à chaque passage : central, cote aile gauche, cote aile droite.\n" +
+      "Le gardien avance à la rencontre du joueur des que celui-ci franchit les 12 mètres, puis se stabilise avant le tir.\n" +
+      "Sur un passage sur trois, un deuxième attaquant suit en soutien : le gardien doit alors couvrir le tir sans se jeter, pour ne pas offrir la passe.\n" +
       "10 duels par gardien.",
     pointsCles:
-      "Sortir tot et s'arreter, plutot que sortir tard en courant : un gardien en mouvement est un gardien battu.\n" +
-      "Rester grand, bras ecartes, le plus longtemps possible : c'est la surface qui gene, pas le plongeon.\n" +
-      "Face a deux attaquants, jouer le porteur et laisser la passe : c'est la solution la plus lente pour eux.",
+      "Sortir tot et s'arrêter, plutôt que sortir tard en courant : un gardien en mouvement est un gardien battu.\n" +
+      "Rester grand, bras ecartes, le plus longtemps possible : c'est la surface qui gêne, pas le plongeon.\n" +
+      "Face à deux attaquants, jouer le porteur et laisser la passe : c'est la solution la plus lente pour eux.",
     evolution:
       "Simplifier : angle central uniquement, sans soutien.\n" +
       "Complexifier : le joueur lance a le droit de feinter le tir une fois avant de conclure.",
@@ -354,7 +354,7 @@ export const GARDIENS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Gardiens seuls : reactivite et coordination oeil-main',
+    titre: 'Gardiens seuls : réactivité et coordination oeil-main',
     ref: 'gardiens-seuls-reactivite-et-coordination-oeil-main',
     categorie: 'gardien',
     duree: 10,
@@ -366,20 +366,20 @@ export const GARDIENS: ModeleExercice[] = [
     enParallele: true,
     vue: 'zone',
     objectifs:
-      "Accelerer le temps de reaction et la dissociation des deux mains, pendant que le groupe travaille un exercice sans but.",
+      "Accélérer le temps de réaction et la dissociation des deux mains, pendant que le groupe travaille un exercice sans but.",
     fonctionnement:
-      "Les deux gardiens travaillent a l'ecart, en alternant les roles toutes les 45 secondes.\n" +
-      "1. Le partenaire tient une balle de tennis dans chaque main, bras ecartes, et en lache une sans prevenir : le gardien la rattrape avant le deuxieme rebond.\n" +
-      "2. Le partenaire montre une balle a droite ou a gauche, a hauteur d'epaule : le gardien touche la balle de la main et du pied du meme cote, simultanement.\n" +
-      "3. Renvois au mur a une main, alternance droite - gauche, 30 secondes par main.\n" +
-      "Trois tours complets. Effort court et intense, recuperation reelle entre les tours.",
+      "Les deux gardiens travaillent à l'écart, en alternant les rôles toutes les 45 secondes.\n" +
+      "1. Le partenaire tient une balle de tennis dans chaque main, bras ecartes, et en lâche une sans prevenir : le gardien la rattrape avant le deuxième rebond.\n" +
+      "2. Le partenaire montre une balle à droite ou à gauche, à hauteur d'épaule : le gardien touche la balle de la main et du pied du même côté, simultanement.\n" +
+      "3. Renvois au mur à une main, alternance droite - gauche, 30 secondes par main.\n" +
+      "Trois tours complets. Effort court et intense, récupération réelle entre les tours.",
     pointsCles:
-      "Main et pied partent ensemble : c'est cette coordination qui fait l'arret du bas, pas la vitesse du bras seul.\n" +
-      "Le regard reste fixe devant, ce sont les mains qui vont chercher, pas la tete qui suit.\n" +
-      "Series courtes : des que le temps de reaction se degrade, l'atelier ne sert plus a rien.",
+      "Main et pied partent ensemble : c'est cette coordination qui fait l'arrêt du bas, pas la vitesse du bras seul.\n" +
+      "Le regard reste fixe devant, ce sont les mains qui vont chercher, pas la tête qui suit.\n" +
+      "Séries courtes : des que le temps de réaction se degrade, l'atelier ne sert plus a rien.",
     evolution:
-      "Sans balles de tennis : un ballon montre a droite ou a gauche produit le meme travail, en moins exigeant.\n" +
-      "Avec un seul gardien : l'entraineur ou un joueur blesse peut tenir le role du partenaire.",
+      "Sans balles de tennis : un ballon montre à droite ou à gauche produit le même travail, en moins exigeant.\n" +
+      "Avec un seul gardien : l'entraîneur ou un joueur blesse peut tenir le rôle du partenaire.",
     jetons: [
       { type: 'gardien', etiquette: 'GB1', x: 31, y: 13 },
       { type: 'gardien', etiquette: 'GB2', x: 33, y: 13 },
@@ -388,33 +388,33 @@ export const GARDIENS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Gardiens seuls : appuis, hanches et prevention epaule',
+    titre: 'Gardiens seuls : appuis, hanches et prévention épaule',
     ref: 'gardiens-seuls-appuis-hanches-et-prevention-epaule',
     categorie: 'gardien',
     duree: 12,
     nombreJoueurs: 0,
     nombreGardiens: 2,
     difficulte: 1,
-    materiel: ['2 elastiques', '4 plots', '2 ballons'],
+    materiel: ['2 élastiques', '4 plots', '2 ballons'],
     formatGardiens: 'gardiens-seuls',
     enParallele: true,
     vue: 'zone',
     objectifs:
-      "Entretenir ce que le poste sollicite le plus - amplitude de hanche, gainage lateral, stabilite d'epaule - pendant que le groupe travaille sans but.",
+      "Entretenir ce que le poste sollicite le plus - amplitude de hanche, gainage latéral, stabilite d'épaule - pendant que le groupe travaille sans but.",
     fonctionnement:
-      "Circuit de quatre ateliers, 45 secondes chacun, deux tours, les deux gardiens en meme temps.\n" +
-      "1. Ecarts lateraux controles sur une jambe, retour en position de garde, 8 par cote.\n" +
-      "2. Deplacements en pas chasses entre quatre plots, sans croiser les appuis.\n" +
-      "3. Rotations externes d'epaule a l'elastique, coude au corps, 2 x 12 par bras.\n" +
-      "4. Gainage lateral avec bras tendu vers le plafond, 30 secondes par cote.\n" +
-      "A placer en debut de seance ou juste apres l'echauffement, jamais apres une longue serie de tirs.",
+      "Circuit de quatre ateliers, 45 secondes chacun, deux tours, les deux gardiens en même temps.\n" +
+      "1. Écarts latéraux contrôles sur une jambe, retour en position de garde, 8 par côté.\n" +
+      "2. Déplacements en pas chasses entre quatre plots, sans croiser les appuis.\n" +
+      "3. Rotations externes d'épaule à l'élastique, coude au corps, 2 x 12 par bras.\n" +
+      "4. Gainage latéral avec bras tendu vers le plafond, 30 secondes par côté.\n" +
+      "A placer en debut de séance ou juste après l'échauffement, jamais après une longue série de tirs.",
     pointsCles:
-      "Amplitude d'abord, vitesse ensuite : un ecart mal controle fatigue l'adducteur sans rien gagner.\n" +
+      "Amplitude d'abord, vitesse ensuite : un écart mal contrôle fatigue l'adducteur sans rien gagner.\n" +
       "Les appuis ne se croisent jamais en pas chasses, sinon le gardien est en retard sur le tir suivant.\n" +
-      "L'elastique doit rester leger : l'objectif est la stabilite de l'epaule, pas la force du bras.",
+      "L'élastique doit rester léger : l'objectif est la stabilite de l'épaule, pas la force du bras.",
     evolution:
-      "Sans elastique : rotations avec un ballon tenu a bout de bras, plus court.\n" +
-      "Complexifier : enchainer chaque atelier avec deux arrets reels servis par le partenaire.",
+      "Sans élastique : rotations avec un ballon tenu a bout de bras, plus court.\n" +
+      "Complexifier : enchaîner chaque atelier avec deux arrêts réels servis par le partenaire.",
     jetons: [
       { type: 'gardien', etiquette: 'GB1', x: 31, y: 13 },
       { type: 'gardien', etiquette: 'GB2', x: 31, y: 7 },

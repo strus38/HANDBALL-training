@@ -135,9 +135,9 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
   if (!exercice) {
     return (
       <div className="mode-terrain vide">
-        <p>Cette seance ne contient aucun exercice.</p>
+        <p>Cette séance ne contient aucun exercice.</p>
         <button className="bouton principal geant" onClick={onFermer}>
-          Revenir a la seance
+          Revenir à la séance
         </button>
       </div>
     )
@@ -156,14 +156,14 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
         <div className="terrain-horaire">
           <strong className={reste < 0 ? 'en-retard' : undefined}>{phraseReste(reste)}</strong>
           <span>
-            Fin prevue {heure(finPrevue(creneaux, debut))} · {phraseDerive(ecart)}
+            Fin prévue {heure(finPrevue(creneaux, debut))} · {phraseDerive(ecart)}
           </span>
         </div>
         <div className="terrain-position">
           <strong>
             {index + 1} / {exercices.length}
           </strong>
-          <span>{menes} mene{menes > 1 ? 's' : ''} sur {exercices.length}</span>
+          <span>{menes} mené{menes > 1 ? 's' : ''} sur {exercices.length}</span>
         </div>
       </header>
 
@@ -175,8 +175,8 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
         <div className="terrain-texte">
           <h1>{exercice.titre || 'Sans titre'}</h1>
           <p className="terrain-meta">
-            {LIBELLES_CATEGORIE[exercice.categorie]} · {exercice.duree} min prevues
-            {exercice.deroule?.dureeReelle ? ` · ${exercice.deroule.dureeReelle} min passees` : ''}
+            {LIBELLES_CATEGORIE[exercice.categorie]} · {exercice.duree} min prévues
+            {exercice.deroule?.dureeReelle ? ` · ${exercice.deroule.dureeReelle} min passées` : ''}
           </p>
           {exercice.objectifs && <p className="terrain-objectif">{exercice.objectifs}</p>}
           {exercice.misePlace && (
@@ -192,7 +192,7 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
           )}
           {exercice.fonctionnement && (
             <section>
-              <h2>Deroulement</h2>
+              <h2>Déroulement</h2>
               {exercice.fonctionnement
                 .split('\n')
                 .filter(Boolean)
@@ -203,7 +203,7 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
           )}
           {exercice.pointsCles && (
             <section>
-              <h2>Points cles</h2>
+              <h2>Points clés</h2>
               <ul>
                 {exercice.pointsCles
                   .split('\n')
@@ -216,7 +216,7 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
           )}
           {exercice.materiel.length > 0 && (
             <p className="terrain-materiel">
-              <strong>Materiel :</strong> {exercice.materiel.join(', ')}
+              <strong>Matériel :</strong> {exercice.materiel.join(', ')}
             </p>
           )}
         </div>
@@ -227,16 +227,16 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
           className="bouton geant"
           onClick={() => allerA(index - 1)}
           disabled={index === 0}
-          title="Exercice precedent"
+          title="Exercice précédent"
         >
-          ← Precedent
+          ← Précédent
         </button>
         <button
           className={`bouton geant marquer-mene${fait ? ' actif' : ''}`}
           aria-pressed={fait}
           onClick={basculerFait}
         >
-          {fait ? '☑ Mene' : '☐ Marquer mene'}
+          {fait ? '☑ Mené' : '☐ Marquer mené'}
         </button>
         <button
           className="bouton principal geant"

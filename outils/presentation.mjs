@@ -42,39 +42,39 @@ function nombreDeFiches() {
 const SECTIONS = [
   {
     capture: 'accueil',
-    titre: 'Toutes vos seances, sur une page',
+    titre: 'Toutes vos séances, sur une page',
     texte:
-      "Chaque carte donne la date, la duree, l'effectif prevu et la repartition du temps par categorie. On voit d'un coup d'oeil une seance trop chargee en attaque, ou sans echauffement.",
+      "Chaque carte donne la date, la durée, l'effectif prévu et la répartition du temps par catégorie. On voit d'un coup d'oeil une séance trop chargée en attaque, ou sans échauffement.",
   },
   {
     capture: 'seance',
-    titre: 'Une seance, exercice par exercice',
+    titre: 'Une séance, exercice par exercice',
     texte:
-      "L'ordre se change en montant ou descendant une ligne. Le total de temps se recalcule tout seul, et le travail des gardiens mene en parallele ne s'y ajoute pas.",
+      "L'ordre se change en montant ou descendant une ligne. Le total de temps se recalcule tout seul, et le travail des gardiens mené en parallèle ne s'y ajoute pas.",
   },
   {
     capture: 'bibliotheque',
-    titre: 'FICHES exercices deja ecrits',
+    titre: 'FICHES exercices déjà écrits',
     texte:
-      "Echauffement, attaque, defense, montee de balle, gardiens, preparation physique. Chaque fiche porte ses objectifs, ses points cles et ses variantes. Vous en prenez une, vous l'ajustez : la copie est a vous, le modele reste intact.",
+      "Échauffement, attaque, défense, montée de balle, gardiens, préparation physique. Chaque fiche porte ses objectifs, ses points clés et ses variantes. Vous en prenez une, vous l'ajustez : la copie est à vous, le modèle reste intact.",
   },
   {
     capture: 'fiche',
-    titre: 'Le schema a gauche, le detail a droite',
+    titre: 'Le schéma à gauche, le détail à droite',
     texte:
-      "La barre entre les deux se deplace, et chaque cote peut occuper tout l'ecran. Si l'exercice demande plus de joueurs que l'effectif annonce, un bandeau le signale avant la seance, pas pendant.",
+      "La barre entre les deux se déplace, et chaque côté peut occuper tout l'écran. Si l'exercice demande plus de joueurs que l'effectif annoncé, un bandeau le signale avant la séance, pas pendant.",
   },
   {
     capture: 'terrain',
-    titre: 'Le mouvement se decoupe en etapes',
+    titre: 'Le mouvement se découpe en étapes',
     texte:
-      "Vous posez les joueurs, vous tracez une fleche : la position suivante en decoule, le ballon suit son porteur. Le bouton Lire rejoue l'enchainement. Le terrain est aux cotes officielles, le schema s'imprime a n'importe quelle taille sans se deformer.",
+      "Vous posez les joueurs, vous tracez une flèche : la position suivante en découle, le ballon suit son porteur. Le bouton Lire rejoue l'enchaînement. Le terrain est aux cotes officielles, le schéma s'imprime à n'importe quelle taille sans se déformer.",
   },
   {
     capture: 'bilan',
-    titre: 'Ce qui a marche, et ce qui revient trop souvent',
+    titre: 'Ce qui a marché, et ce qui revient trop souvent',
     texte:
-      'Apres la seance, une note de une a cinq etoiles et un commentaire. Sur la saison, le bilan montre le temps passe par categorie et les exercices les mieux notes. On ne redemarre pas de zero en septembre.',
+      'Après la séance, une note de une à cinq étoiles et un commentaire. Sur la saison, le bilan montre le temps passé par catégorie et les exercices les mieux notés. On ne redémarre pas de zéro en septembre.',
   },
 ]
 
@@ -225,7 +225,7 @@ async function construire() {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HBPSM — Preparation de seances</title>
+<title>HBPSM — Préparation de séances</title>
 <style>
 ${jetonsDeStyle()}
 ${MISE_EN_PAGE}</style>
@@ -234,17 +234,17 @@ ${MISE_EN_PAGE}</style>
 <header class="tete">
   ${logo('logo-presentation')}
   <div>
-    <h1>Preparer ses seances de handball</h1>
+    <h1>Préparer ses séances de handball</h1>
     <p>Handball Pays de Saint-Marcellin — ce que fait le logiciel</p>
   </div>
 </header>
 
 <div class="page">
   <div class="resume">
-    <div class="fait"><strong>Un seul fichier</strong><span>Rien a installer, aucun compte, aucun mot de passe.</span></div>
-    <div class="fait"><strong>Hors ligne</strong><span>Fonctionne dans le gymnase, sans reseau.</span></div>
-    <div class="fait"><strong>${fiches} exercices fournis</strong><span>Utilisables tels quels, ou a modifier.</span></div>
-    <div class="fait"><strong>Impression A4</strong><span>La seance dans la main, au bord du terrain.</span></div>
+    <div class="fait"><strong>Un seul fichier</strong><span>Rien à installer, aucun compte, aucun mot de passe.</span></div>
+    <div class="fait"><strong>Hors ligne</strong><span>Fonctionne dans le gymnase, sans réseau.</span></div>
+    <div class="fait"><strong>${fiches} exercices fournis</strong><span>Utilisables tels quels, ou à modifier.</span></div>
+    <div class="fait"><strong>Impression A4</strong><span>La séance dans la main, au bord du terrain.</span></div>
   </div>
 
 ${sections}
@@ -252,8 +252,8 @@ ${sections}
   <div class="limites">
     <h2>Ce qu'il ne fait pas</h2>
     <ul>
-      <li><strong>Pas de compte, donc pas de synchronisation.</strong> Votre travail reste sur votre machine. On echange des seances en s'envoyant un fichier.</li>
-      <li><strong>Pas de video, pas de statistiques de match.</strong> Il prepare l'entrainement, rien d'autre.</li>
+      <li><strong>Pas de compte, donc pas de synchronisation.</strong> Votre travail reste sur votre machine. On échange des séances en s'envoyant un fichier.</li>
+      <li><strong>Pas de vidéo, pas de statistiques de match.</strong> Il prépare l'entraînement, rien d'autre.</li>
       <li><strong>Le stockage du navigateur n'est pas transportable.</strong> Changer de machine demande d'exporter puis d'importer.</li>
     </ul>
   </div>
@@ -261,14 +261,14 @@ ${sections}
   <div class="demarrer">
     <h2>Pour l'essayer</h2>
     <ol>
-      <li>Enregistrez le fichier <code>index.html</code> ou vous voulez : bureau, cle USB, dossier partage.</li>
+      <li>Enregistrez le fichier <code>index.html</code> où vous voulez : bureau, clé USB, dossier partagé.</li>
       <li>Double-cliquez dessus. Il s'ouvre dans votre navigateur.</li>
-      <li>Ouvrez la bibliotheque, prenez trois exercices, imprimez. Vous avez une seance.</li>
+      <li>Ouvrez la bibliothèque, prenez trois exercices, imprimez. Vous avez une séance.</li>
     </ol>
     <p style="margin:12px 0 0">Le mode d'emploi complet est dans le fichier <code>LISEZMOI.html</code>, et le bouton <strong>Notice</strong> l'ouvre depuis l'application.</p>
   </div>
 
-  <p class="pied">Captures prises dans l'application elle-meme. Fichier autonome, aucune connexion requise.</p>
+  <p class="pied">Captures prises dans l'application elle-même. Fichier autonome, aucune connexion requise.</p>
 </div>
 </body>
 </html>

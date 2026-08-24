@@ -26,10 +26,16 @@ const verifier = (nom, condition, detail = '') => {
 
 const CATALOGUE = [...SENIORS_MASCULINS, ...GARDIENS]
 
-/** Schema d'attaque placee, pour les tests unitaires. */
+/**
+ * Schema d'attaque placee, pour les tests unitaires.
+ *
+ * La fiche se retrouve par sa REFERENCE, jamais par son titre : le titre est
+ * corrigible - il vient de gagner ses accents - et une recherche par titre
+ * casse au premier remaniement, loin d'ici et sans rapport avec l'analyse.
+ */
 function schemaAttaque() {
   return construireExercice(
-    CATALOGUE.find((m) => m.titre.startsWith('Croise arriere')),
+    CATALOGUE.find((m) => m.ref === 'croise-arriere-ailier-cote-droit'),
   ).schema
 }
 
@@ -58,7 +64,7 @@ verifier('une passe avec receveur est fiable', propositions[1].actions[0].confia
 verifier('un lieu explicite est fiable', propositions[2].actions[0].confiance === 'haute',
   propositions[2].actions[0].confiance)
 verifier('la description est lisible',
-  decrireProposition(schema, propositions[1].actions[0]).includes('passe a'),
+  decrireProposition(schema, propositions[1].actions[0]).includes('passe à'),
   decrireProposition(schema, propositions[1].actions[0]))
 
 const ecran = proposerMouvements(schema, 'Le pivot pose un ecran sur le defenseur 2.')

@@ -24,6 +24,7 @@ import {
 } from './domain/echange'
 import type { Exercice, Seance } from './domain/types'
 import type { MoyenStockage } from './storage/choisirDepot'
+import { versionComplete, versionCourte } from './domain/version'
 
 export function App() {
   const atelier = useAtelier()
@@ -78,17 +79,17 @@ export function App() {
 
   const demanderSuppression = async (cible: Seance) => {
     const accepte = await confirmer({
-      titre: 'Supprimer cette seance ?',
+      titre: 'Supprimer cette séance ?',
       message: (
         <>
           <strong>{cible.titre || 'Sans titre'}</strong> et ses {cible.exercices.length} exercice
-          {cible.exercices.length > 1 ? 's' : ''} seront supprimes definitivement.
+          {cible.exercices.length > 1 ? 's' : ''} seront supprimés définitivement.
           <em className="dialogue-note">
-            Pour en garder une trace, fermez cette fenetre et utilisez « Exporter ».
+            Pour en garder une trace, fermez cette fenêtre et utilisez « Exporter ».
           </em>
         </>
       ),
-      libelleConfirmer: 'Supprimer la seance',
+      libelleConfirmer: 'Supprimer la séance',
       danger: true,
     })
     if (!accepte) return
@@ -104,7 +105,7 @@ export function App() {
     setExerciceOuvertId(undefined)
     setVue('seance')
     setMessageImport(
-      `Seance « ${copie.titre} » creee pour le ${copie.date.split('-').reverse().join('/')}.`,
+      `Séance « ${copie.titre} » créée pour le ${copie.date.split('-').reverse().join('/')}.`,
     )
   }
 
@@ -123,12 +124,12 @@ export function App() {
 
       if (contenu.type === 'sauvegarde') {
         // Une restauration AJOUTE : elle n'ecrase jamais le travail en place.
-        await atelier.restaurer(contenu.seances, contenu.modeles, contenu.favoris)
+        await atelier.restaurer(contenu.seances, contenu.modeles, contenu.favoris, contenu.masquees)
         setVue('accueil')
         setMessageImport(
-          `Sauvegarde restauree : ${contenu.seances.length} seance` +
+          `Sauvegarde restaurée : ${contenu.seances.length} séance` +
             `${contenu.seances.length > 1 ? 's' : ''} et ${contenu.modeles.length} exercice` +
-            `${contenu.modeles.length > 1 ? 's' : ''} ajoutes a ce qui etait deja la.`,
+            `${contenu.modeles.length > 1 ? 's' : ''} ajoutés à ce qui était déjà là.`,
         )
         return
       }
@@ -137,8 +138,8 @@ export function App() {
       setVue('seance')
       setMessageImport(
         contenu.type === 'seance'
-          ? `Seance « ${contenu.seance.titre} » importee.`
-          : 'Exercice importe dans une nouvelle seance.',
+          ? `Séance « ${contenu.seance.titre} » importée.`
+          : 'Exercice importé dans une nouvelle séance.',
       )
     } catch (erreur) {
       setMessageImport(
@@ -161,12 +162,12 @@ export function App() {
     const jour = new Date().toISOString().slice(0, 10)
     fichiersNavigateur.telecharger(
       `hbpsm-sauvegarde-${jour}${EXTENSION}`,
-      exporterSauvegarde(atelier.seances, atelier.mesModeles, atelier.favoris),
+      exporterSauvegarde(atelier.seances, atelier.mesModeles, atelier.favoris, atelier.masquees),
     )
     setMessageImport(
-      `Sauvegarde de ${atelier.seances.length} seance${atelier.seances.length > 1 ? 's' : ''} ` +
+      `Sauvegarde de ${atelier.seances.length} séance${atelier.seances.length > 1 ? 's' : ''} ` +
         `et ${atelier.mesModeles.length} exercice${atelier.mesModeles.length > 1 ? 's' : ''} ` +
-        `de votre bibliotheque, avec vos ${atelier.favoris.length} favori` +
+        `de votre bibliothèque, avec vos ${atelier.favoris.length} favori` +
         `${atelier.favoris.length > 1 ? 's' : ''}. Conservez ce fichier ailleurs que sur cette machine.`,
     )
   }
@@ -183,7 +184,7 @@ export function App() {
         <button
           className="bouton discret replier"
           onClick={() => setColonneRepliee((r) => !r)}
-          title={colonneRepliee ? 'Afficher le menu des seances' : 'Replier le menu des seances'}
+          title={colonneRepliee ? 'Afficher le menu des séances' : 'Replier le menu des séances'}
           aria-expanded={!colonneRepliee}
         >
           {colonneRepliee ? '☰' : '⟨'}
@@ -194,23 +195,24 @@ export function App() {
             setVue('accueil')
             setExerciceOuvertId(undefined)
           }}
-          title="Revenir a la liste des seances"
+          title="Revenir à la liste des séances"
         >
           <LogoHbpsm />
         </button>
         <div className="identite">
-          <h1>HBPSM · Preparation de seances</h1>
+          <h1>HBPSM · Préparation de séances</h1>
           <span className="sous-titre">
             Handball Pays de Saint-Marcellin · fonctionne hors ligne
           </span>
         </div>
         <div className="pousse" />
+        <EtiquetteVersion />
         <button
           className="bouton discret"
           onClick={() => {
             if (!ouvrirNotice()) setMessageNotice(true)
           }}
-          title="Ouvrir la notice dans une fenetre a part"
+          title="Ouvrir la notice dans une fenêtre à part"
         >
           Notice
         </button>
@@ -221,9 +223,9 @@ export function App() {
         <div className="bandeau alerte">
           <div>
             <strong>Sauvegarde automatique indisponible</strong>
-            Votre navigateur n'autorise aucun stockage local pour ce fichier (navigation privee, ou
+            Votre navigateur n'autorise aucun stockage local pour ce fichier (navigation privée, ou
             ouverture directe depuis le disque). Le travail en cours reste utilisable, mais il sera
-            perdu a la fermeture : exportez vos seances en fichier .hbt.json avant de quitter.
+            perdu à la fermeture : exportez vos séances en fichier .hbt.json avant de quitter.
           </div>
         </div>
       )}
@@ -240,9 +242,9 @@ export function App() {
       {messageNotice && (
         <div className="bandeau information">
           <div>
-            <strong>Notice bloquee par le navigateur</strong>
-            La fenetre n'a pas pu s'ouvrir : autorisez les fenetres surgissantes pour cette page,
-            ou ouvrez le fichier <code>LISEZMOI.html</code> livre a cote de l'application.
+            <strong>Notice bloquée par le navigateur</strong>
+            La fenêtre n'a pas pu s'ouvrir : autorisez les fenêtres surgissantes pour cette page,
+            ou ouvrez le fichier <code>LISEZMOI.html</code> livré à côté de l'application.
           </div>
           <button className="bouton discret" onClick={() => setMessageNotice(false)}>
             ✕
@@ -323,7 +325,7 @@ export function App() {
             onEnregistrerDansBibliotheque={() => {
               void atelier.enregistrerModele(exerciceOuvert)
               setMessageImport(
-                `« ${exerciceOuvert.titre} » est enregistre dans votre bibliotheque.`,
+                `« ${exerciceOuvert.titre} » est enregistré dans votre bibliothèque.`,
               )
             }}
             onImprimer={() => setAImprimer([exerciceOuvert])}
@@ -351,6 +353,8 @@ export function App() {
           seances={atelier.seances}
           favoris={atelier.favoris}
           onBasculerFavori={(cle) => void atelier.basculerFavori(cle)}
+          masquees={atelier.masquees}
+          onBasculerMasquee={(ref) => void atelier.basculerMasquee(ref)}
           onFermer={() => setBibliothequeOuverte(false)}
           onSupprimerModele={(id) => void atelier.supprimerModele(id)}
           onAjouter={(exercice) => {
@@ -389,13 +393,48 @@ export function App() {
   )
 }
 
+/**
+ * Version du fichier, dans l'en-tête.
+ *
+ * Un clic la copie en entier — numéro, date, révision. C'est le geste utile :
+ * quand un entraîneur signale un défaut, il colle cette ligne dans son message
+ * au lieu de la recopier de mémoire, et l'on sait exactement quel exemplaire
+ * corriger. L'application voyage en un fichier, sans mise à jour : deux postes
+ * n'ont presque jamais la même.
+ */
+function EtiquetteVersion() {
+  const [copie, setCopie] = useState(false)
+
+  const copier = async () => {
+    try {
+      await navigator.clipboard.writeText(versionComplete())
+      setCopie(true)
+      setTimeout(() => setCopie(false), 2000)
+    } catch {
+      // Presse-papiers refusé (page ouverte depuis le disque, permission
+      // absente) : l'infobulle porte déjà le texte, il reste sélectionnable.
+      setCopie(false)
+    }
+  }
+
+  return (
+    <button
+      className="version"
+      onClick={() => void copier()}
+      title={`${versionComplete()} — cliquer pour copier`}
+    >
+      {copie ? 'copié' : versionCourte()}
+    </button>
+  )
+}
+
 function IndicateurSauvegarde({ etat, moyen }: { etat: EtatSauvegarde; moyen: MoyenStockage }) {
-  if (moyen === 'aucun') return <span className="indicateur erreur">Non sauvegarde</span>
+  if (moyen === 'aucun') return <span className="indicateur erreur">Non sauvegardé</span>
   const libelles: Record<EtatSauvegarde, string> = {
-    inactif: moyen === 'localstorage' ? 'Sauvegarde simplifiee' : '',
+    inactif: moyen === 'localstorage' ? 'Sauvegarde simplifiée' : '',
     'en-cours': 'Enregistrement…',
-    enregistre: 'Enregistre',
-    erreur: 'Echec de sauvegarde',
+    enregistre: 'Enregistré',
+    erreur: 'Échec de sauvegarde',
   }
   const classe = etat === 'erreur' ? 'erreur' : etat === 'enregistre' ? 'enregistre' : ''
   return (
@@ -403,7 +442,7 @@ function IndicateurSauvegarde({ etat, moyen }: { etat: EtatSauvegarde; moyen: Mo
       className={`indicateur ${classe}`}
       title={
         moyen === 'localstorage'
-          ? 'Stockage de secours du navigateur : capacite limitee, exportez regulierement.'
+          ? 'Stockage de secours du navigateur : capacité limitée, exportez régulièrement.'
           : 'Sauvegarde automatique dans le navigateur.'
       }
     >

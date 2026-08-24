@@ -13,6 +13,7 @@ import { nouvelleSeance } from '../domain/fabrique'
 import { normaliserExercice, normaliserSeance } from '../domain/echange'
 import type { Exercice, Seance } from '../domain/types'
 import { basculerFavori, fusionnerFavoris } from '../domain/favoris'
+import { basculerMasquee, fusionnerMasquees } from '../domain/masquees'
 
 const DELAI_SAUVEGARDE_MS = 600
 
@@ -25,6 +26,7 @@ export function useAtelier() {
   const [moyenStockage, setMoyenStockage] = useState<MoyenStockage>('indexeddb')
   const [mesModeles, setMesModeles] = useState<Exercice[]>([])
   const [favoris, setFavoris] = useState<string[]>([])
+  const [masquees, setMasquees] = useState<string[]>([])
   const [etatSauvegarde, setEtatSauvegarde] = useState<EtatSauvegarde>('inactif')
 
   const minuteries = useRef(new Map<string, ReturnType<typeof setTimeout>>())
@@ -50,10 +52,12 @@ export function useAtelier() {
           const existantes = (await choix.depot.listerSeances()).map(normaliserSeance)
           const modeles = (await choix.depot.listerModeles()).map(normaliserExercice)
           const etoiles = await choix.depot.lireFavoris()
+          const retirees = await choix.depot.lireMasquees()
           if (annule) return
           setSeances(existantes)
           setMesModeles(modeles)
           setFavoris(etoiles)
+          setMasquees(retirees)
           setSeanceCouranteId(existantes[0]?.id)
         } catch {
           if (!annule) {
@@ -214,6 +218,25 @@ export function useAtelier() {
       setEtatSauvegarde('erreur')
     }
   }, [])
+
+  /**
+   * Masque une fiche fournie, ou la retablit dans la bibliotheque.
+   *
+   * Comme les favoris, l'ecriture est immediate : retirer une fiche est un
+   * geste isole, et il doit survivre a une fermeture dans la foulee.
+   */
+  const basculerMasqueeDe = useCallback(async (ref: string) => {
+    let suivantes: string[] = []
+    setMasquees((precedentes) => {
+      suivantes = basculerMasquee(precedentes, ref)
+      return suivantes
+    })
+    try {
+      await depot.current?.enregistrerMasquees(suivantes)
+    } catch {
+      setEtatSauvegarde('erreur')
+    }
+  }, [])
   /**
    * Restaure une sauvegarde complete.
    *
@@ -223,7 +246,12 @@ export function useAtelier() {
    * cours ne le detruit pas.
    */
   const restaurer = useCallback(
-    async (nouvelles: Seance[], modeles: Exercice[], etoiles: string[] = []) => {
+    async (
+      nouvelles: Seance[],
+      modeles: Exercice[],
+      etoiles: string[] = [],
+      retirees: string[] = [],
+    ) => {
       setSeances((precedentes) => [...nouvelles, ...precedentes])
       setMesModeles((precedents) => [...modeles, ...precedents])
       setSeanceCouranteId(nouvelles[0]?.id)
@@ -234,10 +262,18 @@ export function useAtelier() {
         fusionnes = fusionnerFavoris(precedents, etoiles)
         return fusionnes
       })
+      // Meme regle pour les fiches masquees : le tri fait sur l'autre machine
+      // s'ajoute a celui d'ici, il ne retablit jamais une fiche masquee depuis.
+      let masqueesFusionnees: string[] = []
+      setMasquees((precedentes) => {
+        masqueesFusionnees = fusionnerMasquees(precedentes, retirees)
+        return masqueesFusionnees
+      })
       try {
         for (const seance of nouvelles) await depot.current?.enregistrerSeance(seance)
         for (const modele of modeles) await depot.current?.enregistrerModele(modele)
         await depot.current?.enregistrerFavoris(fusionnes)
+        await depot.current?.enregistrerMasquees(masqueesFusionnees)
         setEtatSauvegarde('enregistre')
       } catch {
         setEtatSauvegarde('erreur')
@@ -262,6 +298,8 @@ export function useAtelier() {
     mesModeles,
     favoris,
     basculerFavori: basculerFavoriDe,
+    masquees,
+    basculerMasquee: basculerMasqueeDe,
     restaurer,
     enregistrerModele,
     supprimerModele,

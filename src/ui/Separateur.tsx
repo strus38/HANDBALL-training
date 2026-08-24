@@ -162,7 +162,7 @@ export function Separateur({ separation, libelle }: Props) {
       aria-valuemin={0}
       aria-valuemax={100}
       tabIndex={0}
-      title="Glisser pour redimensionner · double-clic pour revenir a la position par defaut"
+      title="Glisser pour redimensionner · double-clic pour revenir à la position par défaut"
       onPointerDown={(e) => {
         // La capture garde le pointeur sur la poignee meme quand il passe
         // au-dessus du terrain, qui possede ses propres gestes.

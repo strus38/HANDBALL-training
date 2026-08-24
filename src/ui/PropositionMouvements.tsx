@@ -59,21 +59,21 @@ export function PropositionMouvements({ schema, propositions, onAppliquer, onAnn
         aria-labelledby="proposition-titre"
         onPointerDown={(evenement) => evenement.stopPropagation()}
       >
-        <h2 id="proposition-titre">Mouvements proposes</h2>
+        <h2 id="proposition-titre">Mouvements proposés</h2>
 
         {actions.length === 0 ? (
           <p className="dialogue-message">
-            Rien n'a pu etre deduit de ce deroulement. C'est frequent : un texte qui decrit une
-            organisation (« series de trois attaques », « le bloc glisse ») ne contient pas le
-            mouvement lui-meme. Nommez les postes et les actions — « l'arriere droit part en
-            course, puis passe a l'ailier droit » — pour que la lecture soit possible.
+            Rien n'a pu être déduit de ce déroulement. C'est fréquent : un texte qui décrit une
+            organisation (« séries de trois attaques », « le bloc glisse ») ne contient pas le
+            mouvement lui-même. Nommez les postes et les actions — « l'arrière droit part en
+            course, puis passe à l'ailier droit » — pour que la lecture soit possible.
           </p>
         ) : (
           <>
             <p className="dialogue-message">
               {actions.length} action{actions.length > 1 ? 's' : ''} lue
-              {actions.length > 1 ? 's' : ''} dans votre texte. Elles seront ajoutees comme
-              nouvelles etapes, a corriger ensuite sur le terrain — et Ctrl+Z annule tout.
+              {actions.length > 1 ? 's' : ''} dans votre texte. Elles seront ajoutées comme
+              nouvelles étapes, à corriger ensuite sur le terrain — et Ctrl+Z annule tout.
             </p>
 
             <ol className="liste-propositions">
@@ -83,7 +83,7 @@ export function PropositionMouvements({ schema, propositions, onAppliquer, onAnn
                   <span className="corps-proposition">
                     <strong>{decrireProposition(schema, action)}</strong>
                     <em className="source-proposition">« {action.phrase} »</em>
-                    <em className="indice-proposition">Situe d'apres : {action.indice}</em>
+                    <em className="indice-proposition">Situé d'après : {action.indice}</em>
                   </span>
                   <span className={`etiquette-confiance ${action.confiance}`}>
                     {LIBELLES_CONFIANCE[action.confiance]}
@@ -94,9 +94,9 @@ export function PropositionMouvements({ schema, propositions, onAppliquer, onAnn
 
             {approximatives > 0 && (
               <p className="avertissement-proposition">
-                {approximatives} destination{approximatives > 1 ? 's sont' : ' est'} placee
+                {approximatives} destination{approximatives > 1 ? 's sont' : ' est'} placée
                 {approximatives > 1 ? 's' : ''} approximativement : le texte dit « dans le dos »
-                ou « vers l'exterieur », ce qui ne se traduit pas en metres. Verifiez-les sur le
+                ou « vers l'extérieur », ce qui ne se traduit pas en mètres. Vérifiez-les sur le
                 terrain.
               </p>
             )}

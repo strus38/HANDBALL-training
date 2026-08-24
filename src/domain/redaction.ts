@@ -19,10 +19,10 @@ export function nommer(schema: Schema, jetonId: string | undefined): string {
   if (jeton.etiquette.trim()) return jeton.etiquette.trim()
   const roles: Record<string, string> = {
     attaquant: 'un attaquant',
-    defenseur: 'un defenseur',
+    defenseur: 'un défenseur',
     gardien: 'le gardien',
     ballon: 'le ballon',
-    entraineur: "l'entraineur",
+    entraineur: "l'entraîneur",
     plot: 'un plot',
     but: 'le but',
     haie: 'une haie',
@@ -43,11 +43,11 @@ export function situer(point: Position): string {
   const distanceAuBut = versLeButDroit ? TERRAIN.longueur - point.x : point.x
 
   const cote =
-    point.y > centre + 4.5 ? " cote gauche" : point.y < centre - 4.5 ? ' cote droit' : " dans l'axe"
+    point.y > centre + 4.5 ? " côté gauche" : point.y < centre - 4.5 ? ' côté droit' : " dans l'axe"
 
-  if (distanceAuBut <= 6.5) return `pres du but${cote}`
-  if (distanceAuBut <= 9.5) return `a 9 m${cote}`
-  if (distanceAuBut <= 15) return `en peripherie${cote}`
+  if (distanceAuBut <= 6.5) return `près du but${cote}`
+  if (distanceAuBut <= 9.5) return `à 9 m${cote}`
+  if (distanceAuBut <= 15) return `en périphérie${cote}`
   return 'au milieu de terrain'
 }
 
@@ -88,18 +88,18 @@ export function decrireEtape(schema: Schema, index: number): Action[] {
       case 'passe': {
         const receveur = trouverReceveur(schema, index, fleche.id)
         phrase = receveur
-          ? `${nom} passe a ${nommer(schema, receveur)}.`
+          ? `${nom} passe à ${nommer(schema, receveur)}.`
           : `${nom} transmet le ballon ${ou}.`
         break
       }
       case 'tir':
-        phrase = `${nom} tire ${ou.startsWith('pres') ? 'a 6 m' : ou}.`
+        phrase = `${nom} tire ${ou.startsWith('près') ? 'à 6 m' : ou}.`
         break
       case 'ecran':
-        phrase = `${nom} pose un ecran ${ou}.`
+        phrase = `${nom} pose un écran ${ou}.`
         break
       default:
-        phrase = `${nom} se deplace ${ou}.`
+        phrase = `${nom} se déplace ${ou}.`
     }
 
     actions.push({ numero: actions.length + 1, phrase, type: fleche.type })

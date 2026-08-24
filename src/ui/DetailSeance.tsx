@@ -64,11 +64,11 @@ export function DetailSeance({
   return (
     <div className="panneau-principal">
       <button className="fil-ariane" onClick={onRetourAccueil}>
-        ← Toutes les seances
+        ← Toutes les séances
       </button>
 
       <section className="carte">
-        <h2>Informations de la seance</h2>
+        <h2>Informations de la séance</h2>
         <div className="grille-seance">
           <label className="champ">
             <span>Titre</span>
@@ -87,16 +87,16 @@ export function DetailSeance({
             />
           </label>
           <label className="champ">
-            <span>Equipe</span>
+            <span>Équipe</span>
             <input
               type="text"
               value={seance.equipe}
-              placeholder="Seniors garcons"
+              placeholder="Seniors garçons"
               onChange={(e) => onModifier((s) => ({ ...s, equipe: e.target.value }))}
             />
           </label>
           <label className="champ">
-            <span>Categorie</span>
+            <span>Catégorie</span>
             <input
               type="text"
               value={seance.categorieAge}
@@ -107,26 +107,26 @@ export function DetailSeance({
         </div>
         <div className="grille-effectif">
           <label className="champ">
-            <span>Joueurs de champ presents</span>
+            <span>Joueurs de champ présents</span>
             <input
               type="number"
               min={0}
               max={40}
               value={seance.effectifJoueurs || ''}
-              placeholder="non renseigne"
+              placeholder="non renseigné"
               onChange={(e) =>
                 onModifier((s) => ({ ...s, effectifJoueurs: Number(e.target.value) || 0 }))
               }
             />
           </label>
           <label className="champ">
-            <span>Gardiens presents</span>
+            <span>Gardiens présents</span>
             <input
               type="number"
               min={0}
               max={6}
               value={seance.effectifGardiens || ''}
-              placeholder="non renseigne"
+              placeholder="non renseigné"
               onChange={(e) =>
                 onModifier((s) => ({ ...s, effectifGardiens: Number(e.target.value) || 0 }))
               }
@@ -134,14 +134,14 @@ export function DetailSeance({
           </label>
           <p className="aide-effectif">
             Renseigne l'effectif du jour : les exercices qui demandent plus de monde sont alors
-            signales.
+            signalés.
           </p>
         </div>
 
         <label className="champ" style={{ marginTop: 14 }}>
           <EtiquetteAvecDictee
-            libelle="Objectif de la seance"
-            quoi="l'objectif de la seance"
+            libelle="Objectif de la séance"
+            quoi="l'objectif de la séance"
             onTexte={(f) =>
               onModifier((s) => ({ ...s, objectifSeance: ajouterFragment(s.objectifSeance, f) }))
             }
@@ -149,7 +149,7 @@ export function DetailSeance({
           <textarea
             rows={2}
             value={seance.objectifSeance}
-            placeholder="Ex : ameliorer la circulation de balle face a une defense 6-0"
+            placeholder="Ex : améliorer la circulation de balle face à une défense 6-0"
             onChange={(e) => onModifier((s) => ({ ...s, objectifSeance: e.target.value }))}
           />
         </label>
@@ -160,7 +160,7 @@ export function DetailSeance({
         <span className="compteur">
           {seance.exercices.length} fiche{seance.exercices.length > 1 ? 's' : ''} ·{' '}
           {dureeTotale(seance)} min
-          {enParallele > 0 && ` · ${enParallele} en parallele`}
+          {enParallele > 0 && ` · ${enParallele} en parallèle`}
         </span>
         <div className="pousse">
           {/*
@@ -178,7 +178,7 @@ export function DetailSeance({
           */}
 
           <button className="bouton danger" onClick={onSupprimerSeance}>
-            Supprimer la seance
+            Supprimer la séance
           </button>
           <span className="separateur-actions" aria-hidden="true" />
           <button className="bouton" onClick={onExporterSeance}>
@@ -188,18 +188,18 @@ export function DetailSeance({
             Dupliquer
           </button>
           <button className="bouton" onClick={onImprimerSeance} disabled={seance.exercices.length === 0}>
-            Imprimer la seance
+            Imprimer la séance
           </button>
           <button
             className="bouton mode-terrain-ouvrir"
             onClick={onModeTerrain}
             disabled={seance.exercices.length === 0}
-            title="Afficher la seance en grand, un exercice a la fois, pour la mener"
+            title="Afficher la séance en grand, un exercice à la fois, pour la mener"
           >
             ▶ Mode terrain
           </button>
           <button className="bouton" onClick={onOuvrirBibliotheque}>
-            Bibliotheque
+            Bibliothèque
           </button>
           <button className="bouton principal" onClick={ajouter}>
             + Exercice
@@ -209,13 +209,13 @@ export function DetailSeance({
 
       {seance.exercices.length === 0 ? (
         <div className="vide">
-          <p>Cette seance ne contient encore aucun exercice.</p>
+          <p>Cette séance ne contient encore aucun exercice.</p>
           <div className="actions-vide">
             <button className="bouton principal" onClick={ajouter}>
-              Creer une fiche
+              Créer une fiche
             </button>
             <button className="bouton" onClick={onOuvrirBibliotheque}>
-              Choisir dans la bibliotheque
+              Choisir dans la bibliothèque
             </button>
           </div>
         </div>
@@ -235,9 +235,9 @@ export function DetailSeance({
                       ? `${exercice.nombreJoueurs} joueurs`
                       : `${exercice.nombreGardiens} gardien${exercice.nombreGardiens > 1 ? 's' : ''}`}
                   </span>
-                  {exercice.enParallele && <em className="jeton-parallele">en parallele</em>}
+                  {exercice.enParallele && <em className="jeton-parallele">en parallèle</em>}
                   {manqueEffectif(exercice, seance) && (
-                    <em className="jeton-manque" title="Cet exercice demande plus de monde que l'effectif annonce">
+                    <em className="jeton-manque" title="Cet exercice demande plus de monde que l'effectif annoncé">
                       effectif insuffisant
                     </em>
                   )}
@@ -289,11 +289,11 @@ export function DetailSeance({
                       titre: 'Supprimer cet exercice ?',
                       message: (
                         <>
-                          <strong>{exercice.titre || 'Sans titre'}</strong> sera retire de la
-                          seance, avec son schema. Cette action est definitive.
+                          <strong>{exercice.titre || 'Sans titre'}</strong> sera retiré de la
+                          séance, avec son schéma. Cette action est définitive.
                           <em className="dialogue-note">
-                            La fiche reste disponible dans votre bibliotheque si elle y a ete
-                            enregistree.
+                            La fiche reste disponible dans votre bibliothèque si elle y a été
+                            enregistrée.
                           </em>
                         </>
                       ),

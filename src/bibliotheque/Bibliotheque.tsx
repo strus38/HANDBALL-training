@@ -8,7 +8,7 @@
  * inverse quand une modification merite d'etre conservee.
  */
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Terrain } from '../terrain/Terrain'
 import { construireExercice } from './modeles'
 import { CATALOGUE, REFS_COMBINAISONS } from './catalogue'
@@ -24,6 +24,7 @@ import {
 } from '../domain/types'
 import { cleUtilisation, indexerUtilisations, resumeUtilisation } from '../domain/utilisation'
 import { estFavori } from '../domain/favoris'
+import { estMasquee } from '../domain/masquees'
 
 // Le catalogue et l ensemble des combinaisons vivent dans catalogue.ts : les
 // tests ne peuvent pas importer ce composant, et en recopiaient une seconde
@@ -102,6 +103,16 @@ interface Props {
    */
   favoris: string[]
   onBasculerFavori: (cle: string) => void
+  /**
+   * References des fiches fournies que l entraineur a retirees.
+   *
+   * Retirer n est pas supprimer : les fiches fournies font partie de
+   * l application, et une nouvelle version les ramenerait. Elles sont donc
+   * masquees, retrouvables derriere la puce « Masquees », et retablies d un
+   * clic. C est ce qui permet de tailler la bibliotheque de base sans crainte.
+   */
+  masquees: string[]
+  onBasculerMasquee: (ref: string) => void
   onAjouter: (exercice: Exercice) => void
   onSupprimerModele: (id: string) => void
   onFermer: () => void
@@ -112,6 +123,8 @@ export function Bibliotheque({
   seances,
   favoris,
   onBasculerFavori,
+  masquees,
+  onBasculerMasquee,
   onAjouter,
   onSupprimerModele,
   onFermer,
@@ -134,21 +147,43 @@ export function Bibliotheque({
   const [favorisSeuls, setFavorisSeuls] = useState(false)
   /** Meme logique : la puce des combinaisons s ajoute, elle ne remplace pas. */
   const [combinaisonsSeules, setCombinaisonsSeules] = useState(false)
+  /**
+   * Montre les fiches fournies RETIREES, au lieu des fiches en place.
+   *
+   * Contrairement aux autres puces, celle-ci inverse la liste plutot que de la
+   * restreindre : c est la corbeille de la bibliotheque, la ou l on va
+   * retablir une fiche retiree par erreur.
+   */
+  const [masqueesSeules, setMasqueesSeules] = useState(false)
   const [recherche, setRecherche] = useState('')
   const [choisi, setChoisi] = useState<string | undefined>()
   const confirmer = useConfirmation()
+
+  /** Les references masquees encore presentes au catalogue. */
+  const masqueesConnues = useMemo(
+    () => CATALOGUE.filter((m) => estMasquee(masquees, m.ref)).length,
+    [masquees],
+  )
+
+  // La derniere fiche retablie fait disparaitre la puce : la vue des masquees
+  // n'a alors plus d'objet, on revient a la bibliotheque.
+  useEffect(() => {
+    if (masqueesSeules && masqueesConnues === 0) setMasqueesSeules(false)
+  }, [masqueesSeules, masqueesConnues])
 
   const entrees = useMemo<Entree[]>(() => {
     if (source === 'personnelle') {
       return mesModeles.map((exercice) => ({ cle: exercice.id, exercice, personnelle: true }))
     }
-    return CATALOGUE.map((modele) => ({
-      // La reference, pas le titre : une fiche renommee reste la meme fiche.
-      cle: modele.ref,
-      exercice: construireExercice(modele),
-      personnelle: false,
-    }))
-  }, [source, mesModeles])
+    return CATALOGUE.filter((modele) => estMasquee(masquees, modele.ref) === masqueesSeules).map(
+      (modele) => ({
+        // La reference, pas le titre : une fiche renommee reste la meme fiche.
+        cle: modele.ref,
+        exercice: construireExercice(modele),
+        personnelle: false,
+      }),
+    )
+  }, [source, mesModeles, masquees, masqueesSeules])
 
   const resultats = useMemo(() => {
     const mots = sansAccent(recherche).split(/\s+/).filter(Boolean)
@@ -189,11 +224,11 @@ export function Bibliotheque({
       <div
         className="modale bibliotheque"
         role="dialog"
-        aria-label="Bibliotheque d'exercices"
+        aria-label="Bibliothèque d'exercices"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="modale-entete">
-          <h2>Bibliotheque</h2>
+          <h2>Bibliothèque</h2>
           <div className="groupe-vues">
             <button
               className={`bouton segment${source === 'fournie' ? ' actif' : ''}`}
@@ -202,7 +237,7 @@ export function Bibliotheque({
                 setChoisi(undefined)
               }}
             >
-              Fiches fournies ({CATALOGUE.length})
+              Fiches fournies ({CATALOGUE.length - masqueesConnues})
             </button>
             <button
               className={`bouton segment${source === 'personnelle' ? ' actif' : ''}`}
@@ -217,7 +252,7 @@ export function Bibliotheque({
           <input
             type="text"
             className="recherche"
-            placeholder="Rechercher : croise, pivot, relance..."
+            placeholder="Rechercher : croisé, pivot, relance..."
             value={recherche}
             onChange={(e) => {
               setRecherche(e.target.value)
@@ -245,7 +280,7 @@ export function Bibliotheque({
           <button
             className={`puce bascule${animesSeuls ? ' active' : ''}`}
             aria-pressed={animesSeuls}
-            title="Ne montrer que les fiches dont le mouvement se deroule en plusieurs etapes"
+            title="Ne montrer que les fiches dont le mouvement se déroule en plusieurs étapes"
             onClick={() => {
               setAnimesSeuls((actif) => !actif)
               setChoisi(undefined)
@@ -267,7 +302,7 @@ export function Bibliotheque({
           <button
             className={`puce bascule${combinaisonsSeules ? ' active' : ''}`}
             aria-pressed={combinaisonsSeules}
-            title="Ne montrer que les combinaisons nommees : Espagnole, Pondus, double croise..."
+            title="Ne montrer que les combinaisons nommées : Espagnole, Pondus, double croisé..."
             onClick={() => {
               setCombinaisonsSeules((actif) => !actif)
               setChoisi(undefined)
@@ -286,6 +321,19 @@ export function Bibliotheque({
           >
             ★ Favoris
           </button>
+          {source === 'fournie' && masqueesConnues > 0 && (
+            <button
+              className={`puce bascule${masqueesSeules ? ' active' : ''}`}
+              aria-pressed={masqueesSeules}
+              title="Voir les fiches fournies que vous avez retirées, pour les rétablir"
+              onClick={() => {
+                setMasqueesSeules((actif) => !actif)
+                setChoisi(undefined)
+              }}
+            >
+              Retirées ({masqueesConnues})
+            </button>
+          )}
         </div>
 
         <div className="corps-bibliotheque">
@@ -293,17 +341,17 @@ export function Bibliotheque({
             {resultats.length === 0 && (
               <li className="aucun-resultat">
                 {combinaisonsSeules && filtre !== 'tous' && filtre !== 'attaque'
-                  ? "Les combinaisons nommees sont des exercices d attaque : levez le filtre de categorie pour les voir."
+                  ? "Les combinaisons nommées sont des exercices d attaque : levez le filtre de catégorie pour les voir."
                   : favorisSeuls
-                  ? "Aucun favori ici. L etoile en haut a droite d une fiche la met de cote."
+                  ? "Aucun favori ici. L étoile en haut à droite d une fiche la met de côté."
                   : source === 'personnelle' && mesModeles.length === 0
-                  ? "Vos exercices apparaitront ici : chaque fiche que vous creez rejoint automatiquement la bibliotheque."
+                  ? "Vos exercices apparaîtront ici : chaque fiche que vous créez rejoint automatiquement la bibliothèque."
                   : animesSeuls && sansBallonSeuls
-                    ? "Aucune fiche ne cumule les deux : les enchainements animes se jouent tous avec un ballon."
+                    ? "Aucune fiche ne cumule les deux : les enchaînements animés se jouent tous avec un ballon."
                     : animesSeuls
-                      ? "Aucune fiche animee ne correspond. Toutes les fiches n'ont pas de mouvement decrit etape par etape."
+                      ? "Aucune fiche animée ne correspond. Toutes les fiches n'ont pas de mouvement décrit étape par étape."
                       : sansBallonSeuls
-                        ? 'Aucune fiche sans ballon ne correspond a ce filtre.'
+                        ? 'Aucune fiche sans ballon ne correspond à ce filtre.'
                         : 'Aucune fiche ne correspond.'}
               </li>
             )}
@@ -330,13 +378,13 @@ export function Bibliotheque({
                     {nombreEtapes(entree.exercice) > 1 && (
                       <em
                         className="etiquette-etapes"
-                        title="Le mouvement se deroule en plusieurs etapes, lisibles en animation"
+                        title="Le mouvement se déroule en plusieurs étapes, lisibles en animation"
                       >
-                        ▶ {nombreEtapes(entree.exercice)} etapes
+                        ▶ {nombreEtapes(entree.exercice)} étapes
                       </em>
                     )}
                     {entree.exercice.enParallele && (
-                      <em className="jeton-parallele">en parallele</em>
+                      <em className="jeton-parallele">en parallèle</em>
                     )}
                     {entree.exercice.evaluation.note > 0 && (
                       <NoteEtoiles note={entree.exercice.evaluation.note} lectureSeule taille="compacte" />
@@ -385,7 +433,7 @@ export function Bibliotheque({
               )}
               {apercu.exercice.fonctionnement && (
                 <>
-                  <h4>Deroulement</h4>
+                  <h4>Déroulement</h4>
                   {apercu.exercice.fonctionnement.split('\n').filter(Boolean).map((l, i) => (
                     <p key={i}>{l}</p>
                   ))}
@@ -393,7 +441,7 @@ export function Bibliotheque({
               )}
               {apercu.exercice.pointsCles && (
                 <>
-                  <h4>Points cles</h4>
+                  <h4>Points clés</h4>
                   <ul>
                     {apercu.exercice.pointsCles.split('\n').filter(Boolean).map((l, i) => (
                       <li key={i}>{l}</li>
@@ -415,12 +463,12 @@ export function Bibliotheque({
                 </p>
               )}
               <p className="materiel-apercu">
-                <strong>Materiel :</strong> {apercu.exercice.materiel.join(', ') || 'aucun'}
+                <strong>Matériel :</strong> {apercu.exercice.materiel.join(', ') || 'aucun'}
               </p>
               {nombreEtapes(apercu.exercice) > 1 && (
                 <p className="materiel-apercu">
-                  <strong>Mouvement :</strong> {nombreEtapes(apercu.exercice)} etapes, lisibles en
-                  animation une fois la fiche ouverte. Le schema ci-dessus montre la mise en place.
+                  <strong>Mouvement :</strong> {nombreEtapes(apercu.exercice)} étapes, lisibles en
+                  animation une fois la fiche ouverte. Le schéma ci-dessus montre la mise en place.
                 </p>
               )}
               <div className="actions-apercu">
@@ -428,7 +476,7 @@ export function Bibliotheque({
                   className="bouton principal"
                   onClick={() => onAjouter(clonerExercice(apercu.exercice, ''))}
                 >
-                  Ajouter a la seance
+                  Ajouter à la séance
                 </button>
                 <button
                   className={`bouton${estFavori(favoris, apercu.cle) ? ' actif' : ''}`}
@@ -442,14 +490,14 @@ export function Bibliotheque({
                     className="bouton danger"
                     onClick={async () => {
                       const accepte = await confirmer({
-                        titre: 'Retirer de la bibliotheque ?',
+                        titre: 'Retirer de la bibliothèque ?',
                         message: (
                           <>
                             <strong>{apercu.exercice.titre || 'Sans titre'}</strong> ne sera plus
-                            proposee pour vos prochaines seances.
+                            proposée pour vos prochaines séances.
                             <em className="dialogue-note">
-                              Les seances qui utilisent deja cette fiche la conservent : elles en
-                              possedent leur propre copie.
+                              Les séances qui utilisent déjà cette fiche la conservent : elles en
+                              possèdent leur propre copie.
                             </em>
                           </>
                         ),
@@ -462,7 +510,52 @@ export function Bibliotheque({
                       }
                     }}
                   >
-                    Retirer de la bibliotheque
+                    Retirer de la bibliothèque
+                  </button>
+                )}
+                {/*
+                  Une fiche FOURNIE ne se supprime pas, elle se masque : elle
+                  reste derriere la puce « Retirees » et se retablit d'un clic.
+                  C'est ce qui permet de nettoyer la bibliotheque de base sans
+                  craindre de perdre quoi que ce soit.
+                */}
+                {!apercu.personnelle && masqueesSeules && (
+                  <button
+                    className="bouton"
+                    onClick={() => {
+                      onBasculerMasquee(apercu.cle)
+                      setChoisi(undefined)
+                    }}
+                  >
+                    Remettre dans la bibliothèque
+                  </button>
+                )}
+                {!apercu.personnelle && !masqueesSeules && (
+                  <button
+                    className="bouton danger"
+                    onClick={async () => {
+                      const accepte = await confirmer({
+                        titre: 'Retirer cette fiche fournie ?',
+                        message: (
+                          <>
+                            <strong>{apercu.exercice.titre || 'Sans titre'}</strong> ne sera plus
+                            proposée dans la bibliothèque.
+                            <em className="dialogue-note">
+                              Rien n'est perdu : la fiche reste derrière la puce « Retirées », d'où
+                              un clic la rétablit. Les séances qui l'utilisent la conservent.
+                            </em>
+                          </>
+                        ),
+                        libelleConfirmer: 'Retirer',
+                        danger: true,
+                      })
+                      if (accepte) {
+                        onBasculerMasquee(apercu.cle)
+                        setChoisi(undefined)
+                      }
+                    }}
+                  >
+                    Retirer de la bibliothèque
                   </button>
                 )}
               </div>

@@ -51,12 +51,12 @@ const lire = (chemin) => readFileSync(join(racine, chemin), 'utf8')
  * qu'il est en train de regarder.
  */
 const LEGENDES = {
-  accueil: 'La page d ouverture : toutes les seances, avec leur repartition du temps.',
-  terrain: 'Le terrain en pleine largeur, a une etape du mouvement.',
-  bibliotheque: 'La bibliotheque, filtree sur les exercices d attaque.',
+  accueil: 'La page d ouverture : toutes les séances, avec leur répartition du temps.',
+  terrain: 'Le terrain en pleine largeur, à une étape du mouvement.',
+  bibliotheque: 'La bibliothèque, filtrée sur les exercices d attaque.',
   bilan: 'Le bilan, ici sur tout l historique.',
-  'mode-terrain': 'Le mode terrain : un exercice a la fois, avec le temps restant.',
-  collage: 'Un texte dicte sur le telephone, colle et reparti dans les champs.',
+  'mode-terrain': 'Le mode terrain : un exercice à la fois, avec le temps restant.',
+  collage: 'Un texte dicté sur le téléphone, collé et réparti dans les champs.',
 }
 
 /** Remplit les emplacements de capture, ou les retire s'il n'y en a pas. */

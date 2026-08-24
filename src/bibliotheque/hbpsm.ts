@@ -40,28 +40,28 @@ const ZONE_DELIMITEE: ModeleJeton[] = [
 
 export const HBPSM: ModeleExercice[] = [
   {
-    titre: 'Echauffement collectif - motricite ballon',
+    titre: 'Échauffement collectif - motricité ballon',
     ref: 'echauffement-collectif-motricite-ballon',
     categorie: 'echauffement',
     duree: 5,
     nombreJoueurs: 12,
     nombreGardiens: 0,
     difficulte: 1,
-    materiel: ['un ballon par joueur', 'plots de delimitation'],
+    materiel: ['un ballon par joueur', 'plots de délimitation'],
     formatGardiens: 'sans',
     vue: 'complet',
     objectifs:
-      'Elever la temperature en retrouvant la manipulation du ballon. Type de situation : echauffement general.',
+      'Élever la température en retrouvant la manipulation du ballon. Type de situation : échauffement général.',
     formeIntervention: 'Approche inductive',
-    misePlace: 'Delimiter un terrain. Un ballon par joueur.',
+    misePlace: 'Délimiter un terrain. Un ballon par joueur.',
     fonctionnement:
-      'Trottiner en jouant avec la balle sans la faire tomber : autour de la tete, autour de la taille, entre les jambes.',
+      'Trottiner en jouant avec la balle sans la faire tomber : autour de la tête, autour de la taille, entre les jambes.',
     regulation: 'Dribbler main forte, main faible, puis en alternance.',
     pointsCles: '',
     evolution:
-      'Echanger la balle sur le dribble.\n' +
-      "Tout en dribblant, faire perdre le controle du ballon a l'adversaire.\n" +
-      "Qui perd le controle de son ballon sort de l'espace et va toucher le poteau du but le plus eloigne.",
+      'Échanger la balle sur le dribble.\n' +
+      "Tout en dribblant, faire perdre le contrôle du ballon à l'adversaire.\n" +
+      "Qui perd le contrôle de son ballon sort de l'espace et va toucher le poteau du but le plus éloigné.",
     jetons: [
       ...ZONE_DELIMITEE,
       { type: 'attaquant', x: 13, y: 6 },
@@ -78,23 +78,23 @@ export const HBPSM: ModeleExercice[] = [
   },
 
   {
-    titre: 'Echauffement gardien - trois colonnes et travail intermittent',
+    titre: 'Échauffement gardien - trois colonnes et travail intermittent',
     ref: 'echauffement-gardien-trois-colonnes-et-travail-inter',
     categorie: 'gardien',
     duree: 15,
     nombreJoueurs: 9,
     nombreGardiens: 1,
     difficulte: 2,
-    materiel: ['2 haies', '1 petite haie', 'echelle de corde', 'un ballon par joueur'],
+    materiel: ['2 haies', '1 petite haie', 'échelle de corde', 'un ballon par joueur'],
     formatGardiens: 'avec-joueurs',
     vue: 'demi',
     objectifs:
-      'Echauffer le gardien sur des impacts varies tout en faisant travailler les joueurs en intermittent.',
+      'Échauffer le gardien sur des impacts variés tout en faisant travailler les joueurs en intermittent.',
     formeIntervention: 'Couverture PIVOT',
     misePlace:
       '03 colonnes, un ballon chacun.\n' +
-      'Colonne 1 : haie + debordement gauche ou droit.\n' +
-      'Colonne 2 : echelle de corde, figuree sur le schema par la serie de haies rapprochees.\n' +
+      'Colonne 1 : haie + débordement gauche ou droit.\n' +
+      'Colonne 2 : échelle de corde, figurée sur le schéma par la série de haies rapprochées.\n' +
       'Colonne 3 : petite haie.',
     fonctionnement: 'Passer sur toutes les colonnes.',
     regulation:
@@ -104,7 +104,7 @@ export const HBPSM: ModeleExercice[] = [
     pointsCles: '',
     evolution:
       'Varier la forme des tirs et leur impact.\n' +
-      'Pour le gardien : aller chercher les tirs hauts a deux mains, les tirs bas avec les mains et les pieds.',
+      'Pour le gardien : aller chercher les tirs hauts à deux mains, les tirs bas avec les mains et les pieds.',
     jetons: [
       GARDIEN_DROITE,
       { type: 'haie', x: 26, y: 4 },
@@ -138,19 +138,19 @@ export const HBPSM: ModeleExercice[] = [
     formatGardiens: 'sans',
     vue: 'complet',
     objectifs:
-      'Travailler la puissance maximale aerobie avec ballon, par sequences de trois minutes. Type de situation : PMA avec ballon.',
+      'Travailler la puissance maximale aérobie avec ballon, par séquences de trois minutes. Type de situation : PMA avec ballon.',
     misePlace:
-      'Faire des equipes de 04.\n' +
-      'Duree annoncee dans le diaporama : de 10 a 15 minutes ; la fiche retient 12.',
+      'Faire des équipes de 04.\n' +
+      'Durée annoncée dans le diaporama : de 10 à 15 minutes ; la fiche retient 12.',
     fonctionnement:
       'Jouer sur tout le terrain pendant 3 minutes.\n' +
-      'A trois equipes : A-B, A-C, B-C.\n' +
-      'A quatre equipes : A-B, C-D, A-C, B-D, A-D, B-C.',
-    regulation: 'Regles du handball.\nDribble interdit dans sa propre moitie de terrain.',
+      'À trois équipes : A-B, A-C, B-C.\n' +
+      'À quatre équipes : A-B, C-D, A-C, B-D, A-D, B-C.',
+    regulation: 'Règles du handball.\nDribble interdit dans sa propre moitié de terrain.',
     pointsCles: '',
     evolution:
       "Dribble interdit sur l'ensemble du terrain.\n" +
-      "Puis dribble autorise sur l'ensemble du terrain.",
+      "Puis dribble autorisé sur l'ensemble du terrain.",
     jetons: [
       { type: 'attaquant', etiquette: 'A', x: 10, y: 10 },
       { type: 'ballon', x: 10.8, y: 10 },
@@ -166,7 +166,7 @@ export const HBPSM: ModeleExercice[] = [
   },
 
   {
-    titre: 'Attaquer une defense 0-6 - deux 3 contre 3',
+    titre: 'Attaquer une défense 0-6 - deux 3 contre 3',
     ref: 'attaquer-une-defense-0-6-deux-3-contre-3',
     categorie: 'attaque',
     duree: 20,
@@ -177,20 +177,20 @@ export const HBPSM: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'demi',
     objectifs:
-      'Attaquer une defense 0-6 en amenant le tir du cote favorable. Type de situation : jouer une situation de 3 x 3.',
+      'Attaquer une défense 0-6 en amenant le tir du côté favorable. Type de situation : jouer une situation de 3 x 3.',
     misePlace:
-      '2 equipes de 6.\n' +
+      '2 équipes de 6.\n' +
       'Couper le demi-terrain en 2.\n' +
-      'Duree laissee vide dans le diaporama ; la fiche retient 20 minutes.',
+      'Durée laissée vide dans le diaporama ; la fiche retient 20 minutes.',
     fonctionnement:
-      "Jouer un 3 x 3 : sur une partie un ailier, un arriere et le demi-centre ; sur l'autre un ailier, un arriere et le pivot.\n" +
-      'Defense en 0-6 mixte.',
+      "Jouer un 3 x 3 : sur une partie un ailier, un arrière et le demi-centre ; sur l'autre un ailier, un arrière et le pivot.\n" +
+      'Défense en 0-6 mixte.',
     regulation:
-      'La defense ne doit pas se faire passer du cote du bras porteur de balle.\n' +
-      "Pour la defense : +01 point si le tir est amene du cote du bras non porteur de balle ou de l'ailier ; -2 si le tir est pris du cote du bras porteur de balle ou du pivot.",
+      'La défense ne doit pas se faire passer du côté du bras porteur de balle.\n' +
+      "Pour la défense : +01 point si le tir est amené du côté du bras non porteur de balle ou de l'ailier ; -2 si le tir est pris du côté du bras porteur de balle ou du pivot.",
     pointsCles: '',
     evolution:
-      "Les arrieres ne peuvent mettre qu'un pied dans les 9 m.\nInterdire le dribble.",
+      "Les arrières ne peuvent mettre qu'un pied dans les 9 m.\nInterdire le dribble.",
     jetons: [
       GARDIEN_DROITE,
       // Bloc defensif releve sur le schema de l'entraineur : six defenseurs,
@@ -219,7 +219,7 @@ export const HBPSM: ModeleExercice[] = [
   },
 
   {
-    titre: 'Projet de jeu en transition - montee de balle',
+    titre: 'Projet de jeu en transition - montée de balle',
     ref: 'projet-de-jeu-en-transition-montee-de-balle',
     categorie: 'transition',
     duree: 15,
@@ -230,24 +230,24 @@ export const HBPSM: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'complet',
     objectifs:
-      'Monter la balle vite et large des la recuperation du gardien, en se desalignant du porteur. Type de situation : jeu de transition.',
-    formeIntervention: 'Montee de balle',
+      'Monter la balle vite et large dès la récupération du gardien, en se désalignant du porteur. Type de situation : jeu de transition.',
+    formeIntervention: 'Montée de balle',
     misePlace:
-      'Des trinomes avec ballon repartis sur les ailes droites.\n' +
+      'Des trinômes avec ballon répartis sur les ailes droites.\n' +
       'Couper le terrain sur la longueur.\n' +
-      'Duree laissee vide dans le diaporama ; la fiche retient 15 minutes.',
+      'Durée laissée vide dans le diaporama ; la fiche retient 15 minutes.',
     fonctionnement:
-      'Ballon au gardien = depart.\nMonter la balle.\nLe tireur ne replie pas.',
-    regulation: 'Jouer en fonction des defenseurs.\nSe desaligner du porteur de balle.',
+      'Ballon au gardien = départ.\nMonter la balle.\nLe tireur ne replie pas.',
+    regulation: 'Jouer en fonction des défenseurs.\nSe désaligner du porteur de balle.',
     pointsCles: '',
     evolution: "Relance possible sur l'ailier.",
     consigneInitiale:
-      "Le trinome attend sur l'aile droite. Le ballon est au gardien : c'est lui qui declenche.",
+      "Le trinôme attend sur l'aile droite. Le ballon est au gardien : c'est lui qui déclenche.",
     etapes: [
       {
-        titre: 'Depart',
+        titre: 'Départ',
         consigne:
-          "Le gardien releve la balle. L'axe vient a la rencontre, les deux autres s'ecartent.",
+          "Le gardien relève la balle. L'axe vient à la rencontre, les deux autres s'écartent.",
         mouvements: [
           { jeton: 'axe', type: 'course', vers: { x: 10, y: 6 } },
           { jeton: 'gbg', type: 'passe', cible: 'axe' },
@@ -256,9 +256,9 @@ export const HBPSM: ModeleExercice[] = [
         ],
       },
       {
-        titre: 'Montee de balle',
+        titre: 'Montée de balle',
         consigne:
-          'Les trois montent en occupant la largeur. Le porteur cherche le joueur desaligne, cote oppose au repli.',
+          'Les trois montent en occupant la largeur. Le porteur cherche le joueur désaligné, côté opposé au repli.',
         mouvements: [
           { jeton: 'axe', type: 'course', vers: { x: 20, y: 8 } },
           { jeton: 'aild', type: 'course', vers: { x: 24, y: 2.5 } },
@@ -271,7 +271,7 @@ export const HBPSM: ModeleExercice[] = [
       {
         titre: 'Fixation',
         consigne:
-          "Le receveur enchaine sans temps mort et attaque l'intervalle laisse par le repli.",
+          "Le receveur enchaîne sans temps mort et attaque l'intervalle laissé par le repli.",
         mouvements: [
           { jeton: 'ailg', type: 'course', vers: { x: 31, y: 16.5 } },
           { jeton: 'aild', type: 'course', vers: { x: 33, y: 3 } },
@@ -308,14 +308,14 @@ export const HBPSM: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'complet',
     objectifs:
-      "Reinvestir la montee de balle et l'attaque du cote favorable dans le jeu complet, sous un bareme qui recompense la transition et le pivot.",
-    misePlace: '06 defenseurs contre 06 attaquants.',
+      "Réinvestir la montée de balle et l'attaque du côté favorable dans le jeu complet, sous un barème qui récompense la transition et le pivot.",
+    misePlace: '06 défenseurs contre 06 attaquants.',
     fonctionnement: 'Jouer un 6x6.',
     regulation:
       '15 minutes.\n' +
-      'Si but sur jeu de transition ou sur engagement rapide : 2 attaques placees, sinon 1 attaque placee.\n' +
+      'Si but sur jeu de transition ou sur engagement rapide : 2 attaques placées, sinon 1 attaque placée.\n' +
       '02 points sur but du pivot.\n' +
-      "Pour la defense : 01 point par recuperation de balle, ou par tir pris du cote du bras non porteur de balle par l'arriere cote pivot.",
+      "Pour la défense : 01 point par récupération de balle, ou par tir pris du côté du bras non porteur de balle par l'arrière côté pivot.",
     pointsCles: '',
     evolution: '5 minutes de jeu libre.',
     jetons: [

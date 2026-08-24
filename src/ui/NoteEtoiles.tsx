@@ -23,7 +23,7 @@ export function NoteEtoiles({ note, onChanger, lectureSeule = false, taille = 'n
   if (lectureSeule) {
     return (
       <span className={`etoiles lecture ${taille} ${classeNote}`} title={LIBELLES_NOTE[note]}>
-        {note === 0 ? <span className="non-evalue">Non evalue</span> : '★'.repeat(note)}
+        {note === 0 ? <span className="non-evalue">Non évalué</span> : '★'.repeat(note)}
       </span>
     )
   }

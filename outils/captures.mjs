@@ -90,18 +90,21 @@ async function seances() {
   const { SENIORS_MASCULINS, GARDIENS, SANS_BALLON, construireExercice, nouvelleSeance } =
     await donnees()
   const tous = [...SENIORS_MASCULINS, ...GARDIENS, ...SANS_BALLON]
-  const parTitre = (debut) => tous.find((m) => m.titre.startsWith(debut))
+  // Par la REFERENCE, jamais par le titre : le titre se corrige - il vient de
+  // gagner ses accents - et une recherche par titre rend alors `undefined`,
+  // ce qui fait tomber toute la fabrication des captures loin d'ici.
+  const parRef = (ref) => tous.find((m) => m.ref === ref)
 
-  const composer = (titre, decalage, objectif, titresModeles, notes) => {
+  const composer = (titre, decalage, objectif, refsModeles, notes) => {
     const seance = nouvelleSeance(titre)
     seance.date = jour(decalage)
-    seance.equipe = 'Seniors garcons'
+    seance.equipe = 'Seniors garçons'
     seance.categorieAge = '+18 ans'
     seance.objectifSeance = objectif
     seance.effectifJoueurs = 12
     seance.effectifGardiens = 2
-    seance.exercices = titresModeles.map((debut, rang) => {
-      const exercice = construireExercice(parTitre(debut))
+    seance.exercices = refsModeles.map((ref, rang) => {
+      const exercice = construireExercice(parRef(ref))
       const note = notes?.[rang]
       if (note) {
         exercice.evaluation = {
@@ -118,37 +121,42 @@ async function seances() {
 
   return [
     composer(
-      'Mardi 15 septembre - attaque placee',
+      'Mardi 15 septembre - attaque placée',
       0,
-      "Trouver le decalage sans forcer le tir : croise, pivot, renversement.",
+      "Trouver le décalage sans forcer le tir : croisé, pivot, renversement.",
       [
-        'Echauffement prophylactique',
-        'Croise arriere',
-        'Passe et va avec le pivot',
-        'Renversement en trois passes',
-        'Gardien face aux tirs',
-        'Match a theme : deux passes',
+        'echauffement-prophylactique-epaules-genoux-chevilles',
+        'croise-arriere-ailier-cote-droit',
+        'passe-et-va-avec-le-pivot',
+        'renversement-en-trois-passes',
+        'gardien-face-aux-tirs-a-9-metres',
+        'match-a-theme-deux-passes-minimum-apres-recuperation',
       ],
       [4, 5, 4, 5, 0, 4],
     ),
     composer(
-      'Jeudi 17 septembre - defense et transition',
+      'Jeudi 17 septembre - défense et transition',
       2,
-      'Tenir le bloc, puis repartir vite des la recuperation.',
+      'Tenir le bloc, puis repartir vite dès la récupération.',
       [
-        'Protocole d echauffement',
-        'Defense 6-0',
-        'Duel defensif',
-        'Contre-attaque soutenue',
-        'Gardiens seuls : temps de reaction',
+        'protocole-d-echauffement-en-quatre-temps',
+        'defense-6-0-glissement-et-aide-sur-le-pivot',
+        'duel-defensif-contest-contre-et-recuperation',
+        'contre-attaque-soutenue-deuxieme-vague-et-engagement',
+        'gardiens-seuls-temps-de-reaction-sur-signal',
       ],
       [0, 5, 3, 4, 0],
     ),
     composer(
       'Samedi 19 septembre - physique et tests',
       4,
-      'Point de forme de debut de saison.',
-      ['Reveil neuromusculaire', 'Test de VMA', 'Gainage handball', 'Renforcement excentrique'],
+      'Point de forme de début de saison.',
+      [
+        'reveil-neuromusculaire-appuis-et-changements-de-dire',
+        'test-de-vma-demi-cooper',
+        'gainage-handball-les-trois-chaines-en-circuit',
+        'renforcement-excentrique-ischio-jambiers-et-adducteu',
+      ],
       [4, 5, 4, 0],
     ),
   ]
@@ -166,22 +174,22 @@ const SCENARIOS = [
     nom: 'accueil',
     taille: '1400,650',
     etapes: `
-      pas(() => clic('Toutes les seances'))
+      pas(() => clic('Toutes les séances'))
     `,
   },
   {
     nom: 'seance',
     taille: '1400,900',
     etapes: `
-      pas(() => clicContenant('.liste-seances button', 'attaque placee'))
+      pas(() => clicContenant('.liste-seances button', 'attaque placée'))
     `,
   },
   {
     nom: 'bibliotheque',
     taille: '1400,900',
     etapes: `
-      pas(() => clicContenant('.liste-seances button', 'attaque placee'))
-      pas(() => clic('Bibliotheque'))
+      pas(() => clicContenant('.liste-seances button', 'attaque placée'))
+      pas(() => clic('Bibliothèque'))
       pas(() => {
         const p = tous('.filtres .puce').find((x) => x.textContent.trim() === 'Attaque')
         if (p) p.click()
@@ -196,16 +204,16 @@ const SCENARIOS = [
     nom: 'fiche',
     taille: '1500,950',
     etapes: `
-      pas(() => clicContenant('.liste-seances button', 'attaque placee'))
-      pas(() => clicContenant('.lien-exercice', 'Croise arriere'))
+      pas(() => clicContenant('.liste-seances button', 'attaque placée'))
+      pas(() => clicContenant('.lien-exercice', 'Croisé arrière'))
     `,
   },
   {
     nom: 'terrain',
     taille: '1500,950',
     etapes: `
-      pas(() => clicContenant('.liste-seances button', 'attaque placee'))
-      pas(() => clicContenant('.lien-exercice', 'Croise arriere'))
+      pas(() => clicContenant('.liste-seances button', 'attaque placée'))
+      pas(() => clicContenant('.lien-exercice', 'Croisé arrière'))
       pas(() => {
         const b = tous('.colonne-terrain .barre-outils .bouton.plein-ecran')[0]
         if (b) b.click()
@@ -221,9 +229,9 @@ const SCENARIOS = [
     nom: 'collage',
     taille: '1400,860',
     etapes: `
-      pas(() => clicContenant('.liste-seances button', 'attaque placee'))
-      pas(() => clicContenant('.lien-exercice', 'Croise arriere'))
-      pas(() => clic('Coller un texte dicte'))
+      pas(() => clicContenant('.liste-seances button', 'attaque placée'))
+      pas(() => clicContenant('.lien-exercice', 'Croisé arrière'))
+      pas(() => clic('Coller un texte dicté'))
       pas(() => {
         const zone = par('.zone-collage')
         if (!zone) return
@@ -233,13 +241,13 @@ const SCENARIOS = [
         ).set
         poseur.call(
           zone,
-          'Mise en place : deux colonnes a neuf metres, un plot devant chacune.' +
+          'Mise en place : deux colonnes à neuf mètres, un plot devant chacune.' +
             String.fromCharCode(10) +
-            'Deroulement : le demi-centre engage, passe a l arriere droit qui fixe son defenseur, puis croise avec l ailier.' +
+            'Déroulement : le demi-centre engage, passe à l arrière droit qui fixe son défenseur, puis croise avec l ailier.' +
             String.fromCharCode(10) +
-            'Points cles : la passe se donne a hauteur de hanche, dans le sens de la course.' +
+            'Points clés : la passe se donne à hauteur de hanche, dans le sens de la course.' +
             String.fromCharCode(10) +
-            'Variantes : ajouter un defenseur flottant sur l intervalle.',
+            'Variantes : ajouter un défenseur flottant sur l intervalle.',
         )
         zone.dispatchEvent(new Event('input', { bubbles: true }))
       })
@@ -249,11 +257,11 @@ const SCENARIOS = [
     nom: 'mode-terrain',
     taille: '1500,950',
     etapes: `
-      pas(() => clicContenant('.liste-seances button', 'attaque placee'))
+      pas(() => clicContenant('.liste-seances button', 'attaque placée'))
       pas(() => clic('▶ Mode terrain'))
       pas(() => {
         // Un exercice deja mene : la case cochee doit se voir sur la capture.
-        const b = tous('.terrain-pied button').find((x) => /Marquer mene/.test(x.textContent))
+        const b = tous('.terrain-pied button').find((x) => /Marquer mené/.test(x.textContent))
         if (b) b.click()
       })
     `,

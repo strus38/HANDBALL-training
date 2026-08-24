@@ -76,7 +76,7 @@ const rect = (e) => (e ? e.getBoundingClientRect() : null)
 const r = { etapes: [] }
 
 pas(() => {
-  const b = parTexte('+ Seance') || parTexte('+ Nouvelle seance')
+  const b = parTexte('+ Séance') || parTexte('+ Nouvelle séance')
   r.bouton_seance = !!b
   if (b) b.click()
 })
@@ -168,7 +168,7 @@ pas(() => {
 })
 pas(() => {
   r.menu_referme = !par('.colonne-terrain .panneau-flottant')
-  const ajouter = parTexte('+ Etape')
+  const ajouter = parTexte('+ Étape')
   r.bouton_etape = !!ajouter
   if (ajouter) ajouter.click()
 })
@@ -213,12 +213,12 @@ pas(() => {
 // l'imbrication. On verifie donc que l'etoile est bien restee dans sa carte,
 // qu'elle bascule, et que la puce « Favoris » filtre reellement.
 pas(() => {
-  const retour = parTexte('← Seance')
+  const retour = parTexte('← Séance')
   r.retour_seance = !!retour
   if (retour) retour.click()
 })
 pas(() => {
-  const b = parTexte('Bibliotheque')
+  const b = parTexte('Bibliothèque')
   r.bouton_bibliotheque = !!b
   if (b) b.click()
 })
@@ -270,7 +270,7 @@ pas(() => {
 pas(() => {
   // Ajouter un exercice ouvre sa fiche : on revient a la seance, c est de
   // la que part le mode terrain.
-  const retour = parTexte('← Seance')
+  const retour = parTexte('← Séance')
   if (retour) retour.click()
 })
 pas(() => {
@@ -295,12 +295,12 @@ pas(() => {
   r.terrain_horaire = (par('.terrain-horaire strong') || {}).textContent ?? null
   r.terrain_position = (par('.terrain-position strong') || {}).textContent ?? null
   r.terrain_schema = !!par('.terrain-schema svg')
-  const cocher = tous('.terrain-pied button').find((x) => /Marquer mene/.test(x.textContent))
+  const cocher = tous('.terrain-pied button').find((x) => /Marquer mené/.test(x.textContent))
   r.terrain_case = !!cocher
   if (cocher) cocher.click()
 })
 pas(() => {
-  const cocher = tous('.terrain-pied button').find((x) => /Mene|Marquer/.test(x.textContent))
+  const cocher = tous('.terrain-pied button').find((x) => /Mené|Marquer/.test(x.textContent))
   r.terrain_coche = cocher ? cocher.getAttribute('aria-pressed') === 'true' : false
   r.terrain_libelle_coche = cocher ? cocher.textContent.trim() : null
   const suivant = tous('.terrain-pied button').find((x) => /Suivant/.test(x.textContent))
@@ -309,7 +309,7 @@ pas(() => {
 })
 pas(() => {
   r.terrain_position_2 = (par('.terrain-position strong') || {}).textContent ?? null
-  const cocher = tous('.terrain-pied button').find((x) => /Mene|Marquer/.test(x.textContent))
+  const cocher = tous('.terrain-pied button').find((x) => /Mené|Marquer/.test(x.textContent))
   // L'exercice suivant n'est pas coche : la case suit l'exercice affiche, elle
   // n'est pas un reglage global.
   r.terrain_coche_2 = cocher ? cocher.getAttribute('aria-pressed') === 'true' : null
@@ -325,7 +325,7 @@ pas(() => {
   // commande irreversible ne touche pas les plus frequentes.
   // L objectif de la seance se dicte aussi : il vit dans DetailSeance, pas
   // dans la fiche, et pourrait donc etre oublie d un remaniement a l autre.
-  const champObjectif = tous('label.champ').find((l) => /Objectif de la seance/i.test(l.textContent))
+  const champObjectif = tous('label.champ').find((l) => /Objectif de la séance/i.test(l.textContent))
   r.micro_objectif_seance = champObjectif ? !!champObjectif.querySelector('.bouton-dictee') : false
   const rangee = par('.entete-section .pousse')
   r.actions = rangee
@@ -373,12 +373,12 @@ pas(() => {
     posValeur.call(zoneFonc, 'TEMOIN A PRESERVER')
     zoneFonc.dispatchEvent(new Event('input', { bubbles: true }))
   }
-  const coller = tous('button').find((b) => /Coller un texte dicte/.test(b.textContent))
+  const coller = tous('button').find((b) => /Coller un texte dicté/.test(b.textContent))
   r.bouton_coller = !!coller
   r.coller_differe = true
 })
 pas(() => {
-  const coller = tous('button').find((b) => /Coller un texte dicte/.test(b.textContent))
+  const coller = tous('button').find((b) => /Coller un texte dicté/.test(b.textContent))
   if (coller) coller.click()
 })
 pas(() => {
@@ -402,7 +402,7 @@ pas(() => {
 pas(() => {
   const apercu = par('.apercu-repartition')
   r.apercu_annonce = apercu ? apercu.textContent.trim() : null
-  const appliquer = tous('.actions-modale button').find((b) => /Repartir/.test(b.textContent))
+  const appliquer = tous('.actions-modale button').find((b) => /Répartir/.test(b.textContent))
   r.bouton_repartir = !!appliquer
   if (appliquer) appliquer.click()
 })
@@ -417,7 +417,7 @@ pas(() => {
   }
   r.mise_en_place = valeur('Mise en place')
   r.fonctionnement = valeur('Fonctionnement')
-  r.points_cles = valeur('Points cles')
+  r.points_cles = valeur('Points clés')
 })
 // Le demarrage sonde le stockage : il n'est pas instantane. On attend qu'il
 // aboutisse avant de jouer le scenario, sans quoi on mesurerait l'ecran de
@@ -597,7 +597,7 @@ verifier(
 )
 verifier(
   'et la liste vide explique quoi faire',
-  /etoile/i.test(r.message_vide ?? ''),
+  /étoile/i.test(r.message_vide ?? ''),
   JSON.stringify(r.message_vide),
 )
 
@@ -695,7 +695,7 @@ verifier('« Coller un texte dicte » est atteignable', r.bouton_coller === true
 verifier('la fenetre de collage s ouvre', r.fenetre_collage === true)
 verifier(
   'la repartition est annoncee AVANT d agir',
-  /Mise en place/.test(r.apercu_annonce ?? '') && /Points cles/.test(r.apercu_annonce ?? ''),
+  /Mise en place/.test(r.apercu_annonce ?? '') && /Points clés/.test(r.apercu_annonce ?? ''),
   JSON.stringify(r.apercu_annonce),
 )
 verifier('le bouton de repartition est propose', r.bouton_repartir === true)

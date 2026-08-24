@@ -109,12 +109,15 @@ export function porteur(schema: Schema, index: number): string | undefined {
    *
    * C'est l'information la plus sure, et elle prime sur la geometrie — le
    * defenseur qui marque le receveur est souvent plus pres du ballon que le
-   * receveur lui-meme, et le lui volait a l'arrivee.
+   * receveur lui-meme, et le lui volait a l'arrivee. Quand l'etape enchaine
+   * plusieurs passes (un renversement), seule la DERNIERE dit ou le ballon
+   * finit : c'est elle qui designe le porteur.
    */
   if (index > 0) {
-    const recu = schema.etapes[index - 1]?.fleches.find(
+    const passes = (schema.etapes[index - 1]?.fleches ?? []).filter(
       (f) => f.type === 'passe' && f.cible !== undefined,
-    )?.cible
+    )
+    const recu = passes[passes.length - 1]?.cible
     if (recu && candidats.some((c) => c.id === recu)) return recu
   }
 
@@ -190,11 +193,23 @@ export function orientationEffective(schema: Schema, index: number, jetonId: str
  *
  * Les fleches devenues sans objet — un jeton supprime, ou un deplacement nul —
  * sont ecartees ici plutot que laissees a l'affichage.
+ *
+ * Le ballon demande un soin particulier : une etape peut lui declarer PLUSIEURS
+ * trajets — une remise puis un tir, ou les deux passes d'un renversement. Il
+ * n'a pourtant qu'une position par etape : seul le dernier trajet y aboutit.
+ * Sans traitement, tous les trajets se dessinaient l'un sur l'autre, du depart
+ * commun a l'arrivee finale — la remise au pivot ressemblait a un tir. Chaque
+ * trajet intermediaire pointe donc sur son receveur, et le trajet suivant
+ * repart de la.
  */
 export function resoudreFleches(schema: Schema, index: number): FlecheResolue[] {
   const resolues: FlecheResolue[] = []
+  const fleches = schema.etapes[index]?.fleches ?? []
+  const ballon = jetonBallon(schema)
+  const flechesBallon = ballon ? fleches.filter((f) => sujetDe(f) === ballon.id) : []
+  let relaisBallon: Position | undefined
 
-  for (const fleche of schema.etapes[index]?.fleches ?? []) {
+  for (const fleche of fleches) {
     const sujet = sujetDe(fleche)
 
     if (!sujet) {
@@ -211,8 +226,20 @@ export function resoudreFleches(schema: Schema, index: number): FlecheResolue[] 
       continue
     }
 
-    const depart = positionDe(schema, index, sujet)
-    const arrivee = positionDe(schema, index + 1, sujet) ?? fleche.arrivee
+    let depart = positionDe(schema, index, sujet)
+    let arrivee = positionDe(schema, index + 1, sujet) ?? fleche.arrivee
+
+    if (ballon && sujet === ballon.id && flechesBallon.length > 1) {
+      depart = relaisBallon ?? depart
+      if (fleche !== flechesBallon[flechesBallon.length - 1]) {
+        // Trajet intermediaire : il s'arrete chez son receveur, pas a la
+        // position finale du ballon.
+        const receveur = fleche.cible ? positionDe(schema, index + 1, fleche.cible) : undefined
+        arrivee = receveur ?? arrivee
+      }
+      relaisBallon = arrivee
+    }
+
     if (!depart || !arrivee) continue
     if (distance(depart, arrivee) < LONGUEUR_MINIMALE) continue
 
@@ -251,7 +278,7 @@ export function assurerEtapeSuivante(schema: Schema, index: number): Schema {
   const courante = schema.etapes[index]
   if (!courante) return schema
   const suivante: Etape = {
-    ...nouvelleEtape(`Etape ${schema.etapes.length + 1}`),
+    ...nouvelleEtape(`Étape ${schema.etapes.length + 1}`),
     positions: Object.fromEntries(
       Object.entries(courante.positions).map(([k, v]) => [k, { ...v }]),
     ),

@@ -108,7 +108,7 @@ export const LIBELLES_FLECHE: Record<TypeFleche, string> = {
   passe: 'Passe',
   dribble: 'Dribble',
   tir: 'Tir',
-  ecran: 'Ecran',
+  ecran: 'Écran',
 }
 
 /**
@@ -181,13 +181,13 @@ export type Categorie =
   | 'jeu'
 
 export const LIBELLES_CATEGORIE: Record<Categorie, string> = {
-  echauffement: 'Echauffement',
+  echauffement: 'Échauffement',
   technique: 'Technique individuelle',
   attaque: 'Attaque',
-  defense: 'Defense',
+  defense: 'Défense',
   gardien: 'Gardien de but',
-  transition: 'Montee de balle / transition',
-  physique: 'Preparation physique',
+  transition: 'Montée de balle / transition',
+  physique: 'Préparation physique',
   jeu: 'Jeu / situation',
 }
 
@@ -218,7 +218,7 @@ export const LIBELLES_FORMAT_GARDIENS: Record<FormatGardiens, string> = {
 export const LIBELLES_FORMAT_GARDIENS_COURTS: Record<FormatGardiens, string> = {
   sans: 'Aucun',
   'avec-joueurs': 'Avec les joueurs',
-  'gardiens-seuls': 'Entre eux, a part',
+  'gardiens-seuls': 'Entre eux, à part',
 }
 
 /**
@@ -240,11 +240,11 @@ export interface Evaluation {
 }
 
 export const LIBELLES_NOTE: Record<number, string> = {
-  0: 'Non evalue',
-  1: 'A eviter',
-  2: 'Decevant',
+  0: 'Non évalué',
+  1: 'À éviter',
+  2: 'Décevant',
   3: 'Correct',
-  4: 'Tres bon',
+  4: 'Très bon',
   5: 'Incontournable',
 }
 
@@ -390,6 +390,16 @@ export interface FichierExport {
   format: 'handball-training'
   version: number
   exporteLe: string
+  /**
+   * Version de l'application qui a produit ce fichier - « v1.0.0 · 2026-08-24 ·
+   * d5dc31b ».
+   *
+   * Une trace de provenance, pas une donnee : rien ne la relit. Elle sert le
+   * jour ou un fichier arrive avec un contenu inattendu, et ou la seule
+   * question utile est « fabrique par quel exemplaire ? ». Absente des fichiers
+   * ecrits avant qu'elle n'existe.
+   */
+  application?: string
   contenu:
     | { type: 'seance'; seance: Seance }
     | { type: 'exercice'; exercice: Exercice }
@@ -397,6 +407,17 @@ export interface FichierExport {
      * Sauvegarde complete : toutes les seances et toute la bibliotheque
      * personnelle. C'est le seul moyen de mettre l'ensemble du travail a l'abri
      * d'un nettoyage du navigateur, qui effacerait tout sans recours.
+     *
+     * Les fiches fournies masquees y figurent pour la meme raison que les
+     * favoris : ce sont des preferences, mais ce fichier est le seul filet, et
+     * les omettre reviendrait a promettre de tout sauver en laissant tomber le
+     * tri fait dans la bibliotheque.
      */
-    | { type: 'sauvegarde'; seances: Seance[]; modeles: Exercice[]; favoris: string[] }
+    | {
+        type: 'sauvegarde'
+        seances: Seance[]
+        modeles: Exercice[]
+        favoris: string[]
+        masquees?: string[]
+      }
 }

@@ -67,11 +67,11 @@ export function TableauSeances({
     <div className="panneau-principal">
       <div className="entete-tableau">
         <div>
-          <h2>Mes seances</h2>
+          <h2>Mes séances</h2>
           <p className="resume-global">
             {seances.length === 0
-              ? 'Aucune seance enregistree pour le moment.'
-              : `${seances.length} seance${seances.length > 1 ? 's' : ''} · ${exercicesTotaux} exercice${exercicesTotaux > 1 ? 's' : ''} · ${Math.round(minutesTotales / 60)} h de contenu`}
+              ? 'Aucune séance enregistrée pour le moment.'
+              : `${seances.length} séance${seances.length > 1 ? 's' : ''} · ${exercicesTotaux} exercice${exercicesTotaux > 1 ? 's' : ''} · ${Math.round(minutesTotales / 60)} h de contenu`}
           </p>
         </div>
         <div className="pousse">
@@ -79,7 +79,7 @@ export function TableauSeances({
             className="bouton"
             onClick={onSauvegarder}
             disabled={seances.length === 0}
-            title="Enregistrer toutes les seances et votre bibliotheque dans un seul fichier"
+            title="Enregistrer toutes les séances et votre bibliothèque dans un seul fichier"
           >
             Sauvegarder tout
           </button>
@@ -87,7 +87,7 @@ export function TableauSeances({
             Importer
           </button>
           <button className="bouton principal" onClick={onNouvelle}>
-            + Nouvelle seance
+            + Nouvelle séance
           </button>
         </div>
       </div>
@@ -97,7 +97,7 @@ export function TableauSeances({
           <input
             type="text"
             className="recherche"
-            placeholder="Rechercher une seance, une equipe, un exercice..."
+            placeholder="Rechercher une séance, une équipe, un exercice..."
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
           />
@@ -106,7 +106,7 @@ export function TableauSeances({
               className={`bouton segment${tri === 'date-desc' ? ' actif' : ''}`}
               onClick={() => setTri('date-desc')}
             >
-              Plus recentes
+              Plus récentes
             </button>
             <button
               className={`bouton segment${tri === 'date-asc' ? ' actif' : ''}`}
@@ -126,10 +126,10 @@ export function TableauSeances({
 
       {seances.length === 0 ? (
         <div className="vide">
-          <p>Creez votre premiere seance, ou importez un fichier recu d'un autre entraineur.</p>
+          <p>Créez votre première séance, ou importez un fichier reçu d'un autre entraîneur.</p>
           <div className="actions-vide">
             <button className="bouton principal" onClick={onNouvelle}>
-              Creer une seance
+              Créer une séance
             </button>
             <button className="bouton" onClick={onImporter}>
               Importer un fichier
@@ -138,7 +138,7 @@ export function TableauSeances({
         </div>
       ) : affichees.length === 0 ? (
         <div className="vide">
-          <p>Aucune seance ne correspond a cette recherche.</p>
+          <p>Aucune séance ne correspond à cette recherche.</p>
         </div>
       ) : (
         <ul className="grille-seances">
@@ -194,7 +194,7 @@ function CarteSeance({
           {resume.noteMoyenne !== undefined && (
             <span
               className="note-moyenne"
-              title={`Moyenne de ${resume.nombreEvalues} exercice${resume.nombreEvalues > 1 ? 's' : ''} evalue${resume.nombreEvalues > 1 ? 's' : ''}`}
+              title={`Moyenne de ${resume.nombreEvalues} exercice${resume.nombreEvalues > 1 ? 's' : ''} évalué${resume.nombreEvalues > 1 ? 's' : ''}`}
             >
               <NoteEtoiles
                 note={Math.round(resume.noteMoyenne) as 1 | 2 | 3 | 4 | 5}
@@ -225,7 +225,7 @@ function CarteSeance({
               {seance.effectifJoueurs || '—'}
               {seance.effectifGardiens > 0 && ` + ${seance.effectifGardiens} GB`}
             </strong>{' '}
-            presents
+            présents
           </li>
         </ul>
 
@@ -266,14 +266,14 @@ function CarteSeance({
         <p className="signaux-carte">
           {resume.travailGardiens && <em className="signal">Travail gardiens</em>}
           {resume.nombreEnParallele > 0 && (
-            <em className="signal">{resume.nombreEnParallele} en parallele</em>
+            <em className="signal">{resume.nombreEnParallele} en parallèle</em>
           )}
           {resume.nombreIncompatibles > 0 && (
             <em className="signal alerte" title="Exercices demandant plus de monde que l'effectif">
               {resume.nombreIncompatibles} au-dessus de l'effectif
             </em>
           )}
-          {resume.nombreExercices === 0 && <em className="signal">Seance vide</em>}
+          {resume.nombreExercices === 0 && <em className="signal">Séance vide</em>}
         </p>
       </button>
 
@@ -287,7 +287,7 @@ function CarteSeance({
         <button className="bouton" onClick={onExporter}>
           Exporter
         </button>
-        <button className="bouton discret" onClick={onSupprimer} title="Supprimer la seance">
+        <button className="bouton discret" onClick={onSupprimer} title="Supprimer la séance">
           ✕
         </button>
       </div>

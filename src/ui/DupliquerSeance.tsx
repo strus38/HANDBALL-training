@@ -96,10 +96,10 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
           })
         }}
       >
-        <h2 id="duplication-titre">Dupliquer la seance</h2>
+        <h2 id="duplication-titre">Dupliquer la séance</h2>
         <p className="dialogue-message">
           {resume.nombreExercices} exercice{resume.nombreExercices > 1 ? 's' : ''} et{' '}
-          {resume.minutes} minutes seront recopies dans une nouvelle seance, independante de
+          {resume.minutes} minutes seront recopiés dans une nouvelle séance, indépendante de
           l'originale.
         </p>
 
@@ -118,16 +118,16 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </label>
           <label className="champ">
-            <span>Equipe</span>
+            <span>Équipe</span>
             <input
               type="text"
               value={equipe}
-              placeholder="Seniors garcons"
+              placeholder="Seniors garçons"
               onChange={(e) => setEquipe(e.target.value)}
             />
           </label>
           <label className="champ">
-            <span>Categorie</span>
+            <span>Catégorie</span>
             <input
               type="text"
               value={categorieAge}
@@ -136,24 +136,24 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
             />
           </label>
           <label className="champ">
-            <span>Joueurs presents</span>
+            <span>Joueurs présents</span>
             <input
               type="number"
               min={0}
               max={40}
               value={effectifJoueurs || ''}
-              placeholder="non renseigne"
+              placeholder="non renseigné"
               onChange={(e) => setEffectifJoueurs(Number(e.target.value) || 0)}
             />
           </label>
           <label className="champ">
-            <span>Gardiens presents</span>
+            <span>Gardiens présents</span>
             <input
               type="number"
               min={0}
               max={6}
               value={effectifGardiens || ''}
-              placeholder="non renseigne"
+              placeholder="non renseigné"
               onChange={(e) => setEffectifGardiens(Number(e.target.value) || 0)}
             />
           </label>
@@ -168,7 +168,7 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
           <span>
             Repartir sans les notes
             <small>
-              Par defaut la copie garde vos notes et vos compteurs d'utilisation : ils portent sur
+              Par défaut la copie garde vos notes et vos compteurs d'utilisation : ils portent sur
               l'exercice, pas sur la date.
             </small>
           </span>
@@ -179,7 +179,7 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
             Annuler
           </button>
           <button type="submit" className="bouton principal">
-            Creer la copie
+            Créer la copie
           </button>
         </div>
       </form>

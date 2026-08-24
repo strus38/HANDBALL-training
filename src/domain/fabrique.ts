@@ -55,7 +55,7 @@ export function nouvelExercice(titre = 'Nouvel exercice'): Exercice {
   }
 }
 
-export function nouvelleSeance(titre = 'Nouvelle seance'): Seance {
+export function nouvelleSeance(titre = 'Nouvelle séance'): Seance {
   const date = maintenant()
   return {
     id: nouvelId(),

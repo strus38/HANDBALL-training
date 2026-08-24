@@ -139,8 +139,8 @@ export function dateEnToutesLettres(iso: string): string {
   if (!annee || !mois || !jour) return iso
   const jours = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
   const moisNoms = [
-    'janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin',
-    'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre',
+    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
   ]
   const date = new Date(annee, mois - 1, jour)
   return `${jours[date.getDay()]} ${jour} ${moisNoms[mois - 1]} ${annee}`

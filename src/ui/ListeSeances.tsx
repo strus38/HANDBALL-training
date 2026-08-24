@@ -31,19 +31,19 @@ export function ListeSeances({
   return (
     <aside className="colonne-seances">
       <div className="tete-seances">
-        <span className="etiquette-groupe">Seances</span>
+        <span className="etiquette-groupe">Séances</span>
         <button
           className="bouton discret replier-menu"
           onClick={onReplier}
-          title="Replier le menu des seances"
-          aria-label="Replier le menu des seances"
+          title="Replier le menu des séances"
+          aria-label="Replier le menu des séances"
         >
           ⟨⟨
         </button>
       </div>
       <div className="barre">
         <button className="bouton principal" onClick={onNouvelle}>
-          + Seance
+          + Séance
         </button>
         <button className="bouton" onClick={onImporter} title="Ouvrir un fichier .hbt.json">
           Importer
@@ -52,20 +52,20 @@ export function ListeSeances({
       <button
         className={`lien-accueil${vue === 'accueil' ? ' actif' : ''}`}
         onClick={onAccueil}
-        title="Vue d'ensemble de toutes les seances"
+        title="Vue d'ensemble de toutes les séances"
       >
-        Toutes les seances
+        Toutes les séances
       </button>
       <button
         className={`lien-accueil${vue === 'bilan' ? ' actif' : ''}`}
         onClick={onBilan}
-        title="Ce qui a ete travaille sur la saison"
+        title="Ce qui a été travaillé sur la saison"
       >
         Bilan de la saison
       </button>
       {seances.length === 0 ? (
         <p style={{ padding: '16px', color: 'var(--texte-doux)', fontSize: 13 }}>
-          Aucune seance enregistree.
+          Aucune séance enregistrée.
         </p>
       ) : (
         <ul className="liste-seances">

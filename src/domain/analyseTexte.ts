@@ -185,6 +185,9 @@ function trouverDestination(
   if (/\b6 ?m|6 metres|surface\b/.test(texte)) {
     return { position: surLaLigne(depart.y, 6.4), confiance: 'haute', indice: 'la ligne des 6 m' }
   }
+  // NB : les motifs et regex ci-dessus comparent du texte NORMALISE (sans
+  // accent) : ils doivent rester ecrits sans accents. Seuls les `indice`,
+  // destines a l'affichage, portent les leurs.
   if (/\bl ?aile|sur l aile|angle\b/.test(texte)) {
     return {
       position: { x: 36.5, y: versLeHaut ? 18.3 : 1.7 },
@@ -201,21 +204,21 @@ function trouverDestination(
       .sort((a, b) => Math.abs(a.y - depart.y) - Math.abs(b.y - depart.y))
     if (defenseurs.length >= 2) {
       const y = (defenseurs[0].y + defenseurs[1].y) / 2
-      return { position: surLaLigne(y, 6.6), confiance: 'moyenne', indice: 'un intervalle defensif' }
+      return { position: surLaLigne(y, 6.6), confiance: 'moyenne', indice: 'un intervalle défensif' }
     }
   }
   if (/dans son dos|derriere lui|dans le dos/.test(texte)) {
     return {
       position: { x: Math.min(33, depart.x + 2.5), y: depart.y + (versLeHaut ? -2.5 : 2.5) },
       confiance: 'faible',
-      indice: 'un deplacement « dans le dos », place approximativement',
+      indice: 'un déplacement « dans le dos », placé approximativement',
     }
   }
   if (/\bexterieur\b/.test(texte)) {
     return {
       position: { x: depart.x + 1.5, y: depart.y + (versLeHaut ? 2.5 : -2.5) },
       confiance: 'faible',
-      indice: "un ecartement vers l'exterieur",
+      indice: "un écartement vers l'extérieur",
     }
   }
   if (/\baxe\b|au centre|central/.test(texte)) {
@@ -226,7 +229,7 @@ function trouverDestination(
   return {
     position: { x: Math.min(33, depart.x + 3), y: depart.y },
     confiance: 'faible',
-    indice: 'aucune indication de lieu : avancee de 3 m vers le but',
+    indice: 'aucune indication de lieu : avancée de 3 m vers le but',
   }
 }
 
@@ -294,7 +297,7 @@ export function proposerMouvements(schema: Schema, texte: string): EtapeProposee
     const confiance: Confiance = cible ? 'haute' : lieu.confiance
 
     etapes.push({
-      titre: `Etape ${etapes.length + 2}`,
+      titre: `Étape ${etapes.length + 2}`,
       actions: [
         {
           phrase,
@@ -303,7 +306,7 @@ export function proposerMouvements(schema: Schema, texte: string): EtapeProposee
           cible,
           destination,
           confiance,
-          indice: cible ? 'le joueur vise' : lieu.indice,
+          indice: cible ? 'le joueur visé' : lieu.indice,
         },
       ],
     })
@@ -320,9 +323,9 @@ export function decrireProposition(schema: Schema, action: ActionDetectee): stri
   const verbes: Record<TypeFleche, string> = {
     course: 'court',
     dribble: 'dribble',
-    passe: cible ? `passe a ${cible}` : 'transmet le ballon',
+    passe: cible ? `passe à ${cible}` : 'transmet le ballon',
     tir: 'tire',
-    ecran: 'pose un ecran',
+    ecran: 'pose un écran',
   }
   return `${nom} ${verbes[action.type]}`
 }

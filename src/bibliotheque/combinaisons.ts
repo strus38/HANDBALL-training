@@ -37,7 +37,7 @@ import {
 
 export const COMBINAISONS: ModeleExercice[] = [
   {
-    titre: 'Espagnole - croise central',
+    titre: 'Espagnole - croisé central',
     ref: 'espagnole-croise-central',
     combinaison: true,
     categorie: 'attaque',
@@ -49,35 +49,35 @@ export const COMBINAISONS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'demi',
     objectifs:
-      "Liberer un tir de 9 metres en supprimant le defenseur direct du tireur : le demi-centre pose l'ecran lui-meme, au lieu de le demander au pivot.",
+      "Libérer un tir de 9 mètres en supprimant le défenseur direct du tireur : le demi-centre pose l'écran lui-même, au lieu de le demander au pivot.",
     fonctionnement:
-      "Attaque placee face a une defense 6-0, puis 5-1. La combinaison est aussi appelee « Est-Allemande » selon les clubs.\n" +
-      "Le demi-centre engage vers le bloc et vient bloquer le defenseur du couloir de l'arriere gauche. Il garde le ballon jusqu'au dernier moment.\n" +
-      "L'ailier gauche rentre et croise dans le dos du demi-centre : c'est lui qui recoit.\n" +
-      "L'arriere gauche part sur une course PARALLELE a celle de l'ailier, un temps derriere. Il recoit de l'ailier et tire en suspension par-dessus l'ecran.\n" +
-      '6 repetitions par cote, puis on inverse.\n' +
-      'Schema tactique du repertoire classique, recense notamment sur dragoerhb.dk.',
+      "Attaque placée face à une défense 6-0, puis 5-1. La combinaison est aussi appelée « Est-Allemande » selon les clubs.\n" +
+      "Le demi-centre engage vers le bloc et vient bloquer le défenseur du couloir de l'arrière gauche. Il garde le ballon jusqu'au dernier moment.\n" +
+      "L'ailier gauche rentre et croise dans le dos du demi-centre : c'est lui qui reçoit.\n" +
+      "L'arrière gauche part sur une course PARALLÈLE à celle de l'ailier, un temps derrière. Il reçoit de l'ailier et tire en suspension par-dessus l'écran.\n" +
+      '6 répétitions par côté, puis on inverse.\n' +
+      'Schéma tactique du répertoire classique, recensé notamment sur dragoerhb.dk.',
     pointsCles:
-      "L'ecran se pose avant l'arrivee du tireur, et immobile au moment du contact : en mouvement, c'est une faute d'attaque.\n" +
-      "Les deux courses sont paralleles, jamais convergentes : deux joueurs sur la meme ligne n'occupent qu'un defenseur.\n" +
-      "L'ailier ne court pas a plat : s'il longe la ligne des 9 metres, il n'inquiete personne et la passe devient laterale.\n" +
-      'Le tir part en suspension : un tir en appui derriere un ecran est contre.',
+      "L'écran se pose avant l'arrivée du tireur, et immobile au moment du contact : en mouvement, c'est une faute d'attaque.\n" +
+      "Les deux courses sont parallèles, jamais convergentes : deux joueurs sur la même ligne n'occupent qu'un défenseur.\n" +
+      "L'ailier ne court pas à plat : s'il longe la ligne des 9 mètres, il n'inquiète personne et la passe devient latérale.\n" +
+      'Le tir part en suspension : un tir en appui derrière un écran est contré.',
     evolution:
-      "Simplifier : defense passive, sans changement d'adversaire. Le demi-centre annonce l'ecran a voix haute.\n" +
-      "Variante A : le demi-centre passe directement a l'arriere gauche et saute l'ailier. Le rythme est plus rapide, mais le decalage plus petit.\n" +
-      "Variante B : l'ailier garde le ballon et tire lui-meme au premier temps, quand le defenseur exterieur a suivi l'arriere.\n" +
-      'Complexifier : defense 5-1, avec un pointe qui gene la premiere passe.',
-    consigneInitiale: 'Attaque placee face a une 6-0. Ballon au demi-centre.',
+      "Simplifier : défense passive, sans changement d'adversaire. Le demi-centre annonce l'écran à voix haute.\n" +
+      "Variante A : le demi-centre passe directement à l'arrière gauche et saute l'ailier. Le rythme est plus rapide, mais le décalage plus petit.\n" +
+      "Variante B : l'ailier garde le ballon et tire lui-même au premier temps, quand le défenseur extérieur a suivi l'arrière.\n" +
+      'Complexifier : défense 5-1, avec un pointe qui gêne la première passe.',
+    consigneInitiale: 'Attaque placée face à une 6-0. Ballon au demi-centre.',
     etapes: [
       {
-        titre: 'Engagement et ecran du demi-centre',
-        consigne: 'Le demi-centre entre dans le bloc et bloque le defenseur 5, epaule contre epaule.',
+        titre: 'Engagement et écran du demi-centre',
+        consigne: 'Le demi-centre entre dans le bloc et bloque le défenseur 5, épaule contre épaule.',
         mouvements: [{ jeton: 'dc', type: 'ecran', vers: { x: 32.2, y: 12.2 } }],
       },
       {
-        titre: 'Deux courses paralleles',
+        titre: 'Deux courses parallèles',
         consigne:
-          "L'ailier croise dans le dos du demi-centre et recoit ; l'arriere part sur la meme ligne, un temps derriere.",
+          "L'ailier croise dans le dos du demi-centre et reçoit ; l'arrière part sur la même ligne, un temps derrière.",
         mouvements: [
           { jeton: 'alg', type: 'course', vers: { x: 31.2, y: 15.2 } },
           { jeton: 'arg', type: 'course', vers: { x: 30.0, y: 12.8 } },
@@ -85,13 +85,13 @@ export const COMBINAISONS: ModeleExercice[] = [
         ],
       },
       {
-        titre: 'La balle revient a l arriere',
-        consigne: "L'ailier fixe, puis rend a l'arriere qui arrive lance derriere lui.",
+        titre: 'La balle revient à l arrière',
+        consigne: "L'ailier fixe, puis rend à l'arrière qui arrive lancé derrière lui.",
         mouvements: [{ jeton: 'alg', type: 'passe', cible: 'arg' }],
       },
       {
-        titre: 'Tir par-dessus l ecran',
-        consigne: 'Tir en suspension a 9 metres, dans le couloir libere.',
+        titre: 'Tir par-dessus l écran',
+        consigne: 'Tir en suspension à 9 mètres, dans le couloir libéré.',
         mouvements: [{ jeton: 'arg', type: 'tir', vers: { x: 40, y: 11 } }],
       },
     ],
@@ -99,7 +99,7 @@ export const COMBINAISONS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Double croise - arrieres et demi-centre',
+    titre: 'Double croisé - arrières et demi-centre',
     ref: 'double-croise-arrieres-et-demi-centre',
     combinaison: true,
     categorie: 'attaque',
@@ -111,25 +111,25 @@ export const COMBINAISONS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'demi',
     objectifs:
-      'Faire glisser le bloc deux fois de suite dans le meme sens, puis attaquer a contresens le couloir central libere par l ecran.',
+      'Faire glisser le bloc deux fois de suite dans le même sens, puis attaquer à contresens le couloir central libéré par l écran.',
     fonctionnement:
-      "Attaque placee face a une defense 6-0. La circulation part de l'aile gauche et revient au demi-centre.\n" +
-      "Le demi-centre entre dans la defense, bloque le defenseur central, et passe a l'arriere gauche qui croise dans son dos.\n" +
-      "L'arriere droit croise a son tour derriere l'arriere gauche, recoit, et tire dans le couloir libere.\n" +
-      "Le deuxieme croise est le vrai : le premier ne sert qu'a mettre le bloc en mouvement.\n" +
-      '8 repetitions, puis on part de l aile droite.\n' +
-      'Schema tactique du repertoire classique, recense notamment sur dragoerhb.dk.',
+      "Attaque placée face à une défense 6-0. La circulation part de l'aile gauche et revient au demi-centre.\n" +
+      "Le demi-centre entre dans la défense, bloque le défenseur central, et passe à l'arrière gauche qui croise dans son dos.\n" +
+      "L'arrière droit croise à son tour derrière l'arrière gauche, reçoit, et tire dans le couloir libéré.\n" +
+      "Le deuxième croisé est le vrai : le premier ne sert qu'à mettre le bloc en mouvement.\n" +
+      '8 répétitions, puis on part de l aile droite.\n' +
+      'Schéma tactique du répertoire classique, recensé notamment sur dragoerhb.dk.',
     pointsCles:
-      "Le premier croise doit etre credible : si l'arriere gauche ne menace pas le but, le bloc ne glisse pas et le second croise ne trouve rien.\n" +
-      "Le deuxieme croiseur passe DERRIERE le premier, jamais devant : devant, il lui prend son espace au lieu d'en creer.\n" +
-      "La passe se donne dans le sens de la course, a hauteur de hanche.\n" +
-      "L'ecran du demi-centre tient jusqu'au tir : relache trop tot, le defenseur central revient contrer.",
+      "Le premier croisé doit être crédible : si l'arrière gauche ne menace pas le but, le bloc ne glisse pas et le second croisé ne trouve rien.\n" +
+      "Le deuxième croiseur passe DERRIÈRE le premier, jamais devant : devant, il lui prend son espace au lieu d'en créer.\n" +
+      "La passe se donne dans le sens de la course, à hauteur de hanche.\n" +
+      "L'écran du demi-centre tient jusqu'au tir : relâché trop tôt, le défenseur central revient contrer.",
     evolution:
-      "Simplifier : un seul croise, pour installer la mecanique du passage dans le dos.\n" +
-      "Variante : l'arriere gauche tire lui-meme au lieu de passer, quand le bloc a trop glisse.\n" +
-      "Variante : si le defenseur central monte, l'arriere droit sert le pivot dans son dos plutot que de tirer.\n" +
-      'Complexifier : defense autorisee a changer d adversaire sur les croises.',
-    consigneInitiale: "Attaque placee face a une 6-0. Ballon a l'ailier gauche.",
+      "Simplifier : un seul croisé, pour installer la mécanique du passage dans le dos.\n" +
+      "Variante : l'arrière gauche tire lui-même au lieu de passer, quand le bloc a trop glissé.\n" +
+      "Variante : si le défenseur central monte, l'arrière droit sert le pivot dans son dos plutôt que de tirer.\n" +
+      'Complexifier : défense autorisée à changer d adversaire sur les croisés.',
+    consigneInitiale: "Attaque placée face à une 6-0. Ballon à l'ailier gauche.",
     etapes: [
       {
         titre: 'La balle revient au centre',
@@ -137,21 +137,21 @@ export const COMBINAISONS: ModeleExercice[] = [
         mouvements: [{ jeton: 'alg', type: 'passe', cible: 'dc' }],
       },
       {
-        titre: 'Entree et ecran du demi-centre',
-        consigne: 'Le demi-centre entre dans le bloc et bloque le defenseur central 3.',
+        titre: 'Entrée et écran du demi-centre',
+        consigne: 'Le demi-centre entre dans le bloc et bloque le défenseur central 3.',
         mouvements: [{ jeton: 'dc', type: 'ecran', vers: { x: 32.6, y: 8.6 } }],
       },
       {
-        titre: 'Premier croise',
-        consigne: "L'arriere gauche passe dans le dos du demi-centre et recoit.",
+        titre: 'Premier croisé',
+        consigne: "L'arrière gauche passe dans le dos du demi-centre et reçoit.",
         mouvements: [
           { jeton: 'arg', type: 'course', vers: { x: 30.6, y: 10.9 } },
           { jeton: 'dc', type: 'passe', cible: 'arg' },
         ],
       },
       {
-        titre: 'Deuxieme croise',
-        consigne: "L'arriere droit croise derriere l'arriere gauche et recoit a son tour.",
+        titre: 'Deuxième croisé',
+        consigne: "L'arrière droit croise derrière l'arrière gauche et reçoit à son tour.",
         mouvements: [
           { jeton: 'ard', type: 'course', vers: { x: 29.8, y: 8.8 } },
           { jeton: 'arg', type: 'passe', cible: 'ard' },
@@ -159,7 +159,7 @@ export const COMBINAISONS: ModeleExercice[] = [
       },
       {
         titre: 'Tir dans le couloir central',
-        consigne: 'Tir a 9 metres dans le couloir libere par l ecran.',
+        consigne: 'Tir à 9 mètres dans le couloir libéré par l écran.',
         mouvements: [{ jeton: 'ard', type: 'tir', vers: { x: 40, y: 8.8 } }],
       },
     ],
@@ -167,7 +167,7 @@ export const COMBINAISONS: ModeleExercice[] = [
   },
 
   {
-    titre: 'Pondus - renversement et entree d ailier',
+    titre: 'Pondus - renversement et entrée d ailier',
     ref: 'pondus-renversement-et-entree-d-ailier',
     combinaison: true,
     categorie: 'attaque',
@@ -179,39 +179,39 @@ export const COMBINAISONS: ModeleExercice[] = [
     formatGardiens: 'avec-joueurs',
     vue: 'demi',
     objectifs:
-      "Fixer la defense d'un cote par un croise et un renversement, puis conclure de l'autre cote par une entree d'ailier sur un bloc de pivot.",
+      "Fixer la défense d'un côté par un croisé et un renversement, puis conclure de l'autre côté par une entrée d'ailier sur un bloc de pivot.",
     fonctionnement:
-      "Attaque placee face a une defense 6-0. La combinaison est longue : elle vaut pour un temps fort, pas pour une possession pressee.\n" +
-      "Le demi-centre sert l'arriere droit, qui s'engage vers le centre et croise avec l'arriere gauche.\n" +
-      "L'arriere gauche donne a l'ailier droit et continue sa course jusqu'a l'aile opposee : les postes tournent.\n" +
-      "L'ailier droit rend aussitot au demi-centre, qui part fixer du cote gauche pour emmener le bloc avec lui.\n" +
-      "Le pivot bloque le defenseur 2. L'ailier droit s'engage dans l'intervalle libere, recoit du demi-centre et tire.\n" +
-      'La combinaison se joue des deux cotes. 6 passages par cote.\n' +
-      'Schema tactique du repertoire classique, recense notamment sur dragoerhb.dk.',
+      "Attaque placée face à une défense 6-0. La combinaison est longue : elle vaut pour un temps fort, pas pour une possession pressée.\n" +
+      "Le demi-centre sert l'arrière droit, qui s'engage vers le centre et croise avec l'arrière gauche.\n" +
+      "L'arrière gauche donne à l'ailier droit et continue sa course jusqu'à l'aile opposée : les postes tournent.\n" +
+      "L'ailier droit rend aussitôt au demi-centre, qui part fixer du côté gauche pour emmener le bloc avec lui.\n" +
+      "Le pivot bloque le défenseur 2. L'ailier droit s'engage dans l'intervalle libéré, reçoit du demi-centre et tire.\n" +
+      'La combinaison se joue des deux côtés. 6 passages par côté.\n' +
+      'Schéma tactique du répertoire classique, recensé notamment sur dragoerhb.dk.',
     pointsCles:
-      "La fixation du demi-centre a gauche est le coeur de la combinaison : sans elle, le bloc n'a aucune raison de glisser et l'intervalle n'existe pas.\n" +
-      "L'arriere gauche va vraiment jusqu'a l'aile : une course a mi-chemin laisse deux joueurs dans le meme couloir.\n" +
-      "L'ailier entre au moment ou le bloc a fini de glisser, pas avant : trop tot, il arrive dans un defenseur.\n" +
-      'La derniere passe traverse le terrain : elle se donne tendue, sinon le bloc a le temps de revenir.',
+      "La fixation du demi-centre à gauche est le coeur de la combinaison : sans elle, le bloc n'a aucune raison de glisser et l'intervalle n'existe pas.\n" +
+      "L'arrière gauche va vraiment jusqu'à l'aile : une course à mi-chemin laisse deux joueurs dans le même couloir.\n" +
+      "L'ailier entre au moment où le bloc a fini de glisser, pas avant : trop tôt, il arrive dans un défenseur.\n" +
+      'La dernière passe traverse le terrain : elle se donne tendue, sinon le bloc a le temps de revenir.',
     evolution:
-      "Simplifier : supprimer le renversement. On garde le croise arriere droit / arriere gauche, puis l'entree directe de l'ailier.\n" +
-      "Variante : si le defenseur 2 ne suit pas le bloc, le pivot se retourne et recoit lui-meme a 6 metres.\n" +
-      "Variante : l'arriere gauche tire directement apres le croise, si le bloc s'est ouvert au premier temps.\n" +
-      'Complexifier : defense 5-1, dont la pointe gene le retour au demi-centre.',
-    consigneInitiale: 'Attaque placee face a une 6-0. Ballon au demi-centre.',
+      "Simplifier : supprimer le renversement. On garde le croisé arrière droit / arrière gauche, puis l'entrée directe de l'ailier.\n" +
+      "Variante : si le défenseur 2 ne suit pas le bloc, le pivot se retourne et reçoit lui-même à 6 mètres.\n" +
+      "Variante : l'arrière gauche tire directement après le croisé, si le bloc s'est ouvert au premier temps.\n" +
+      'Complexifier : défense 5-1, dont la pointe gêne le retour au demi-centre.',
+    consigneInitiale: 'Attaque placée face à une 6-0. Ballon au demi-centre.',
     etapes: [
       {
-        titre: "Engagement de l'arriere droit",
-        consigne: "L'arriere droit recoit en s'engageant vers le centre.",
+        titre: "Engagement de l'arrière droit",
+        consigne: "L'arrière droit reçoit en s'engageant vers le centre.",
         mouvements: [
           { jeton: 'ard', type: 'course', vers: { x: 30.9, y: 7.6 } },
           { jeton: 'dc', type: 'passe', cible: 'ard' },
         ],
       },
       {
-        titre: 'Croise entre les arrieres',
+        titre: 'Croisé entre les arrières',
         consigne:
-          "Le demi-centre s'ecarte, l'arriere gauche croise dans le dos de l'arriere droit et recoit.",
+          "Le demi-centre s'écarte, l'arrière gauche croise dans le dos de l'arrière droit et reçoit.",
         mouvements: [
           { jeton: 'dc', type: 'course', vers: { x: 29.4, y: 11.6 } },
           { jeton: 'arg', type: 'course', vers: { x: 30.3, y: 9.4 } },
@@ -219,14 +219,14 @@ export const COMBINAISONS: ModeleExercice[] = [
         ],
       },
       {
-        titre: 'Renversement a l aile',
-        consigne: "L'arriere gauche renverse vers l'ailier droit.",
+        titre: 'Renversement à l aile',
+        consigne: "L'arrière gauche renverse vers l'ailier droit.",
         mouvements: [{ jeton: 'arg', type: 'passe', cible: 'ald' }],
       },
       {
         titre: 'Changement d aile et fixation',
         consigne:
-          "L'arriere gauche poursuit jusqu'a l'aile opposee ; l'ailier rend au demi-centre, qui part fixer a gauche.",
+          "L'arrière gauche poursuit jusqu'à l'aile opposée ; l'ailier rend au demi-centre, qui part fixer à gauche.",
         mouvements: [
           { jeton: 'arg', type: 'course', vers: { x: 34.2, y: 3.0 } },
           { jeton: 'dc', type: 'course', vers: { x: 30.3, y: 12.6 } },
@@ -234,8 +234,8 @@ export const COMBINAISONS: ModeleExercice[] = [
         ],
       },
       {
-        titre: "Bloc du pivot et entree de l'ailier",
-        consigne: "Le pivot bloque le defenseur 2 ; l'ailier s'engage dans l'intervalle et recoit.",
+        titre: "Bloc du pivot et entrée de l'ailier",
+        consigne: "Le pivot bloque le défenseur 2 ; l'ailier s'engage dans l'intervalle et reçoit.",
         mouvements: [
           { jeton: 'piv', type: 'ecran', vers: { x: 33.5, y: 7.2 } },
           { jeton: 'ald', type: 'course', vers: { x: 32.6, y: 5.6 } },
@@ -244,7 +244,7 @@ export const COMBINAISONS: ModeleExercice[] = [
       },
       {
         titre: 'Tir dans l intervalle',
-        consigne: "Tir a 6 metres dans l'intervalle libere par le bloc.",
+        consigne: "Tir à 6 mètres dans l'intervalle libéré par le bloc.",
         mouvements: [{ jeton: 'ald', type: 'tir', vers: { x: 40, y: 8.8 } }],
       },
     ],

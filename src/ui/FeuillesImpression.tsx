@@ -76,9 +76,9 @@ function Feuille({
         </div>
         <ul className="feuille-reperes">
           <li>
-            <span>Duree</span>
+            <span>Durée</span>
             <strong>
-              {exercice.duree} min{exercice.enParallele && ' (parallele)'}
+              {exercice.duree} min{exercice.enParallele && ' (parallèle)'}
             </strong>
           </li>
           <li>
@@ -88,7 +88,7 @@ function Feuille({
             </strong>
           </li>
           <li>
-            <span>Categorie</span>
+            <span>Catégorie</span>
             <strong>{LIBELLES_CATEGORIE[exercice.categorie]}</strong>
           </li>
         </ul>
@@ -159,13 +159,13 @@ function Feuille({
           )}
           {exercice.regulation && (
             <section>
-              <h2>Regulation</h2>
+              <h2>Régulation</h2>
               {lignes(exercice.regulation)}
             </section>
           )}
           {exercice.schema.etapes.length > 1 && (
             <section>
-              <h2>Etapes</h2>
+              <h2>Étapes</h2>
               <ol className="liste-etapes-impression">
                 {exercice.schema.etapes.map((etape) => (
                   <li key={etape.id}>
@@ -178,19 +178,19 @@ function Feuille({
           )}
           {exercice.pointsCles && (
             <section>
-              <h2>Points cles</h2>
+              <h2>Points clés</h2>
               {lignes(exercice.pointsCles)}
             </section>
           )}
           {exercice.evolution && (
             <section>
-              <h2>Evolution</h2>
+              <h2>Évolution</h2>
               {lignes(exercice.evolution)}
             </section>
           )}
           <section className="feuille-pied">
             <p>
-              <strong>Materiel :</strong> {exercice.materiel.join(', ') || 'aucun'} ·{' '}
+              <strong>Matériel :</strong> {exercice.materiel.join(', ') || 'aucun'} ·{' '}
               <strong>Gardiens :</strong> {LIBELLES_FORMAT_GARDIENS[exercice.formatGardiens]}
             </p>
           </section>
@@ -201,7 +201,7 @@ function Feuille({
         <span>HBPSM · {seance.titre}</span>
         <span>
           {total > 1
-            ? `Exercice ${index + 1} sur ${total} · seance de ${dureeTotale(seance)} min`
+            ? `Exercice ${index + 1} sur ${total} · séance de ${dureeTotale(seance)} min`
             : `${exercice.duree} min`}
         </span>
       </footer>

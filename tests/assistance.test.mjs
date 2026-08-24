@@ -155,13 +155,13 @@ verifier('le sens de la course est bien inverse',
 
 console.log('')
 console.log('4. Situer un point')
-verifier('pres du but', situer({ x: 38, y: 10 }).startsWith('pres du but'))
-verifier('a 9 m', situer({ x: 31, y: 10 }).startsWith('a 9 m'), situer({ x: 31, y: 10 }))
-verifier('cote gauche pour un y eleve', situer({ x: 31, y: 17 }).includes('cote gauche'))
-verifier('cote droit pour un y faible', situer({ x: 31, y: 3 }).includes('cote droit'))
+verifier('pres du but', situer({ x: 38, y: 10 }).startsWith('près du but'))
+verifier('a 9 m', situer({ x: 31, y: 10 }).startsWith('à 9 m'), situer({ x: 31, y: 10 }))
+verifier('cote gauche pour un y eleve', situer({ x: 31, y: 17 }).includes('côté gauche'))
+verifier('cote droit pour un y faible', situer({ x: 31, y: 3 }).includes('côté droit'))
 verifier('dans l axe au centre', situer({ x: 31, y: 10 }).includes("dans l'axe"))
 verifier('milieu de terrain au loin', situer({ x: 20, y: 10 }) === 'au milieu de terrain')
-verifier('symetrique pour le but de gauche', situer({ x: 2, y: 10 }).startsWith('pres du but'))
+verifier('symetrique pour le but de gauche', situer({ x: 2, y: 10 }).startsWith('près du but'))
 
 console.log('')
 console.log('5. Redaction du deroulement')
@@ -181,14 +181,14 @@ verifier('les actions sont numerotees', actions[0].numero === 1 && actions[1].nu
 verifier('la course nomme le joueur', actions[0].phrase.startsWith('ArD part en course'),
   actions[0].phrase)
 verifier('la passe nomme le passeur et le receveur',
-  actions[1].phrase === 'ArD passe a AlD.', actions[1].phrase)
+  actions[1].phrase === 'ArD passe à AlD.', actions[1].phrase)
 verifier('la redaction devient possible', redactionPossible(scenario) === true)
 
 const deroulement = redigerDeroulement(scenario)
 verifier('le deroulement porte le titre de l etape',
   deroulement.startsWith('Mise en place :'), deroulement)
 verifier('il enchaine les deux phrases',
-  deroulement.includes('part en course') && deroulement.includes('passe a AlD'))
+  deroulement.includes('part en course') && deroulement.includes('passe à AlD'))
 verifier('redigerConsigne donne les phrases sans le titre',
   redigerConsigne(scenario, 0).startsWith('ArD part en course'))
 
@@ -204,14 +204,14 @@ const ecran = appliquerMouvement(base, 0, {
   type: 'ecran', jetonDepart: 'ald', arrivee: { x: 34, y: 6 },
 })
 verifier('un ecran est decrit comme tel',
-  decrireEtape(ecran, 0)[0].phrase.includes('pose un ecran'),
+  decrireEtape(ecran, 0)[0].phrase.includes('pose un écran'),
   decrireEtape(ecran, 0)[0].phrase)
 
 console.log('')
 console.log('6. Nommer les jetons')
 verifier('l etiquette sert de nom', nommer(base, 'ard') === 'ArD')
 const sansEtiquette = { ...base, jetons: base.jetons.map((j) => ({ ...j, etiquette: '' })) }
-verifier('sans etiquette, on nomme le role', nommer(sansEtiquette, 'def') === 'un defenseur')
+verifier('sans etiquette, on nomme le role', nommer(sansEtiquette, 'def') === 'un défenseur')
 verifier('un jeton inconnu reste generique', nommer(base, 'inexistant') === 'un joueur')
 
 console.log('')

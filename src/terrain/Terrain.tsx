@@ -330,7 +330,7 @@ export function Terrain({
       className={`terrain${outil !== 'selection' ? ' mode-trace' : ''}`}
       viewBox={viewBox}
       role="img"
-      aria-label="Schema de l'exercice sur le terrain"
+      aria-label="Schéma de l'exercice sur le terrain"
       onPointerDown={surPointeurBas}
       onPointerMove={suivre}
       onPointerUp={terminer}

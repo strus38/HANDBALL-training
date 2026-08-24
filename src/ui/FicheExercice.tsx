@@ -415,10 +415,10 @@ export function FicheExercice({
     if (!texte) return
     if (exercice.fonctionnement.trim()) {
       const accepte = await confirmer({
-        titre: 'Remplacer le deroulement ?',
+        titre: 'Remplacer le déroulement ?',
         message: (
           <>
-            Le deroulement redige a partir du schema remplacera le texte actuel.
+            Le déroulement rédigé à partir du schéma remplacera le texte actuel.
             <em className="dialogue-note">{premiereLigne(texte)}</em>
           </>
         ),
@@ -542,8 +542,8 @@ export function FicheExercice({
         />
       )}
       <div className="fiche-entete">
-        <button className="bouton discret" onClick={onRetour} title="Revenir a la seance">
-          ← Seance
+        <button className="bouton discret" onClick={onRetour} title="Revenir à la séance">
+          ← Séance
         </button>
         <input
           className="titre-fiche"
@@ -557,7 +557,7 @@ export function FicheExercice({
             onChanger={(note) => onModifier({ evaluation: { ...exercice.evaluation, note } })}
           />
           <button className="bouton" onClick={onEnregistrerDansBibliotheque}>
-            Vers la bibliotheque
+            Vers la bibliothèque
           </button>
           <button className="bouton" onClick={onImprimer}>
             Imprimer
@@ -599,7 +599,7 @@ export function FicheExercice({
               <button
                 className={`bouton segment${outil === 'selection' ? ' actif' : ''}`}
                 onClick={() => setOutil('selection')}
-                title="Deplacer et orienter les joueurs"
+                title="Déplacer et orienter les joueurs"
                 aria-label="Placer"
               >
                 ✥
@@ -633,7 +633,7 @@ export function FicheExercice({
                 className="bouton discret"
                 onClick={historique.retablir}
                 disabled={!historique.peutRetablir}
-                title="Retablir (Ctrl+Y)"
+                title="Rétablir (Ctrl+Y)"
               >
                 ↷
               </button>
@@ -692,14 +692,14 @@ export function FicheExercice({
                 {i + 1}
               </button>
             ))}
-            <button className="bouton discret" onClick={ajouterEtape} title="Ajouter une etape">
-              + Etape
+            <button className="bouton discret" onClick={ajouterEtape} title="Ajouter une étape">
+              + Étape
             </button>
             <button
               className="bouton discret"
               onClick={supprimerEtape}
               disabled={schema.etapes.length <= 1}
-              title="Supprimer cette etape"
+              title="Supprimer cette étape"
             >
               ✕
             </button>
@@ -716,9 +716,9 @@ export function FicheExercice({
                 disabled={schema.etapes.length < 2}
                 title={
                   schema.etapes.length < 2
-                    ? 'Ajoutez une deuxieme etape pour animer le mouvement'
+                    ? 'Ajoutez une deuxième étape pour animer le mouvement'
                     : lecture?.pause
-                      ? "Reprendre la lecture ou on l'a laissee"
+                      ? "Reprendre la lecture où on l'a laissée"
                       : lecture
                         ? "Figer l'image sans perdre l'endroit"
                         : 'Lire le mouvement'
@@ -730,7 +730,7 @@ export function FicheExercice({
                 <button
                   className="bouton discret"
                   onClick={() => setLecture(undefined)}
-                  title="Arreter la lecture et revenir a l'edition"
+                  title="Arrêter la lecture et revenir à l'édition"
                 >
                   ■
                 </button>
@@ -740,7 +740,7 @@ export function FicheExercice({
 
           <div className="detail-etape">
             <label className="champ-en-ligne large">
-              <span>Titre de l'etape {index + 1}</span>
+              <span>Titre de l'étape {index + 1}</span>
               <input
                 type="text"
                 value={etape.titre}
@@ -750,7 +750,7 @@ export function FicheExercice({
             <label className="champ-en-ligne large">
               <EtiquetteAvecDictee
                 libelle="Consigne"
-                quoi="la consigne de cette etape"
+                quoi="la consigne de cette étape"
                 onTexte={(f) =>
                   modifierEtape((et) => ({
                     ...et,
@@ -761,7 +761,7 @@ export function FicheExercice({
               <input
                 type="text"
                 value={etape.consigne}
-                placeholder="Ce que fait le groupe a ce moment"
+                placeholder="Ce que fait le groupe à ce moment"
                 onChange={(e) => modifierEtape((et) => ({ ...et, consigne: e.target.value }))}
               />
             </label>
@@ -771,10 +771,10 @@ export function FicheExercice({
           {jetonSelectionne ? (
             <div className="editeur-jeton">
               <span className="etiquette-groupe">
-                {APPARENCES[jetonSelectionne.type].libelle} selectionne
+                {APPARENCES[jetonSelectionne.type].libelle} sélectionné
               </span>
               <label className="champ-en-ligne">
-                <span>Etiquette</span>
+                <span>Étiquette</span>
                 <input
                   type="text"
                   maxLength={4}
@@ -819,28 +819,28 @@ export function FicheExercice({
           ) : flecheSelectionnee ? (
             <div className="editeur-jeton">
               <span className="etiquette-groupe">
-                {LIBELLES_FLECHE[flecheSelectionnee.type]} selectionne
+                {LIBELLES_FLECHE[flecheSelectionnee.type]} sélectionné
               </span>
               <span className="aide-terrain sans-marge">
-                Faites glisser le point du milieu pour courber le trace.
+                Faites glisser le point du milieu pour courber le tracé.
               </span>
               <button
                 className="bouton danger"
                 onClick={() => supprimerFleche(flecheSelectionnee.id)}
               >
-                Effacer le trace
+                Effacer le tracé
               </button>
             </div>
           ) : (
             <p className="aide-terrain">
-              Ajoutez un element de la palette, puis faites-le glisser sur le terrain. La poignee
+              Ajoutez un élément de la palette, puis faites-le glisser sur le terrain. La poignée
               jaune fait pivoter le joueur sur 360°. Choisissez un type de mouvement ci-dessus pour
-              tracer une fleche.
+              tracer une flèche.
             </p>
           )}
         </section>
 
-        <Separateur separation={separation} libelle="Largeur du schema de terrain" />
+        <Separateur separation={separation} libelle="Largeur du schéma de terrain" />
 
         {/* -------------------------------------------------- Colonne detail */}
         <section className="colonne-detail">
@@ -851,19 +851,19 @@ export function FicheExercice({
               aria-expanded={!signaletiqueRepliee}
               title={
                 signaletiqueRepliee
-                  ? 'Afficher categorie, duree, effectif et difficulte'
-                  : 'Replier : le resume reste visible'
+                  ? 'Afficher catégorie, durée, effectif et difficulté'
+                  : 'Replier : le résumé reste visible'
               }
             >
               <span className={`chevron${signaletiqueRepliee ? ' replie' : ''}`}>⌄</span>
-              <span className="etiquette-groupe">Detail de l'exercice</span>
+              <span className="etiquette-groupe">Détail de l'exercice</span>
             </button>
             {signaletiqueRepliee && (
               <span className="resume-signaletique">
                 {LIBELLES_CATEGORIE[exercice.categorie]} · {exercice.duree} min ·{' '}
                 {exercice.nombreJoueurs} joueurs
                 {exercice.nombreGardiens > 0 && ` + ${exercice.nombreGardiens} GB`}
-                {exercice.enParallele && ' · en parallele'}
+                {exercice.enParallele && ' · en parallèle'}
               </span>
             )}
             <div className="pousse">
@@ -876,13 +876,13 @@ export function FicheExercice({
               <button
                 className="bouton discret"
                 onClick={() => setCollageOuvert(true)}
-                title="Coller un texte dicte sur votre telephone, et le repartir dans les champs"
+                title="Coller un texte dicté sur votre téléphone, et le répartir dans les champs"
               >
-                Coller un texte dicte
+                Coller un texte dicté
               </button>
               <BoutonPleinEcran
                 actif={plein === 'detail'}
-                zone="Le detail"
+                zone="Le détail"
                 onBasculer={() => basculer('detail')}
               />
             </div>
@@ -899,7 +899,7 @@ export function FicheExercice({
           */}
           <div className={`grille-detail${signaletiqueRepliee ? ' repliee' : ''}`}>
             <label className="champ etendu">
-              <span>Categorie</span>
+              <span>Catégorie</span>
               <select
                 value={exercice.categorie}
                 onChange={(e) => onModifier({ categorie: e.target.value as Categorie })}
@@ -912,7 +912,7 @@ export function FicheExercice({
               </select>
             </label>
             <label className="champ">
-              <span>Difficulte</span>
+              <span>Difficulté</span>
               <select
                 value={exercice.difficulte}
                 onChange={(e) =>
@@ -920,7 +920,7 @@ export function FicheExercice({
                 }
               >
                 <option value={1}>Facile</option>
-                <option value={2}>Intermediaire</option>
+                <option value={2}>Intermédiaire</option>
                 <option value={3}>Difficile</option>
               </select>
             </label>
@@ -932,7 +932,7 @@ export function FicheExercice({
                   min={0}
                   max={180}
                   value={exercice.duree}
-                  aria-label="Duree en minutes"
+                  aria-label="Durée en minutes"
                   onChange={(e) => onModifier({ duree: Number(e.target.value) || 0 })}
                 />
                 <span>min</span>
@@ -963,7 +963,7 @@ export function FicheExercice({
 
             {/* Pleine largeur : les intitules debordaient de la liste. */}
             <label className="champ etendu">
-              <span>Role des gardiens</span>
+              <span>Rôle des gardiens</span>
               <select
                 value={exercice.formatGardiens}
                 onChange={(e) => onModifier({ formatGardiens: e.target.value as FormatGardiens })}
@@ -978,14 +978,14 @@ export function FicheExercice({
 
             <label
               className="case-a-cocher compacte"
-              title="Un exercice mene en parallele se deroule pendant un autre : sa duree ne s'ajoute pas au temps total de la seance."
+              title="Un exercice mené en parallèle se déroule pendant un autre : sa durée ne s'ajoute pas au temps total de la séance."
             >
               <input
                 type="checkbox"
                 checked={exercice.enParallele}
                 onChange={(e) => onModifier({ enParallele: e.target.checked })}
               />
-              <span>En parallele d'un autre exercice</span>
+              <span>En parallèle d'un autre exercice</span>
             </label>
           </div>
 
@@ -1026,7 +1026,7 @@ export function FicheExercice({
             />
             <textarea
               rows={3}
-              placeholder="Espaces a delimiter, colonnes, materiel a poser"
+              placeholder="Espaces à délimiter, colonnes, matériel à poser"
               {...champ('misePlace')}
             />
           </label>
@@ -1038,43 +1038,43 @@ export function FicheExercice({
             />
             <textarea
               rows={5}
-              placeholder="Comment la situation se deroule une fois lancee"
+              placeholder="Comment la situation se déroule une fois lancée"
               {...champ('fonctionnement')}
             />
           </label>
           <label className="champ">
             <EtiquetteAvecDictee
-              libelle="Regulation"
-              quoi="la regulation"
+              libelle="Régulation"
+              quoi="la régulation"
               onTexte={(f) => dicter('regulation', f)}
             />
             <textarea
               rows={3}
-              placeholder="Regles, contraintes, bareme de points"
+              placeholder="Règles, contraintes, barème de points"
               {...champ('regulation')}
             />
           </label>
           <label className="champ">
             <EtiquetteAvecDictee
-              libelle="Points cles"
-              quoi="les points cles"
+              libelle="Points clés"
+              quoi="les points clés"
               onTexte={(f) => dicter('pointsCles', f)}
             />
-            <textarea rows={3} placeholder="Ce que l'entraineur observe et corrige" {...champ('pointsCles')} />
+            <textarea rows={3} placeholder="Ce que l'entraîneur observe et corrige" {...champ('pointsCles')} />
           </label>
           <label className="champ">
             <EtiquetteAvecDictee
-              libelle="Evolution"
-              quoi="les evolutions"
+              libelle="Évolution"
+              quoi="les évolutions"
               onTexte={(f) => dicter('evolution', f)}
             />
-            <textarea rows={3} placeholder="Simplifier, complexifier, faire evoluer" {...champ('evolution')} />
+            <textarea rows={3} placeholder="Simplifier, complexifier, faire évoluer" {...champ('evolution')} />
           </label>
           <label className="champ">
-            <span>Materiel</span>
+            <span>Matériel</span>
             <input
               type="text"
-              placeholder="ballons, plots, chasubles (separes par des virgules)"
+              placeholder="ballons, plots, chasubles (séparés par des virgules)"
               value={exercice.materiel.join(', ')}
               onChange={(e) =>
                 onModifier({
@@ -1089,7 +1089,7 @@ export function FicheExercice({
 
           <div className="bloc-evaluation">
             <div className="entete-evaluation">
-              <span className="etiquette-groupe">Retour apres seance</span>
+              <span className="etiquette-groupe">Retour après séance</span>
               <button
                 className="bouton"
                 onClick={() =>
@@ -1102,15 +1102,15 @@ export function FicheExercice({
                   })
                 }
               >
-                Marquer comme realise
+                Marquer comme réalisé
               </button>
             </div>
             <p className="compteur-utilisations">
               {exercice.evaluation.nombreUtilisations === 0
-                ? 'Jamais utilise'
-                : `Utilise ${exercice.evaluation.nombreUtilisations} fois` +
+                ? 'Jamais utilisé'
+                : `Utilisé ${exercice.evaluation.nombreUtilisations} fois` +
                   (exercice.evaluation.derniereUtilisation
-                    ? `, la derniere fois le ${exercice.evaluation.derniereUtilisation
+                    ? `, la dernière fois le ${exercice.evaluation.derniereUtilisation
                         .split('-')
                         .reverse()
                         .join('/')}`
@@ -1119,7 +1119,7 @@ export function FicheExercice({
             {/* Le retour d apres-seance se dicte aussi bien qu il s ecrit. */}
             <label className="champ">
               <EtiquetteAvecDictee
-                libelle="Ce qui a marche"
+                libelle="Ce qui a marché"
                 quoi="votre retour"
                 onTexte={(f) =>
                   onModifier({
@@ -1132,7 +1132,7 @@ export function FicheExercice({
               />
             <textarea
               rows={3}
-              placeholder="Ce qui a marche ou non, a relire avant de le reprogrammer"
+              placeholder="Ce qui a marché ou non, à relire avant de le reprogrammer"
               value={exercice.evaluation.commentaire}
               onChange={(e) =>
                 onModifier({ evaluation: { ...exercice.evaluation, commentaire: e.target.value } })
@@ -1169,7 +1169,7 @@ function BoutonPleinEcran({
       aria-pressed={actif}
       title={
         actif
-          ? `${zone} occupe toute la largeur : revenir a deux colonnes (Echap)`
+          ? `${zone} occupe toute la largeur : revenir à deux colonnes (Échap)`
           : `${zone} occupe toute la largeur`
       }
     >

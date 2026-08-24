@@ -34,9 +34,9 @@ interface Poste {
 
 const POSTES_DROITE: Poste[] = [
   { nom: 'ailier gauche', x: 36.5, y: 18.3 },
-  { nom: 'arriere gauche', x: 31.5, y: 14.5 },
+  { nom: 'arrière gauche', x: 31.5, y: 14.5 },
   { nom: 'demi-centre', x: 30.5, y: 10 },
-  { nom: 'arriere droit', x: 31.5, y: 5.5 },
+  { nom: 'arrière droit', x: 31.5, y: 5.5 },
   { nom: 'ailier droit', x: 36.5, y: 1.7 },
   { nom: 'pivot', x: 34.6, y: 10 },
 ]

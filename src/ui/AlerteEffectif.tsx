@@ -12,19 +12,19 @@ export function AlerteEffectif({ manque, seance }: { manque: Manque; seance: Sea
   const morceaux: string[] = []
   if (manque.joueurs > 0) {
     morceaux.push(
-      `${manque.joueurs} joueur${manque.joueurs > 1 ? 's' : ''} de champ (${seance.effectifJoueurs} present${seance.effectifJoueurs > 1 ? 's' : ''})`,
+      `${manque.joueurs} joueur${manque.joueurs > 1 ? 's' : ''} de champ (${seance.effectifJoueurs} présent${seance.effectifJoueurs > 1 ? 's' : ''})`,
     )
   }
   if (manque.gardiens > 0) {
     morceaux.push(
-      `${manque.gardiens} gardien${manque.gardiens > 1 ? 's' : ''} (${seance.effectifGardiens} present${seance.effectifGardiens > 1 ? 's' : ''})`,
+      `${manque.gardiens} gardien${manque.gardiens > 1 ? 's' : ''} (${seance.effectifGardiens} présent${seance.effectifGardiens > 1 ? 's' : ''})`,
     )
   }
   return (
     <div className="alerte-effectif">
       <strong>Effectif insuffisant</strong>
-      Il manque {morceaux.join(' et ')} pour mener cet exercice tel qu'il est decrit. Adaptez le
-      nombre de joueurs, ou prevoyez une rotation.
+      Il manque {morceaux.join(' et ')} pour mener cet exercice tel qu'il est décrit. Adaptez le
+      nombre de joueurs, ou prévoyez une rotation.
     </div>
   )
 }

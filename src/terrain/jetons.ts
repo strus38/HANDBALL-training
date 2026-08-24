@@ -50,8 +50,8 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     etiquetteParDefaut: '',
   },
   defenseur: {
-    libelle: 'Defenseur',
-    aide: 'Joueur du bloc defensif',
+    libelle: 'Défenseur',
+    aide: 'Joueur du bloc défensif',
     forme: 'joueur',
     remplissage: '#12467f',
     contour: '#06182f',
@@ -93,7 +93,7 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
   },
   but: {
     libelle: 'But mobile',
-    aide: 'But supplementaire ou cible',
+    aide: 'But supplémentaire ou cible',
     forme: 'rectangle',
     remplissage: '#ffffff',
     contour: '#0b2a52',
@@ -102,8 +102,8 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     etiquetteParDefaut: '',
   },
   entraineur: {
-    libelle: 'Entraineur',
-    aide: 'Entraineur, passeur ou relanceur',
+    libelle: 'Entraîneur',
+    aide: 'Entraîneur, passeur ou relanceur',
     forme: 'losange',
     remplissage: '#495867',
     contour: '#1f2933',

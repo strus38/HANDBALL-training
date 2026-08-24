@@ -66,17 +66,17 @@ function expliquer(code: string): string {
   switch (code) {
     case 'not-allowed':
     case 'service-not-allowed':
-      return "Le micro a ete refuse. Autorisez-le dans la barre d'adresse du navigateur."
+      return "Le micro a été refusé. Autorisez-le dans la barre d'adresse du navigateur."
     case 'no-speech':
-      return "Rien n'a ete entendu."
+      return "Rien n'a été entendu."
     case 'audio-capture':
-      return 'Aucun micro trouve sur cet ordinateur.'
+      return 'Aucun micro trouvé sur cet ordinateur.'
     case 'network':
-      return 'La dictee passe par internet et la connexion a manque.'
+      return 'La dictée passe par internet et la connexion a manqué.'
     case 'aborted':
       return ''
     default:
-      return 'La dictee a echoue (' + code + ').'
+      return 'La dictée a échoué (' + code + ').'
   }
 }
 
@@ -112,7 +112,7 @@ export function BoutonDictee({ onTexte, quoi }: Props) {
 
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
       setMessage(
-        'La dictee du navigateur passe par internet. Sans connexion, dictez sur votre telephone et collez le texte.',
+        'La dictée du navigateur passe par internet. Sans connexion, dictez sur votre téléphone et collez le texte.',
       )
       return
     }
@@ -152,7 +152,7 @@ export function BoutonDictee({ onTexte, quoi }: Props) {
       m.start()
       setEcoute(true)
     } catch {
-      setMessage("La dictee n'a pas pu demarrer.")
+      setMessage("La dictée n'a pas pu démarrer.")
     }
   }
 
@@ -168,7 +168,7 @@ export function BoutonDictee({ onTexte, quoi }: Props) {
           e.preventDefault()
           ecoute ? arreter() : demarrer()
         }}
-        title={ecoute ? 'Arreter la dictee' : `Dicter ${quoi} (necessite internet)`}
+        title={ecoute ? 'Arrêter la dictée' : `Dicter ${quoi} (nécessite internet)`}
       >
         {ecoute ? '⏹' : '🎤'}
       </button>

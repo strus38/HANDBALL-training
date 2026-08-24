@@ -62,8 +62,8 @@ export interface Bilan {
 }
 
 const MOIS = [
-  'janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin',
-  'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre',
+  'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+  'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
 ]
 
 /**

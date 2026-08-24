@@ -10,6 +10,8 @@
 import { clonerExercice, nouvelExercice, nouvelId, nouvelleSeance } from './fabrique'
 import { migrerSchema } from './mouvement'
 import { lireFavoris, retracerFavoris } from './favoris'
+import { lireMasquees } from './masquees'
+import { versionComplete } from './version'
 import {
   nouvelleEvaluation,
   SCHEMA_VERSION,
@@ -28,6 +30,7 @@ export function exporterSeance(seance: Seance): string {
     format: 'handball-training',
     version: SCHEMA_VERSION,
     exporteLe: new Date().toISOString(),
+    application: versionComplete(),
     contenu: { type: 'seance', seance },
   }
   return JSON.stringify(fichier, null, 2)
@@ -47,12 +50,14 @@ export function exporterSauvegarde(
   seances: Seance[],
   modeles: Exercice[],
   favoris: string[] = [],
+  masquees: string[] = [],
 ): string {
   const fichier: FichierExport = {
     format: 'handball-training',
     version: SCHEMA_VERSION,
     exporteLe: new Date().toISOString(),
-    contenu: { type: 'sauvegarde', seances, modeles, favoris },
+    application: versionComplete(),
+    contenu: { type: 'sauvegarde', seances, modeles, favoris, masquees },
   }
   return JSON.stringify(fichier, null, 2)
 }
@@ -62,6 +67,7 @@ export function exporterExercice(exercice: Exercice): string {
     format: 'handball-training',
     version: SCHEMA_VERSION,
     exporteLe: new Date().toISOString(),
+    application: versionComplete(),
     contenu: { type: 'exercice', exercice },
   }
   return JSON.stringify(fichier, null, 2)
@@ -101,7 +107,13 @@ const liste = (v: unknown): unknown[] => (Array.isArray(v) ? v : [])
 export type ContenuImporte =
   | { type: 'seance'; seance: Seance }
   | { type: 'exercice'; seance: Seance }
-  | { type: 'sauvegarde'; seances: Seance[]; modeles: Exercice[]; favoris: string[] }
+  | {
+      type: 'sauvegarde'
+      seances: Seance[]
+      modeles: Exercice[]
+      favoris: string[]
+      masquees: string[]
+    }
 
 export function importerFichier(contenuTexte: string): ContenuImporte {
   let brut: unknown
@@ -113,12 +125,12 @@ export function importerFichier(contenuTexte: string): ContenuImporte {
 
   if (!estObjet(brut) || brut.format !== 'handball-training') {
     throw new ErreurImport(
-      "Ce fichier n'a pas ete cree par l'application (champ « format » absent ou incorrect).",
+      "Ce fichier n'a pas été créé par l'application (champ « format » absent ou incorrect).",
     )
   }
   if (nombre(brut.version, 0) > SCHEMA_VERSION) {
     throw new ErreurImport(
-      'Ce fichier a ete cree avec une version plus recente de l\'application. Mettez a jour votre fichier index.html.',
+      'Ce fichier a été créé avec une version plus récente de l\'application. Mettez à jour votre fichier index.html.',
     )
   }
   if (!estObjet(brut.contenu)) throw new ErreurImport('Contenu du fichier illisible.')
@@ -148,6 +160,9 @@ export function importerFichier(contenuTexte: string): ContenuImporte {
         .map((s) => renouvelerIdentifiants(lireSeance(s))),
       modeles,
       favoris: retracerFavoris(lireFavoris(contenu.favoris), correspondances),
+      // Les fiches masquees ne designent que des fiches FOURNIES, dont la
+      // reference est stable : rien a retracer, contrairement aux favoris.
+      masquees: lireMasquees(contenu.masquees),
     }
   }
 
@@ -160,7 +175,7 @@ export function importerFichier(contenuTexte: string): ContenuImporte {
     seance.exercices = [exercice]
     return { seance, type: 'exercice' }
   }
-  throw new ErreurImport('Le fichier ne contient ni seance, ni exercice, ni sauvegarde.')
+  throw new ErreurImport('Le fichier ne contient ni séance, ni exercice, ni sauvegarde.')
 }
 
 /**
@@ -230,7 +245,7 @@ function lireExercice(brut: Objet): Exercice {
       }
       return {
         id: texte(e.id) || `etape-${Math.random().toString(36).slice(2, 10)}`,
-        titre: texte(e.titre, 'Etape'),
+        titre: texte(e.titre, 'Étape'),
         consigne: texte(e.consigne),
         positions,
         // Une fleche liee a un jeton ne stocke plus ses extremites : elles se

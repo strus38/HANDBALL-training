@@ -145,12 +145,12 @@ const source = readFileSync(new URL('../LISEZMOI.md', import.meta.url), 'utf8')
 const notice = versHtml(pourLesCoachs(source))
 verifier(
   'LISEZMOI.md garde ses sections de developpement',
-  source.includes('## Developpement') && source.includes("## Etat d'avancement"),
+  source.includes('## Développement') && source.includes("## État d'avancement"),
   '(le Markdown est la reference du projet, il reste complet)',
 )
 verifier(
   'la notice des coachs ne les reprend pas',
-  !notice.includes('Developpement') && !notice.includes("Etat d'avancement"),
+  !notice.includes('Développement') && !notice.includes("État d'avancement"),
 )
 verifier(
   'aucune commande de developpement ne subsiste',

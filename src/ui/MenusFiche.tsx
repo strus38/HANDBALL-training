@@ -55,7 +55,7 @@ export function SelecteurJeton({ onChoisir }: { onChoisir: (type: TypeJeton) => 
         onClick={() => setOuvert((o) => !o)}
         aria-expanded={ouvert}
         aria-haspopup="menu"
-        title="Ajouter un joueur, un ballon, du materiel"
+        title="Ajouter un joueur, un ballon, du matériel"
       >
         + Ajouter
       </button>
@@ -140,17 +140,17 @@ export function MenuActions({
           >
             <span className="icone-menu">🧲</span>
             Aimantation
-            <em>{aimantation ? 'active' : 'desactivee'}</em>
+            <em>{aimantation ? 'active' : 'désactivée'}</em>
           </button>
           <button className="entree-menu" role="menuitem" onClick={choisir(onSymetrie)}>
             <span className="icone-menu">⇅</span>
-            Symetrie
-            <em>refaire de l'autre cote</em>
+            Symétrie
+            <em>refaire de l'autre côté</em>
           </button>
           <button className="entree-menu" role="menuitem" onClick={choisir(onImage)}>
             <span className="icone-menu">🖼</span>
             Exporter en image
-            <em>PNG du schema</em>
+            <em>PNG du schéma</em>
           </button>
           <button
             className="entree-menu"
@@ -160,7 +160,7 @@ export function MenuActions({
           >
             <span className="icone-menu">⤳</span>
             Proposer des mouvements
-            <em>{proposerPossible ? "d'apres le deroulement" : 'ecrivez un deroulement'}</em>
+            <em>{proposerPossible ? "d'après le déroulement" : 'écrivez un déroulement'}</em>
           </button>
           <button
             className="entree-menu"
@@ -169,8 +169,8 @@ export function MenuActions({
             disabled={!redigerPossible}
           >
             <span className="icone-menu">✎</span>
-            Rediger le deroulement
-            <em>{redigerPossible ? "d'apres le schema" : 'tracez des mouvements'}</em>
+            Rédiger le déroulement
+            <em>{redigerPossible ? "d'après le schéma" : 'tracez des mouvements'}</em>
           </button>
         </div>
       )}

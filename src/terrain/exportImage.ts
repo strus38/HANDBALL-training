@@ -112,7 +112,7 @@ export function schemaEnPng(source: SVGSVGElement): Promise<Blob> {
         else rejeter(new Error('Conversion en PNG impossible'))
       }, 'image/png')
     }
-    image.onerror = () => rejeter(new Error('Le schema n a pas pu etre rasterise'))
+    image.onerror = () => rejeter(new Error('Le schéma n a pas pu être rastérisé'))
     image.src = url
   })
 }

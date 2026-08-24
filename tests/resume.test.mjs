@@ -122,7 +122,7 @@ verifier('l orientation est conservee',
 console.log('')
 console.log('3. Dates')
 verifier('date en toutes lettres',
-  dateEnToutesLettres('2026-08-25') === 'mardi 25 aout 2026',
+  dateEnToutesLettres('2026-08-25') === 'mardi 25 août 2026',
   '(' + dateEnToutesLettres('2026-08-25') + ')')
 verifier('date invalide renvoyee telle quelle', dateEnToutesLettres('') === '')
 verifier('ecart nul le jour meme', ecartEnJours('2026-08-25', '2026-08-25') === 0)

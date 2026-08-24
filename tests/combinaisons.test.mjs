@@ -130,7 +130,7 @@ console.log('')
 console.log('7. La source est creditee')
 verifier(
   'chaque combinaison dit d ou vient le schema',
-  COMBINAISONS.every((m) => /repertoire classique/i.test(m.fonctionnement)),
+  COMBINAISONS.every((m) => /répertoire classique/i.test(m.fonctionnement)),
   "(les textes et les schemas sont ecrits ici, la provenance de l'idee se dit)",
 )
 

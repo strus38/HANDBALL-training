@@ -19,7 +19,7 @@ export interface DepotChoisi {
 
 export const LIBELLES_STOCKAGE: Record<MoyenStockage, string> = {
   indexeddb: 'Sauvegarde automatique active',
-  localstorage: 'Sauvegarde automatique active (capacite reduite)',
+  localstorage: 'Sauvegarde automatique active (capacité réduite)',
   aucun: 'Sauvegarde automatique indisponible',
 }
 

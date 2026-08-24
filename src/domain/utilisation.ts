@@ -88,7 +88,7 @@ export function dateCourte(iso: string): string {
  */
 export function resumeUtilisation(utilisation: Utilisation | undefined): string | undefined {
   if (!utilisation || utilisation.fois <= 0) return undefined
-  const fois = utilisation.fois === 1 ? 'Menee 1 fois' : `Menee ${utilisation.fois} fois`
+  const fois = utilisation.fois === 1 ? 'Menée 1 fois' : `Menée ${utilisation.fois} fois`
   const date = dateCourte(utilisation.derniere)
-  return date ? `${fois}, la derniere le ${date}` : fois
+  return date ? `${fois}, la dernière le ${date}` : fois
 }

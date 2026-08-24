@@ -255,6 +255,79 @@ verifier(
   '(' + orphelins.join(', ') + ')',
 )
 
+// La meme exigence vaut pour les etapes CONSTRUITES : le moteur pose le ballon,
+// mais il le pose la ou les donnees le menent. Une passe declaree avant la
+// course de son receveur laissait le ballon au milieu du terrain, et la fiche
+// montrait ensuite un tir partir de personne — c'est arrive sur la
+// contre-attaque directe, sans que rien ne le signale.
+const machesEnEtape = []
+const abandonnes = []
+const passesPerdues = []
+for (const modele of avecEtapes) {
+  const exercice = construireExercice(modele)
+  const schema = exercice.schema
+  const ballon = schema.jetons.find((j) => j.type === 'ballon')
+  if (!ballon) continue
+
+  schema.etapes.forEach((etape, index) => {
+    const positionBallon = etape.positions[ballon.id]
+    if (!positionBallon) return
+    const distances = schema.jetons
+      .filter((j) => JOUEURS.includes(j.type) && etape.positions[j.id])
+      .map((j) => ({
+        j,
+        d: Math.hypot(etape.positions[j.id].x - positionBallon.x, etape.positions[j.id].y - positionBallon.y),
+      }))
+      .sort((a, b) => a.d - b.d)
+    if (distances[0] && distances[0].d < MASQUE) {
+      machesEnEtape.push(
+        `${modele.ref} / etape ${index + 1} : ${distances[0].j.etiquette} (${distances[0].d.toFixed(2)} m)`,
+      )
+    }
+    // A partir de la deuxieme etape, le ballon doit etre chez quelqu'un — sauf
+    // s'il vient d'etre tire : il repose alors au but, et c'est normal.
+    const tirVientDEtrePorte = schema.etapes[index - 1]?.fleches.some((f) => f.type === 'tir')
+    if (index > 0 && !tirVientDEtrePorte && !porteur(schema, index)) {
+      abandonnes.push(
+        `${modele.ref} / etape ${index + 1} : ballon a ${distances[0]?.d.toFixed(1)} m de tout joueur`,
+      )
+    }
+  })
+
+  // Une passe declaree doit remettre le ballon a sa cible — sauf si un autre
+  // mouvement du ballon suit dans la meme etape (remise puis tir, ou deux
+  // passes d'un renversement) : c'est alors le dernier qui decide.
+  const cles = new Map()
+  modele.jetons.forEach((mj, i) => {
+    if (mj.ref) cles.set(mj.ref, schema.jetons[i].id)
+  })
+  modele.etapes.forEach((etapeModele, rang) => {
+    const mouvementsBallon = etapeModele.mouvements.filter(
+      (m) => m.type === 'passe' || m.type === 'tir',
+    )
+    const dernier = mouvementsBallon[mouvementsBallon.length - 1]
+    if (!dernier || dernier.type !== 'passe' || !dernier.cible) return
+    if (porteur(schema, rang + 1) !== cles.get(dernier.cible)) {
+      passesPerdues.push(`${modele.ref} / etape ${rang + 1} : la passe n'atteint pas ${dernier.cible}`)
+    }
+  })
+}
+verifier(
+  'aucun ballon ne masque un joueur dans les etapes construites',
+  machesEnEtape.length === 0,
+  '\n        ' + machesEnEtape.slice(0, 6).join('\n        '),
+)
+verifier(
+  'le ballon est toujours chez quelqu un, ou au but apres un tir',
+  abandonnes.length === 0,
+  '\n        ' + abandonnes.slice(0, 6).join('\n        '),
+)
+verifier(
+  'chaque passe declaree remet le ballon a sa cible',
+  passesPerdues.length === 0,
+  '\n        ' + passesPerdues.slice(0, 6).join('\n        '),
+)
+
 console.log('')
 console.log('8. Personne n en cache un autre')
 // Le pivot etait dessine SOUS les defenseurs 3 et 4, a un metre de chacun, et

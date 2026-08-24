@@ -99,7 +99,7 @@ export function phraseReste(minutes: number): string {
 export function phraseDerive(minutes: number): string {
   if (minutes >= 2) return `${minutes} min de retard`
   if (minutes <= -2) return `${-minutes} min d'avance`
-  return 'a l\u2019heure'
+  return 'à l\u2019heure'
 }
 
 /**

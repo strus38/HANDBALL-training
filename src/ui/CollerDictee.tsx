@@ -28,9 +28,9 @@ const NOMS: Record<ChampDicte, string> = {
   objectifs: 'Objectifs',
   misePlace: 'Mise en place',
   fonctionnement: 'Fonctionnement',
-  regulation: 'Regulation',
-  pointsCles: 'Points cles',
-  evolution: 'Evolution',
+  regulation: 'Régulation',
+  pointsCles: 'Points clés',
+  evolution: 'Évolution',
 }
 
 interface Props {
@@ -50,11 +50,11 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
       <div
         className="modale coller-dictee"
         role="dialog"
-        aria-label="Coller un texte dicte"
+        aria-label="Coller un texte dicté"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="modale-entete">
-          <h2>Coller un texte dicte</h2>
+          <h2>Coller un texte dicté</h2>
           <button className="bouton discret" onClick={onFermer} title="Fermer">
             ✕
           </button>
@@ -62,8 +62,8 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
 
         <div className="corps-coller">
           <p className="explication-dictee">
-            Dictez dans les notes de votre telephone — cette dictee-la fonctionne{' '}
-            <strong>sans connexion</strong> et connait le francais — puis collez le texte ici
+            Dictez dans les notes de votre téléphone — cette dictée-là fonctionne{' '}
+            <strong>sans connexion</strong> et connaît le français — puis collez le texte ici
             avec Ctrl+V.
           </p>
 
@@ -75,7 +75,7 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
             onChange={(e) => setTexte(e.target.value)}
             placeholder={
               'Collez ici.\n\n' +
-              'Astuce : si vous dictez « mise en place », « deroulement » ou « points cles »' +
+              'Astuce : si vous dictez « mise en place », « déroulement » ou « points clés »' +
               ' avant chaque partie, le texte se range tout seul dans les bons champs.'
             }
           />
@@ -84,13 +84,13 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
             <p className="apercu-repartition">
               {reconnus.length > 0 ? (
                 <>
-                  <strong>Sera reparti dans :</strong>{' '}
+                  <strong>Sera réparti dans :</strong>{' '}
                   {reconnus.map((c) => NOMS[c]).join(', ')}.
                 </>
               ) : (
                 <>
-                  <strong>Aucun intitule reconnu :</strong> tout ira dans le fonctionnement, d'un
-                  bloc. On ne devine pas — un paragraphe range au jugement se retrouve la ou
+                  <strong>Aucun intitulé reconnu :</strong> tout ira dans le fonctionnement, d'un
+                  bloc. On ne devine pas — un paragraphe rangé au jugement se retrouve là où
                   personne ne le cherche.
                 </>
               )}
@@ -104,8 +104,8 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
           */}
           {propre && (reparti.fonctionnement ?? '') !== '' && (
             <p className="suite-collage">
-              Une fois le deroulement en place, le menu <strong>⋯</strong> du terrain propose
-              les deplacements qu il y reconnait.
+              Une fois le déroulement en place, le menu <strong>⋯</strong> du terrain propose
+              les déplacements qu il y reconnaît.
             </p>
           )}
         </div>
@@ -118,7 +118,7 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
             className="bouton"
             disabled={!propre || reconnus.length === 0}
             onClick={() => onAppliquer({ fonctionnement: propre })}
-            title="Ignorer les intitules et tout mettre dans le fonctionnement"
+            title="Ignorer les intitulés et tout mettre dans le fonctionnement"
           >
             Tout dans le fonctionnement
           </button>
@@ -127,7 +127,7 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
             disabled={!propre}
             onClick={() => onAppliquer(reparti)}
           >
-            {reconnus.length > 0 ? 'Repartir dans les champs' : 'Ajouter au fonctionnement'}
+            {reconnus.length > 0 ? 'Répartir dans les champs' : 'Ajouter au fonctionnement'}
           </button>
         </div>
       </div>

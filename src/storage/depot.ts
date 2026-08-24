@@ -9,6 +9,7 @@
 
 import type { Exercice, Seance } from '../domain/types'
 import { lireFavoris } from '../domain/favoris'
+import { lireMasquees } from '../domain/masquees'
 
 export interface Depot {
   /** Toutes les seances, de la plus recemment modifiee a la plus ancienne. */
@@ -31,6 +32,14 @@ export interface Depot {
    */
   lireFavoris(): Promise<string[]>
   enregistrerFavoris(favoris: string[]): Promise<void>
+  /**
+   * Fiches fournies masquees : references retirees de la bibliotheque de base.
+   *
+   * Meme nature que les favoris — une preference designant des fiches par leur
+   * reference stable — et donc meme rangement, a part des seances.
+   */
+  lireMasquees(): Promise<string[]>
+  enregistrerMasquees(masquees: string[]): Promise<void>
   /** Verifie que le stockage est reellement utilisable (mode file://, navigation privee...). */
   verifierDisponibilite(): Promise<boolean>
 }
@@ -43,6 +52,7 @@ const MAGASIN_SEANCES = 'seances'
 const MAGASIN_MODELES = 'modeles'
 const MAGASIN_PREFERENCES = 'preferences'
 const CLE_FAVORIS = 'favoris'
+const CLE_MASQUEES = 'fiches-masquees'
 /**
  * Au-dela, on considere qu'IndexedDB ne repondra pas et on passe au depot
  * suivant. Mieux vaut une sauvegarde en localStorage qu'une application qui
@@ -143,6 +153,27 @@ export const depotIndexedDB: Depot = {
   async enregistrerFavoris(favoris) {
     await transaction(MAGASIN_PREFERENCES, 'readwrite', (m) =>
       m.put({ cle: CLE_FAVORIS, valeur: favoris }),
+    )
+  },
+
+  async lireMasquees() {
+    // Meme tolerance que les favoris : une lecture qui echoue ne doit jamais
+    // empecher l'application de demarrer. Sans liste vaut mieux que rien.
+    try {
+      const enregistrement = await transaction<{ cle: string; valeur: unknown } | undefined>(
+        MAGASIN_PREFERENCES,
+        'readonly',
+        (m) => m.get(CLE_MASQUEES),
+      )
+      return lireMasquees(enregistrement?.valeur)
+    } catch {
+      return []
+    }
+  },
+
+  async enregistrerMasquees(masquees) {
+    await transaction(MAGASIN_PREFERENCES, 'readwrite', (m) =>
+      m.put({ cle: CLE_MASQUEES, valeur: masquees }),
     )
   },
 

@@ -40,11 +40,11 @@ const livrable = pathToFileURL(resolve('dist/index.html')).href
  * la combinaison qui met la mise en page en difficulte.
  */
 const FICHES_TEMOINS = [
-  'Croise arriere',        // demi-terrain, quatre etapes, texte moyen
-  'Echauffement en montee', // terrain complet, tres large
+  'Croisé arrière',        // demi-terrain, quatre etapes, texte moyen
+  'Échauffement en montée', // terrain complet, tres large
   'Circuit intermittent',   // beaucoup de texte, beaucoup de plots
-  'Duels croises entre gardiens', // terrain complet, fiche gardien
-  'Echauffement gardien : appuis', // vue zone, plus haute que large
+  'Duels croisés entre gardiens', // terrain complet, fiche gardien
+  'Échauffement gardien : appuis', // vue zone, plus haute que large
   // Les deux fiches du club les plus exposees : l'une pour son bareme de
   // points, qui fait le texte le plus long du catalogue, l'autre pour sa
   // choregraphie en quatre temps sur terrain complet.
@@ -58,7 +58,7 @@ const PREPARER = `
     .find((b) => b.textContent.trim().includes(t));
   await pause(400);
   if (!document.querySelector('.carte-seance')) {
-    btn('Nouvelle seance')?.click(); await pause(500);
+    btn('Nouvelle séance')?.click(); await pause(500);
   } else {
     document.querySelector('.carte-seance .zone-ouverture').click(); await pause(500);
   }
@@ -67,13 +67,13 @@ const PREPARER = `
     const deja = [...document.querySelectorAll('.titre-exercice')]
       .some((t) => t.textContent.includes(voulue));
     if (deja) continue;
-    btn('Bibliotheque')?.click(); await pause(500);
+    btn('Bibliothèque')?.click(); await pause(500);
     const carte = [...document.querySelectorAll('.carte-modele')]
       .find((c) => c.textContent.includes(voulue));
     if (!carte) { document.querySelector('.voile')?.dispatchEvent(
       new PointerEvent('pointerdown', { bubbles: true })); await pause(300); continue; }
     carte.click(); await pause(250);
-    btn('Ajouter a la seance')?.click(); await pause(500);
+    btn('Ajouter à la séance')?.click(); await pause(500);
   }
   return document.querySelectorAll('.ligne-exercice').length;
 `
@@ -87,7 +87,7 @@ const PREPARER = `
 const OUVRIR_FICHE = `
   const pause = (ms) => new Promise((r) => setTimeout(r, ms));
   const liens = [...document.querySelectorAll('.lien-exercice')];
-  const cible = liens.find((l) => l.textContent.includes('Croise arriere')) ?? liens[0];
+  const cible = liens.find((l) => l.textContent.includes('Croisé arrière')) ?? liens[0];
   cible.click();
   await pause(800);
   return document.querySelectorAll('.puce-etape').length;
@@ -215,7 +215,7 @@ try {
         }),
       };
     };
-    btn('Imprimer la seance')?.click();
+    btn('Imprimer la séance')?.click();
     await pause(700);
     return { capture, exercices: document.querySelectorAll('.ligne-exercice').length };
   `)

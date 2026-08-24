@@ -83,11 +83,11 @@ verifier('aucune entree parasite', index.size === 2, `(${index.size} entrees)`)
 
 console.log('')
 console.log('3. Phrase affichee')
-verifier('le singulier est respecte', resumeUtilisation({ fois: 1, derniere: '2026-09-15' }) === 'Menee 1 fois, la derniere le 15/09/2026')
-verifier('le pluriel aussi', resumeUtilisation({ fois: 3, derniere: '2026-09-22' })?.startsWith('Menee 3 fois'))
+verifier('le singulier est respecte', resumeUtilisation({ fois: 1, derniere: '2026-09-15' }) === 'Menée 1 fois, la dernière le 15/09/2026')
+verifier('le pluriel aussi', resumeUtilisation({ fois: 3, derniere: '2026-09-22' })?.startsWith('Menée 3 fois'))
 verifier(
   'sans date, la phrase reste correcte',
-  resumeUtilisation({ fois: 2, derniere: '' }) === 'Menee 2 fois',
+  resumeUtilisation({ fois: 2, derniere: '' }) === 'Menée 2 fois',
 )
 verifier(
   'un exercice jamais mene ne dit rien',
