@@ -514,6 +514,19 @@ export interface Seance {
    * une question qu'on ne lui a pas posee.
    */
   espaceDisponible: Espace | ''
+  /**
+   * Duree du creneau, en minutes. Absente = creneau inconnu.
+   *
+   * L'application savait additionner les exercices ; elle ne savait pas
+   * combien de temps on a. Un plan de 95 minutes pose sur un creneau de 75 ne
+   * se decouvrait qu'au gymnase, en sautant le dernier atelier.
+   *
+   * Deduite du planning du club a la creation de la seance, puis recopiee ici
+   * pour la meme raison que l'equipe : une seance exportee reste
+   * auto-descriptive, et le jour ou le planning change, les seances passees ne
+   * se reecrivent pas.
+   */
+  dureeCreneau?: number
   exercices: Exercice[]
   /**
    * Ce qu'on ecrit dans la voiture en rentrant.
@@ -611,6 +624,19 @@ export function dureeTotale(seance: Seance): number {
   return seance.exercices
     .filter((ex) => !ex.enParallele)
     .reduce((total, ex) => total + (ex.duree || 0), 0)
+}
+
+/**
+ * Minutes de trop par rapport au creneau, 0 si le plan y tient.
+ *
+ * Meme convention que manqueEffectif et manqueEspace : un creneau inconnu ne
+ * dit rien, et une seance plus courte que son creneau n'est jamais signalee.
+ * On ne reproche pas a l'entraineur d'avoir garde dix minutes de marge — c'est
+ * souvent volontaire, et toujours son affaire.
+ */
+export function depassementCreneau(seance: Seance): number {
+  if (!seance.dureeCreneau) return 0
+  return Math.max(0, dureeTotale(seance) - seance.dureeCreneau)
 }
 
 // ---------------------------------------------------------------- Fichiers

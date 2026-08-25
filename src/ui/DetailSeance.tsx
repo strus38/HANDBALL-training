@@ -1,7 +1,22 @@
 import { useState } from 'react'
-import { clonerExercice, dateDuJour, nouvelExercice } from '../domain/fabrique'
+import {
+  clonerExercice,
+  dateDuJour,
+  dateEnToutesLettres,
+  nouvelExercice,
+  redater,
+} from '../domain/fabrique'
 import { equipeInhabituelle, equipeRenseignee, libelleEquipe, type MonEquipe } from '../domain/equipe'
 import {
+  calerSurLePlanning,
+  creneauDuJour,
+  creneauSuivant,
+  dureeCreneau,
+  libelleCreneau,
+  voisinesDe,
+} from '../domain/planning'
+import {
+  depassementCreneau,
   dureeTotale,
   LIBELLES_CATEGORIE,
   LIBELLES_ESPACE,
@@ -13,7 +28,6 @@ import {
   type Seance,
 } from '../domain/types'
 import { consoliderMateriel, libelleMateriel } from '../domain/materiel'
-import { dateEnToutesLettres } from '../domain/resume'
 import { NoteEtoiles } from './NoteEtoiles'
 import { useConfirmation } from './Dialogue'
 import { EtiquetteAvecDictee } from './Dictee'
@@ -92,6 +106,19 @@ export function DetailSeance({
   const materiel = consoliderMateriel(seance.exercices)
   const precedente = retourPrecedent(seance, seances)
 
+  /**
+   * Ce que le planning du club sait de ce soir-la.
+   *
+   * Relu a l'affichage plutot que stocke : c'est une information sur le
+   * CRENEAU, pas sur la seance. Seules la duree et l'espace, dont depend une
+   * alerte, sont recopies dans la seance — pour qu'un plan de 95 minutes reste
+   * un plan trop long meme apres un changement de planning.
+   */
+  const creneau = creneauDuJour(seance.equipe, seance.date)
+  const voisines = creneau ? voisinesDe(creneau, seance.equipe) : []
+  const suivant = creneau ? creneauSuivant(creneau) : undefined
+  const depassement = depassementCreneau(seance)
+
   return (
     <div className="panneau-principal">
       <button className="fil-ariane" onClick={onRetourAccueil}>
@@ -134,7 +161,16 @@ export function DetailSeance({
             <input
               type="date"
               value={seance.date}
-              onChange={(e) => onModifier((s) => ({ ...s, date: e.target.value }))}
+              /*
+                Changer la date, c'est changer de creneau : le mardi des moins
+                de 13 dure 90 minutes, leur vendredi 75. Sans ce recalage, la
+                seance deplacee garderait l'ancienne duree et l'ancien espace,
+                et l'alerte de depassement porterait sur un soir revolu.
+
+                redater emmene aussi le titre, tant qu'il est celui pose par
+                l'application. Un titre ecrit a la main, lui, ne bouge pas.
+              */
+              onChange={(e) => onModifier((s) => calerSurLePlanning(redater(s, e.target.value)))}
             />
           </label>
         </div>
@@ -182,6 +218,20 @@ export function DetailSeance({
             <button type="button" className="lien-discret" onClick={() => setEquipeDepliee(true)}>
               Autre équipe pour cette séance
             </button>
+          </p>
+        )}
+        {/*
+          Le creneau, sous l'equipe et la date dont il decoule. Il dit trois
+          choses que l'entraineur n'a plus a saisir : combien de temps il a,
+          avec qui il partage le sol, et qui attend derriere la porte.
+        */}
+        {creneau && (
+          <p className="creneau-seance">
+            <strong>{libelleCreneau(creneau)}</strong> · {dureeCreneau(creneau)} min ·{' '}
+            {voisines.length > 0
+              ? `demi-terrain, ${voisines.join(' et ')} sur l'autre moitié`
+              : 'terrain complet'}
+            {suivant && ` · ${suivant.equipes.join(' et ')} enchaîne ensuite`}
           </p>
         )}
         <div className="grille-effectif">
@@ -305,8 +355,27 @@ export function DetailSeance({
         <span className="compteur">
           {seance.exercices.length} fiche{seance.exercices.length > 1 ? 's' : ''} ·{' '}
           {dureeTotale(seance)} min
+          {/*
+            « 95 min sur 90 » : le total seul ne disait rien tant qu'il fallait
+            se rappeler la longueur du creneau. Le rapport, lui, se lit d'un
+            coup d'oeil — et le depassement se voit avant le gymnase, pas
+            pendant, en sautant le dernier atelier.
+          */}
+          {seance.dureeCreneau ? ` sur ${seance.dureeCreneau}` : ''}
           {enParallele > 0 && ` · ${enParallele} en parallèle`}
         </span>
+        {depassement > 0 && (
+          <em
+            className="jeton-manque"
+            title={
+              suivant
+                ? `La séance déborde du créneau : ${suivant.equipes.join(' et ')} attend le terrain`
+                : 'La séance déborde du créneau'
+            }
+          >
+            {depassement} min de trop
+          </em>
+        )}
         <div className="pousse">
           {/*
             L'ordre suit la VIE d'une seance, lue depuis la droite : on ajoute
@@ -317,7 +386,7 @@ export function DetailSeance({
             ou la main revient.
 
             La suppression est a l'autre bout, derriere un separateur. Elle
-            etait auparavant coincee entre « Exporter » et « Bibliotheque »,
+            etait auparavant coincee entre « Sauvegarder » et « Bibliotheque »,
             deux commandes anodines : la seule action irreversible de la rangee
             se trouvait a un pixel des plus frequentes.
           */}
@@ -326,8 +395,22 @@ export function DetailSeance({
             Supprimer la séance
           </button>
           <span className="separateur-actions" aria-hidden="true" />
-          <button className="bouton" onClick={onExporterSeance}>
-            Exporter
+          {/*
+            « Sauvegarder » et non « Exporter » : le mot ne parlait pas aux
+            entraineurs. Il fait paire avec « Sauvegarder tout » de l'accueil —
+            meme verbe, deux portees.
+
+            L'infobulle dit ce que le bouton PRODUIT. Sans elle, le mot pourrait
+            laisser croire qu'il faut cliquer pour ne pas perdre son travail,
+            alors que l'enregistrement est automatique et que l'indicateur de
+            l'entete l'annonce deja.
+          */}
+          <button
+            className="bouton"
+            onClick={onExporterSeance}
+            title="Enregistrer cette séance dans un fichier, pour l'envoyer ou la garder ailleurs"
+          >
+            Sauvegarder
           </button>
           <button className="bouton" onClick={onDupliquer}>
             Dupliquer
@@ -429,7 +512,7 @@ export function DetailSeance({
                 </button>
                 <button
                   className="bouton discret"
-                  title="Exporter cette fiche"
+                  title="Sauvegarder cette fiche dans un fichier"
                   onClick={() => onExporterExercice(exercice)}
                 >
                   ⇩

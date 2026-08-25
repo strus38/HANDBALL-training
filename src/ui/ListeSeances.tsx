@@ -1,4 +1,5 @@
 import { dureeTotale, type Seance } from '../domain/types'
+import { titreAutomatique } from '../domain/fabrique'
 
 interface Props {
   seances: Seance[]
@@ -77,7 +78,9 @@ export function ListeSeances({
               >
                 <span className="titre-seance">{seance.titre || 'Sans titre'}</span>
                 <span className="meta-seance">
-                  {formaterDate(seance.date)} · {seance.exercices.length} exercice
+                  {/* La date ne se repete pas quand elle sert deja de titre. */}
+                  {!titreAutomatique(seance) && `${formaterDate(seance.date)} · `}
+                  {seance.exercices.length} exercice
                   {seance.exercices.length > 1 ? 's' : ''} · {dureeTotale(seance)} min
                 </span>
               </button>

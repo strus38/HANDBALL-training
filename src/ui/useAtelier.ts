@@ -152,10 +152,23 @@ export function useAtelier() {
    *
    * Une seance neuve nait avec l'equipe de l'entraineur deja inscrite : c'est
    * tout l'interet de la preference, ne plus jamais reposer la question.
+   *
+   * Les seances deja enregistrees lui sont passees : sa date est celle du
+   * creneau qui SUIT la derniere preparee, et non celle du prochain creneau
+   * tout court. Elles sont lues dans la reference synchrone, et non dans
+   * l'etat que cette fonction memorisee aurait fige au premier rendu.
+   *
+   * La reference est mise a jour ici meme, sans attendre le rendu : deux
+   * « + Seance » de suite doivent donner deux dates differentes, pas deux fois
+   * le meme mardi.
    */
   const ajouterSeance = useCallback(
     (seance?: Seance) => {
-      const ajoutee = seance ?? nouvelleSeance('Nouvelle séance', equipeCourante.current)
+      const ajoutee =
+        seance ??
+        // Sans titre : la fabrique la nomme par sa date.
+        nouvelleSeance(undefined, equipeCourante.current, dernieresSeances.current)
+      dernieresSeances.current = [ajoutee, ...dernieresSeances.current]
       setSeances((precedentes) => [ajoutee, ...precedentes])
       setSeanceCouranteId(ajoutee.id)
       planifierSauvegarde(ajoutee)

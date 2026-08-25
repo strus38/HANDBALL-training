@@ -230,6 +230,11 @@ function lireSeance(brut: Objet): Seance {
     espaceDisponible: (texte(brut.espaceDisponible) in RANG_ESPACE
       ? texte(brut.espaceDisponible)
       : '') as Seance['espaceDisponible'],
+    // Absente des fichiers ecrits avant que le planning n'existe, et absente
+    // de toute seance dont l'equipe n'a pas de creneau : dans les deux cas,
+    // aucune alerte de depassement, ce qui est exactement le comportement
+    // d'avant.
+    dureeCreneau: nombre(brut.dureeCreneau, 0) > 0 ? nombre(brut.dureeCreneau, 0) : undefined,
     retour: texte(brut.retour),
     retourEcritLe: texte(brut.retourEcritLe),
     demarreLe: brut.demarreLe ? texte(brut.demarreLe) : undefined,

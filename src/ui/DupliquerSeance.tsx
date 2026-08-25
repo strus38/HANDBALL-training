@@ -12,19 +12,38 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { dateDuJour } from '../domain/fabrique'
+import { dateDuJour, titreAutomatique, titreParDefaut } from '../domain/fabrique'
 import { resumerSeance, type OptionsDuplication } from '../domain/resume'
+import { prochaineDateLibre } from '../domain/planning'
 import { LIBELLES_ESPACE, type Espace, type Seance } from '../domain/types'
 
 interface Props {
   seance: Seance
+  /**
+   * Toutes les seances : la date proposee doit tomber sur un soir LIBRE.
+   * Sans elles, la copie atterrissait sur une seance deja preparee.
+   */
+  seances: Seance[]
   onValider: (options: OptionsDuplication) => void
   onAnnuler: () => void
 }
 
-/** Propose la meme date une semaine plus tard : le rythme habituel d'un club. */
-function dateProposee(iso: string): string {
-  const [a, m, j] = iso.split('-').map(Number)
+/**
+ * Le prochain soir d'entrainement encore LIBRE.
+ *
+ * On proposait la meme date une semaine plus tard, sans regarder ce qui
+ * existait : dupliquer la seance du 4 septembre proposait le 11, ou une seance
+ * etait deja preparee, et il fallait corriger a la main.
+ *
+ * Le planning du club sait quels soirs l'equipe s'entraine ; les seances deja
+ * ecrites disent lesquels sont pris. Faute de planning — equipe hors club,
+ * date illisible — on retombe sur la semaine suivante, qui reste le rythme
+ * habituel.
+ */
+function dateProposee(seance: Seance, seances: Seance[]): string {
+  const libre = prochaineDateLibre(seance.equipe, seances, seance.date)
+  if (libre) return libre
+  const [a, m, j] = seance.date.split('-').map(Number)
   if (!a || !m || !j) return dateDuJour()
   const date = new Date(a, m - 1, j + 7)
   const suivant = new Date(Math.max(date.getTime(), Date.now()))
@@ -33,9 +52,17 @@ function dateProposee(iso: string): string {
   return `${suivant.getFullYear()}-${mois}-${jour}`
 }
 
-export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
-  const [titre, setTitre] = useState(seance.titre)
-  const [date, setDate] = useState(() => dateProposee(seance.date))
+export function DupliquerSeance({ seance, seances, onValider, onAnnuler }: Props) {
+  const [date, setDate] = useState(() => dateProposee(seance, seances))
+  /*
+    Une seance nommee par sa date ne peut pas se dupliquer sous ce nom-la : la
+    copie est prevue pour un autre jour. Son titre prend donc la date proposee,
+    et suit ensuite celle que l'entraineur choisit. Un titre ecrit a la main,
+    lui, se recopie tel quel — c'est le meme partage qu'ailleurs.
+  */
+  const [titre, setTitre] = useState(() =>
+    titreAutomatique(seance) ? titreParDefaut(date) : seance.titre,
+  )
   const [effectifJoueurs, setEffectifJoueurs] = useState(seance.effectifJoueurs)
   const [effectifGardiens, setEffectifGardiens] = useState(seance.effectifGardiens)
   const [espaceDisponible, setEspace] = useState<Espace | ''>(seance.espaceDisponible)
@@ -118,7 +145,15 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
           </label>
           <label className="champ">
             <span>Date</span>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => {
+                const choisie = e.target.value
+                setTitre((actuel) => (actuel === titreParDefaut(date) ? titreParDefaut(choisie) : actuel))
+                setDate(choisie)
+              }}
+            />
           </label>
           <label className="champ">
             <span>Joueurs présents</span>

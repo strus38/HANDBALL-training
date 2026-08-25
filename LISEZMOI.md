@@ -436,7 +436,7 @@ l'exporte, et un jour on la supprime. Les commandes les plus utilisées se
 trouvent ainsi au plus près du bouton principal, là où la main revient.
 
 **Supprimer la séance** est à l'autre bout, derrière un separateur. Elle etait
-auparavant coincee entre « Exporter » et « Bibliothèque » : la seule action
+auparavant coincee entre « Sauvegarder » et « Bibliothèque » : la seule action
 irréversible de la rangee se trouvait à un pixel des plus frequentes.
 
 ## Mon équipe
@@ -981,8 +981,11 @@ sont tus.
 
 ## Partager des séances et des exercices
 
-- `Exporter la séance` produit un fichier `.hbt.json` contenant toute la séance.
-- L'icone ⇩ sur une ligne d'exercice exporte cet exercice seul.
+- `Sauvegarder` produit un fichier `.hbt.json` contenant toute la séance. Le
+  mot fait paire avec `Sauvegarder tout` de l'accueil : même geste, deux
+  portées. Il ne remplace pas l'enregistrement automatique, qui continue tout
+  seul — l'infobulle du bouton le précise.
+- L'icone ⇩ sur une ligne d'exercice sauvegarde cet exercice seul.
 - `Importer` relit un fichier `.hbt.json`, qu'il contienne une séance ou un
   exercice isole.
 

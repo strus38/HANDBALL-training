@@ -106,7 +106,7 @@ export function App() {
           <strong>{cible.titre || 'Sans titre'}</strong> et ses {cible.exercices.length} exercice
           {cible.exercices.length > 1 ? 's' : ''} seront supprimés définitivement.
           <em className="dialogue-note">
-            Pour en garder une trace, fermez cette fenêtre et utilisez « Exporter ».
+            Pour en garder une trace, fermez cette fenêtre et utilisez « Sauvegarder ».
           </em>
         </>
       ),
@@ -503,6 +503,7 @@ export function App() {
       {aDupliquer && (
         <DupliquerSeance
           seance={aDupliquer}
+          seances={atelier.seances}
           onAnnuler={() => setADupliquer(undefined)}
           onValider={validerDuplication}
         />

@@ -8,8 +8,8 @@
 
 import { useMemo, useState } from 'react'
 import { NoteEtoiles } from './NoteEtoiles'
-import { dateEnToutesLettres, resumerSeance, situerDansLeTemps } from '../domain/resume'
-import { dateDuJour } from '../domain/fabrique'
+import { resumerSeance, situerDansLeTemps } from '../domain/resume'
+import { dateDuJour, dateEnToutesLettres, titreAutomatique } from '../domain/fabrique'
 import { LIBELLES_CATEGORIE, type Seance } from '../domain/types'
 import { equipeInhabituelle, libelleEquipe, type MonEquipe } from '../domain/equipe'
 
@@ -193,8 +193,13 @@ function CarteSeance({
         <div className="entete-carte">
           <div>
             <h3>{seance.titre || 'Sans titre'}</h3>
+            {/*
+              Depuis que la date sert de titre par defaut, la repeter juste
+              dessous ecrirait deux fois la meme phrase. Reste alors ce que le
+              titre ne dit pas : « dans 3 jours », « la semaine derniere ».
+            */}
             <p className="date-carte">
-              {dateEnToutesLettres(seance.date)}
+              {!titreAutomatique(seance) && dateEnToutesLettres(seance.date)}
               <em>{situerDansLeTemps(seance.date, aujourdHui)}</em>
             </p>
           </div>
@@ -295,8 +300,12 @@ function CarteSeance({
         <button className="bouton" onClick={onImprimer} disabled={resume.nombreExercices === 0}>
           Imprimer
         </button>
-        <button className="bouton" onClick={onExporter}>
-          Exporter
+        <button
+          className="bouton"
+          onClick={onExporter}
+          title="Enregistrer cette séance dans un fichier, pour l'envoyer ou la garder ailleurs"
+        >
+          Sauvegarder
         </button>
         <button className="bouton discret" onClick={onSupprimer} title="Supprimer la séance">
           ✕

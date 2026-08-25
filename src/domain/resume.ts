@@ -142,18 +142,9 @@ export function dupliquerSeance(seance: Seance, options: OptionsDuplication = {}
   }
 }
 
-/** Date lisible : « mardi 25 aout 2026 ». */
-export function dateEnToutesLettres(iso: string): string {
-  const [annee, mois, jour] = iso.split('-').map(Number)
-  if (!annee || !mois || !jour) return iso
-  const jours = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
-  const moisNoms = [
-    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
-  ]
-  const date = new Date(annee, mois - 1, jour)
-  return `${jours[date.getDay()]} ${jour} ${moisNoms[mois - 1]} ${annee}`
-}
+// dateEnToutesLettres a rejoint la fabrique, aupres de dateDuJour : le titre
+// par defaut d'une seance s'en sert, et la fabrique ne peut pas dependre de ce
+// fichier, qui depend deja d'elle.
 
 /** Distance en jours entre une date de seance et aujourd'hui. */
 export function ecartEnJours(iso: string, aujourdHui = dateDuJour()): number {
