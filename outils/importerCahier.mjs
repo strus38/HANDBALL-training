@@ -26,10 +26,10 @@
  *   npm run importer -- "chemin/vers/Cahier.pdf" --sortie autre/dossier
  */
 
-import { execFileSync } from 'node:child_process'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { build as construire } from 'esbuild'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { accoler, recoller, reparerLigatures, SUITE_DE_LIGNE } from './texteCahier.mjs'
 
@@ -381,7 +381,7 @@ function espaceDe(textes) {
  * ajoute au modele. En passant par nouvelExercice() et exporterSauvegarde(), le
  * fichier produit est exactement celui qu'ecrirait l'application.
  */
-function domaine() {
+async function domaine() {
   mkdirSync(BAC, { recursive: true })
   const entree = join(BAC, 'entree-import.ts')
   const bundle = join(BAC, 'import-domaine.mjs')
@@ -393,21 +393,23 @@ function domaine() {
       '',
     ].join('\n'),
   )
-  // L'executable d'esbuild est appele par son chemin, et non par « npx » :
-  // npx n'est pas un binaire sur Windows, et passer par un shell pour le
-  // trouver ferait entrer un chemin de fichier dans une ligne de commande.
-  execFileSync(
-    process.execPath,
-    [
-      join('node_modules', 'esbuild', 'bin', 'esbuild'),
-      entree,
-      '--bundle',
-      '--format=esm',
-      '--platform=neutral',
-      `--outfile=${bundle}`,
-    ],
-    { stdio: ['ignore', 'ignore', 'inherit'] },
-  )
+  // L'API JavaScript d'esbuild, et non son executable.
+  //
+  // « npx esbuild » n'est pas un binaire sur Windows et demande un shell ;
+  // « node node_modules/esbuild/bin/esbuild » ne vaut pas mieux : le script
+  // d'installation d'esbuild REMPLACE ce fichier par le binaire natif de la
+  // plateforme. Sur Windows il reste un script Node et tout marche ; sur Linux
+  // c'est un executable, que node ne sait pas lire — l'appel echoue alors sur
+  // une machine et pas sur l'autre.
+  //
+  // L'API n'a ni chemin a deviner ni shell a traverser.
+  await construire({
+    entryPoints: [entree],
+    bundle: true,
+    format: 'esm',
+    platform: 'neutral',
+    outfile: bundle,
+  })
   return import(pathToFileURL(resolve(bundle)).href)
 }
 

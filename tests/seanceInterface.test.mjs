@@ -15,10 +15,10 @@
  * Lancement : npm run fumee
  */
 
+import { build as construire } from 'esbuild'
 import { ouvrirNavigateur } from '../outils/navigateur.mjs'
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
-import { execFileSync } from 'node:child_process'
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs'
 
 // --- Fabrique les donnees de depart avec le domaine lui-meme.
@@ -31,12 +31,18 @@ writeFileSync(
     '',
   ].join('\n'),
 )
-execFileSync(process.execPath, [
-  'node_modules/esbuild/bin/esbuild',
-  '.build-tests/entree-quatre.ts',
-  '--bundle', '--format=esm', '--platform=neutral',
-  '--outfile=.build-tests/quatre-domaine.mjs',
-], { stdio: ['ignore', 'ignore', 'inherit'] })
+// L'API JavaScript d'esbuild, et non son executable : le script d'installation
+// d'esbuild REMPLACE node_modules/esbuild/bin/esbuild par le binaire natif de
+// la plateforme. Sur Windows il reste un script Node et « node <fichier> »
+// marche ; sur Linux c'est un executable, que node ne sait pas lire. Le test
+// passait donc en local et tombait sur le runner.
+await construire({
+  entryPoints: ['.build-tests/entree-quatre.ts'],
+  bundle: true,
+  format: 'esm',
+  platform: 'neutral',
+  outfile: '.build-tests/quatre-domaine.mjs',
+})
 const { nouvelExercice, nouvelleSeance, exporterSauvegarde } = await import(
   pathToFileURL(resolve('.build-tests/quatre-domaine.mjs')).href
 )
