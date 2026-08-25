@@ -31,6 +31,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import { accoler, recoller, reparerLigatures, SUITE_DE_LIGNE } from './texteCahier.mjs'
 
 const BAC = '.build-tests'
 const SORTIE_PAR_DEFAUT = 'import'
@@ -51,20 +52,6 @@ const TOLERANCE_LIGNE = 4
 const ECART_LIGNE_PAR_DEFAUT = 40
 /** Hauteur du bandeau sous ses intitules : au-dela commence le pied de page. */
 const HAUTEUR_BANDEAU = 55
-
-/**
- * Mots francais qui se terminent vraiment par une ligature.
- *
- * Le cahier encode « ﬁ » suivi d'une espace : « enfi n », « fi xer »,
- * « profi tant ». On recolle donc systematiquement — sauf derriere ces mots-la,
- * ou l'espace est legitime.
- *
- * « défi » N'Y FIGURE PAS, volontairement : dans ce corpus il n'apparait qu'en
- * tete de « défi nir » et « défi cile ». L'y mettre laissait passer les deux.
- * Le nom « un défi » suivi d'un mot en minuscule serait mal recolle — c'est le
- * compromis assume, dans le sens ou il se trompe le moins souvent.
- */
-const MOTS_EN_LIGATURE = /(?:^|[^a-zàâäéèêëîïôöùûüç])(bluff|off|surf)$/i
 
 /** Intitules de rubrique reconnus, et le champ de la fiche qu'ils alimentent. */
 const RUBRIQUES = {
@@ -109,24 +96,6 @@ const CATEGORIES = [
 
 // --------------------------------------------------------------- Extraction
 
-/**
- * Recolle les mots coupes par une ligature.
- *
- * Le PDF n'est pas mal extrait : il contient REELLEMENT « Et enfi n ». Le glyphe
- * ﬁ y est suivi d'une espace, et l'artefact traverse toute une collection de
- * cahiers du meme editeur. On le repare une fois ici plutot que vingt fois a la
- * main dans chaque fiche.
- */
-function reparerLigatures(texte) {
-  return texte.replace(
-    /([a-zàâäéèêëîïôöùûüç]*(?:ffi|ff|fi|fl)) ([a-zàâäéèêëîïôöùûüç])/g,
-    (tout, avant, apres, position, source) => {
-      const debut = source.slice(0, position + avant.length)
-      return MOTS_EN_LIGATURE.test(debut) ? tout : avant + apres
-    },
-  )
-}
-
 /** Fragments de texte d'une page, avec leur position, en ordre de lecture. */
 async function fragmentsDe(page) {
   const vue = page.getViewport({ scale: 1 })
@@ -161,27 +130,6 @@ function enLignes(fragments) {
     lignes.push({ y: f.y, x: f.x, texte: f.texte })
   }
   return lignes
-}
-
-/**
- * Recolle les lignes d'un paragraphe.
- *
- * Une puce « • » ouvre un element de liste ; les lignes suivantes, plus
- * indentees, le continuent. Sans ce recollage, chaque retour a la ligne du PDF
- * deviendrait un retour a la ligne dans la fiche, et une regulation de trois
- * points en comptait douze.
- */
-function recoller(lignes) {
-  const sorties = []
-  for (const ligne of lignes) {
-    const t = ligne.texte.trim()
-    if (!t) continue
-    const commence = /^[•\-–—]/.test(t) || sorties.length === 0
-    if (commence) sorties.push(t.replace(/^[•\-–—]\s*/, '• '))
-    else sorties[sorties.length - 1] += ' ' + t
-  }
-  // Une rubrique sans puce reste un paragraphe : on ne lui en invente pas.
-  return sorties.map((s) => (s.startsWith('• ') ? s : s)).join('\n')
 }
 
 /** Découpe une page de fiche en ses rubriques. */
@@ -247,28 +195,6 @@ function repererColonnes(fragments, intitules) {
     .map((nom) => ({ nom, fragment: fragments.find((f) => f.texte.trim() === nom) }))
     .filter((c) => c.fragment)
 }
-
-/**
- * Ajoute un fragment a une cellule deja commencee.
- *
- * Un mot coupe en fin de ligne laisse un trait d'union : « Interne- » puis
- * « Externe ». Les recoller avec une espace donnait « Interne- Externe ».
- */
-function accoler(deja, ajout) {
-  if (!deja) return ajout
-  return deja.endsWith('-') ? deja + ajout : `${deja} ${ajout}`
-}
-
-/**
- * Mots qui ne peuvent pas ouvrir un article de materiel.
- *
- * Une cellule du bandeau tient sur plusieurs lignes, et rien ne dit si une
- * ligne commence un nouvel article ou continue le precedent. « 8 plots » puis
- * « réserve de ballons » sont deux articles ; « 1 réserve de ballon près »
- * puis « du Demi-Centre passeur » n'en font qu'un. Ce sont les mots
- * grammaticaux qui les separent : aucun article ne commence par « du ».
- */
-const SUITE_DE_LIGNE = /^(?:du|de|des|d[’']|par|pour|près|pres|et|à|a|au|aux|en|le|la|les|sur)\b/i
 
 /** Colonne dont l'intitule est le plus proche en abscisse, si elle est assez proche. */
 function colonneDe(fragment, colonnes, ecartMaximal = 90) {

@@ -1063,13 +1063,22 @@ qui en sort n'entre dans la bibliothèque livrée ni dans l'application
 distribuée. Chaque fiche importée porte la mention de sa source, qui la suit
 dans les exports et sur les feuilles imprimées.
 
-Deux réparations que l'outil fait au passage, et qu'il faut connaître :
+Trois réparations que l'outil fait au passage, et qu'il faut connaître :
 
 - le cahier encode la ligature « ﬁ » suivie d'une espace — le PDF contient
   réellement « enfi n » et « fi xer ». Les mots sont recollés ;
 - le bandeau de caractéristiques et le pied de page sont bornés par leur
   position, sinon « 1 ballon » devenait « 1 ballon 7 » en ramassant le numéro
-  de page.
+  de page ;
+- **les puces du cahier servent à découper, elles ne sont pas recopiées.** Le
+  texte d'une fiche ne porte aucune décoration — un élément par ligne, comme
+  dans les 62 fiches livrées — et c'est l'application qui pose la puce à
+  l'affichage. Les recopier en faisait apparaître deux dans l'aperçu de la
+  bibliothèque, et une puce en toutes lettres sur la feuille imprimée.
+
+Ces quatre règles de texte sont isolées dans `outils/texteCahier.mjs` et
+testées à part : ce sont de pures fonctions de chaîne, et ce sont elles qui se
+trompent.
 
 ### Retirer une fiche fournie : le parcours entier
 
