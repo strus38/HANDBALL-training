@@ -13,6 +13,7 @@
 import { Terrain } from '../terrain/Terrain'
 import { choisirMiseEnPage, type MiseEnPage } from '../impression/miseEnPage'
 import { synthetiser } from '../domain/mouvement'
+import { TexteFiche } from './TexteFiche'
 import {
   dureeTotale,
   LIBELLES_CATEGORIE,
@@ -211,10 +212,7 @@ function styleTexte(page: MiseEnPage): React.CSSProperties {
 }
 
 function lignes(texte: string) {
-  return texte
-    .split('\n')
-    .filter(Boolean)
-    .map((ligne, i) => <p key={i}>{ligne}</p>)
+  return <TexteFiche texte={texte} />
 }
 
 function formaterDate(iso: string): string {

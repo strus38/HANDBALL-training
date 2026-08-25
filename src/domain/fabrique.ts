@@ -78,6 +78,8 @@ export function nouvelleSeance(titre = 'Nouvelle séance', mienne: MonEquipe = A
     effectifJoueurs: 0,
     effectifGardiens: 0,
     espaceDisponible: '',
+    retour: '',
+    retourEcritLe: '',
     exercices: [],
     creeLe: date,
     modifieLe: date,

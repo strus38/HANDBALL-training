@@ -1,16 +1,19 @@
 import { useState } from 'react'
-import { clonerExercice, nouvelExercice } from '../domain/fabrique'
+import { clonerExercice, dateDuJour, nouvelExercice } from '../domain/fabrique'
 import { equipeInhabituelle, equipeRenseignee, libelleEquipe, type MonEquipe } from '../domain/equipe'
 import {
   dureeTotale,
   LIBELLES_CATEGORIE,
   LIBELLES_ESPACE,
   manqueEffectif,
+  retourPrecedent,
   manqueEspace,
   type Espace,
   type Exercice,
   type Seance,
 } from '../domain/types'
+import { consoliderMateriel, libelleMateriel } from '../domain/materiel'
+import { dateEnToutesLettres } from '../domain/resume'
 import { NoteEtoiles } from './NoteEtoiles'
 import { useConfirmation } from './Dialogue'
 import { EtiquetteAvecDictee } from './Dictee'
@@ -18,6 +21,11 @@ import { ajouterFragment } from '../domain/dictee'
 
 interface Props {
   seance: Seance
+  /**
+   * Toutes les seances : sert a retrouver le retour a chaud de la precedente.
+   * C'est ce rappel qui fait qu'un bilan ecrit le mardi soir est relu le jeudi.
+   */
+  seances: Seance[]
   /** L'equipe de l'entraineur, pour signaler quand la seance en porte une autre. */
   monEquipe: MonEquipe
   onModifier: (transformation: (seance: Seance) => Seance) => void
@@ -34,6 +42,7 @@ interface Props {
 
 export function DetailSeance({
   seance,
+  seances,
   monEquipe,
   onModifier,
   onSupprimerSeance,
@@ -80,12 +89,34 @@ export function DetailSeance({
     })
 
   const enParallele = seance.exercices.filter((ex) => ex.enParallele).length
+  const materiel = consoliderMateriel(seance.exercices)
+  const precedente = retourPrecedent(seance, seances)
 
   return (
     <div className="panneau-principal">
       <button className="fil-ariane" onClick={onRetourAccueil}>
         ← Toutes les séances
       </button>
+
+      {/*
+        Le retour de la seance precedente, rappele AVANT tout le reste.
+        Un bilan qu'il faut aller chercher n'est jamais relu ; celui-ci se pose
+        sur le chemin, la ou l'entraineur arrive quand il prepare le prochain
+        entrainement.
+      */}
+      {precedente && (
+        <section className="rappel-retour">
+          <span className="etiquette-groupe">
+            Retour du {dateEnToutesLettres(precedente.date)}
+          </span>
+          {precedente.retour
+            .split('\n')
+            .filter(Boolean)
+            .map((ligne, i) => (
+              <p key={i}>{ligne}</p>
+            ))}
+        </section>
+      )}
 
       <section className="carte">
         <h2>Informations de la séance</h2>
@@ -219,6 +250,53 @@ export function DetailSeance({
             placeholder="Ex : améliorer la circulation de balle face à une défense 6-0"
             onChange={(e) => onModifier((s) => ({ ...s, objectifSeance: e.target.value }))}
           />
+        </label>
+
+        {/*
+          Le materiel de toute la seance, additionne : c'est la liste qu'on
+          charge dans le coffre, et elle n'existait nulle part alors que chaque
+          fiche portait deja la sienne.
+        */}
+        {materiel.length > 0 && (
+          <p className="materiel-seance">
+            <strong>À emporter :</strong> {libelleMateriel(materiel)}
+          </p>
+        )}
+      </section>
+
+      {/*
+        Le retour a chaud, en bas de la carte d'informations : on l'ecrit APRES
+        la seance, pas en la preparant. C'est aussi ce qui remontera tout seul a
+        l'ouverture de la suivante.
+      */}
+      <section className="carte carte-retour">
+        <label className="champ">
+          <EtiquetteAvecDictee
+            libelle="Retour à chaud"
+            quoi="le retour sur la séance"
+            onTexte={(f) =>
+              onModifier((s) => ({
+                ...s,
+                retour: ajouterFragment(s.retour, f),
+                retourEcritLe: dateDuJour(),
+              }))
+            }
+          />
+          <textarea
+            rows={3}
+            value={seance.retour}
+            placeholder="Ce qui s'est passé ce soir : l'ambiance, les absents, ce qu'on reprend jeudi"
+            onChange={(e) =>
+              onModifier((s) => ({
+                ...s,
+                retour: e.target.value,
+                retourEcritLe: e.target.value.trim() ? dateDuJour() : '',
+              }))
+            }
+          />
+          <span className="aide-effectif">
+            Il vous sera rappelé à l'ouverture de la séance suivante.
+          </span>
         </label>
       </section>
 

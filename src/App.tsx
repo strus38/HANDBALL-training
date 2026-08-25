@@ -14,11 +14,20 @@ import { Bibliotheque } from './bibliotheque/Bibliotheque'
 import { useAtelier, type EtatSauvegarde } from './ui/useAtelier'
 import { ModeTerrain } from './ui/ModeTerrain'
 import { ReglageEquipe } from './ui/ReglageEquipe'
+import { ChoixImport as DialogueImport } from './ui/ChoixImport'
+import {
+  fusionner,
+  rapprocher,
+  resumerImport,
+  type ChoixImport,
+  type Rapprochement,
+} from './domain/rapprochement'
 import { equipeRenseignee, libelleEquipe } from './domain/equipe'
 import { fichiersNavigateur, nomDeFichierSur } from './platform/fichiers'
 import {
   EXTENSION,
   ErreurImport,
+  type ContenuImporte,
   exporterExercice,
   exporterSauvegarde,
   exporterSeance,
@@ -45,6 +54,15 @@ export function App() {
   const surAccueil = vue === 'accueil'
   const [aDupliquer, setADupliquer] = useState<Seance | undefined>()
   const [reglageEquipe, setReglageEquipe] = useState(false)
+  /**
+   * Importation suspendue le temps que l'entraineur tranche.
+   *
+   * Le contenu relu est conserve tel quel : le relire depuis le fichier apres
+   * la reponse obligerait a redemander le fichier, que le navigateur n'a plus.
+   */
+  const [importEnAttente, setImportEnAttente] = useState<
+    { contenu: Extract<ContenuImporte, { type: 'sauvegarde' }>; rapprochement: Rapprochement } | undefined
+  >()
   // La seance a imprimer n'est pas forcement celle qui est ouverte : depuis
   // l'accueil, on imprime une seance sans y entrer.
   const [seanceImprimee, setSeanceImprimee] = useState<Seance | undefined>()
@@ -117,6 +135,44 @@ export function App() {
     setAImprimer(cible.exercices)
   }
 
+  /**
+   * Applique une restauration, une fois le sort des divergentes tranche.
+   *
+   * Le bilan est rendu a l'appelant plutot qu'affiche ici : une importation qui
+   * ne dit pas ce qu'elle a fait laisse l'entraineur verifier a la main ce
+   * qu'elle est devenue de ses fiches.
+   */
+  const appliquerImport = async (
+    contenu: Extract<ContenuImporte, { type: 'sauvegarde' }>,
+    rapprochement: Rapprochement,
+    choix: ChoixImport,
+  ) => {
+    const retenues = [...rapprochement.nouvelles]
+    if (choix === 'remplacer') retenues.push(...rapprochement.divergentes.map(fusionner))
+    if (choix === 'ajouter') retenues.push(...rapprochement.divergentes.map((d) => d.arrivante))
+
+    await atelier.restaurer(
+      contenu.seances,
+      retenues,
+      contenu.favoris,
+      contenu.masquees,
+      contenu.monEquipe,
+    )
+    setVue('accueil')
+
+    const bilan = {
+      ajoutees: rapprochement.nouvelles.length + (choix === 'ajouter' ? rapprochement.divergentes.length : 0),
+      remplacees: choix === 'remplacer' ? rapprochement.divergentes.length : 0,
+      inchangees: rapprochement.identiques.length,
+      ignorees: choix === 'ignorer' ? rapprochement.divergentes.length : 0,
+    }
+    const seances =
+      contenu.seances.length > 0
+        ? ` ${contenu.seances.length} séance${contenu.seances.length > 1 ? 's' : ''} ajoutée${contenu.seances.length > 1 ? 's' : ''}.`
+        : ''
+    setMessageImport(`Import terminé : ${resumerImport(bilan)}${seances}`)
+  }
+
   const importer = async () => {
     setMessageImport(undefined)
     const fichier = await fichiersNavigateur.choisirFichier('.json,application/json')
@@ -126,20 +182,16 @@ export function App() {
       setExerciceOuvertId(undefined)
 
       if (contenu.type === 'sauvegarde') {
-        // Une restauration AJOUTE : elle n'ecrase jamais le travail en place.
-        await atelier.restaurer(
-          contenu.seances,
-          contenu.modeles,
-          contenu.favoris,
-          contenu.masquees,
-          contenu.monEquipe,
-        )
-        setVue('accueil')
-        setMessageImport(
-          `Sauvegarde restaurée : ${contenu.seances.length} séance` +
-            `${contenu.seances.length > 1 ? 's' : ''} et ${contenu.modeles.length} exercice` +
-            `${contenu.modeles.length > 1 ? 's' : ''} ajoutés à ce qui était déjà là.`,
-        )
+        // Les fiches sont rapprochees de celles deja presentes AVANT d'entrer.
+        // Une fiche dont le titre est inconnu passe sans question ; une fiche
+        // identique n'appelle aucune decision ; seules celles qui portent un
+        // titre connu avec un contenu different valent qu'on demande.
+        const rapprochement = rapprocher(contenu.modeles, atelier.mesModeles)
+        if (rapprochement.divergentes.length > 0) {
+          setImportEnAttente({ contenu, rapprochement })
+          return
+        }
+        await appliquerImport(contenu, rapprochement, 'remplacer')
         return
       }
 
@@ -372,6 +424,7 @@ export function App() {
         ) : (
           <DetailSeance
             seance={seance}
+            seances={atelier.seances}
             monEquipe={atelier.monEquipe}
             onModifier={modifierSeance}
             onSupprimerSeance={() => void demanderSuppression(seance)}
@@ -416,6 +469,23 @@ export function App() {
           seance={seance}
           onModifier={modifierSeance}
           onFermer={() => setModeTerrain(false)}
+        />
+      )}
+
+      {importEnAttente && (
+        <DialogueImport
+          divergentes={importEnAttente.rapprochement.divergentes}
+          nouvelles={importEnAttente.rapprochement.nouvelles.length}
+          identiques={importEnAttente.rapprochement.identiques.length}
+          onAnnuler={() => {
+            setImportEnAttente(undefined)
+            setMessageImport('Import annulé : rien n a été modifié.')
+          }}
+          onChoisir={(choix) => {
+            const attente = importEnAttente
+            setImportEnAttente(undefined)
+            void appliquerImport(attente.contenu, attente.rapprochement, choix)
+          }}
         />
       )}
 

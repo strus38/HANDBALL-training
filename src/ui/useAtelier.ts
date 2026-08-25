@@ -288,7 +288,15 @@ export function useAtelier() {
       mienne: MonEquipe = AUCUNE_EQUIPE,
     ) => {
       setSeances((precedentes) => [...nouvelles, ...precedentes])
-      setMesModeles((precedents) => [...modeles, ...precedents])
+      // Une fiche dont l'identifiant existe deja REMPLACE la sienne : c'est
+      // ainsi que se traduit le choix « remplacer » de l'importation, ou la
+      // fiche entrante a repris l'identifiant de celle qu'elle met a jour.
+      // Sans cette regle, elle serait ajoutee a cote et la bibliotheque
+      // contiendrait deux fiches de meme identifiant.
+      setMesModeles((precedents) => {
+        const remplaces = new Set(modeles.map((m) => m.id))
+        return [...modeles, ...precedents.filter((m) => !remplaces.has(m.id))]
+      })
       setSeanceCouranteId(nouvelles[0]?.id)
       // Les favoris se FUSIONNENT, comme le reste : restaurer ajoute, et ne
       // doit pas retirer une etoile posee depuis sur cette machine.

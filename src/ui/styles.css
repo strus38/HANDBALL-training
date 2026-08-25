@@ -2377,6 +2377,93 @@ textarea:focus {
   display: block;
 }
 
+/* ------------------------------------------- Choix a l'import de fiches */
+
+.liste-divergences {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--rayon-petit);
+  max-height: 170px;
+  overflow-y: auto;
+  font-size: 13px;
+  color: var(--bleu-800);
+}
+
+.liste-divergences li {
+  padding: 2px 0;
+}
+
+.liste-divergences .reste {
+  color: var(--texte-doux);
+  font-style: italic;
+}
+
+.choix-import {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ------------------------------- Retour a chaud et materiel de la seance */
+
+/*
+  Le rappel du retour precedent. Pose AVANT les informations de la seance,
+  sur le chemin de l'entraineur qui prepare le prochain entrainement : un
+  bilan qu'il faudrait aller chercher ne serait jamais relu.
+
+  Le bleu du club plutot que le jaune des alertes : ce n'est pas un
+  avertissement, c'est une note qu'on se laisse a soi-meme.
+*/
+.rappel-retour {
+  background: var(--bleu-050);
+  border: 1px solid var(--bleu-100);
+  border-left: 3px solid var(--bleu-500);
+  border-radius: var(--rayon-petit);
+  padding: 11px 14px;
+  margin-bottom: 14px;
+}
+
+.rappel-retour p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--texte);
+}
+
+.rappel-retour .etiquette-groupe {
+  color: var(--bleu-700);
+}
+
+.carte-retour {
+  margin-top: 14px;
+}
+
+/* La liste a charger dans le coffre : elle ferme la carte d'informations. */
+.materiel-seance {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--bordure);
+  font-size: 13.5px;
+  color: var(--texte-doux);
+}
+
+.materiel-seance strong {
+  color: var(--bleu-800);
+}
+
+/*
+  La provenance d'une fiche — « Source : ... », « D'apres ... ».
+  Le projet n'a pas de champ pour elle : elle se dit dans le texte. L'italique
+  lui rend sa place sans rien ajouter aux donnees, la ou elle se lisait comme
+  une consigne de plus au milieu du deroulement.
+*/
+.provenance {
+  font-style: italic;
+  color: var(--texte-doux);
+  font-size: 0.94em;
+}
+
 /* ========================================================= Page d accueil */
 
 .marque {

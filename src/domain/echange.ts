@@ -230,6 +230,8 @@ function lireSeance(brut: Objet): Seance {
     espaceDisponible: (texte(brut.espaceDisponible) in RANG_ESPACE
       ? texte(brut.espaceDisponible)
       : '') as Seance['espaceDisponible'],
+    retour: texte(brut.retour),
+    retourEcritLe: texte(brut.retourEcritLe),
     demarreLe: brut.demarreLe ? texte(brut.demarreLe) : undefined,
     exercices,
   }

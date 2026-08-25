@@ -25,6 +25,7 @@ import {
 import { cleUtilisation, indexerUtilisations, resumeUtilisation } from '../domain/utilisation'
 import { estFavori } from '../domain/favoris'
 import { estMasquee } from '../domain/masquees'
+import { ElementsFiche, TexteFiche } from '../ui/TexteFiche'
 
 // Le catalogue et l ensemble des combinaisons vivent dans catalogue.ts : les
 // tests ne peuvent pas importer ce composant, et en recopiaient une seconde
@@ -445,27 +446,21 @@ export function Bibliotheque({
               {apercu.exercice.fonctionnement && (
                 <>
                   <h4>Déroulement</h4>
-                  {apercu.exercice.fonctionnement.split('\n').filter(Boolean).map((l, i) => (
-                    <p key={i}>{l}</p>
-                  ))}
+                  <TexteFiche texte={apercu.exercice.fonctionnement} />
                 </>
               )}
               {apercu.exercice.pointsCles && (
                 <>
                   <h4>Points clés</h4>
                   <ul>
-                    {apercu.exercice.pointsCles.split('\n').filter(Boolean).map((l, i) => (
-                      <li key={i}>{l}</li>
-                    ))}
+                    <ElementsFiche texte={apercu.exercice.pointsCles} />
                   </ul>
                 </>
               )}
               {apercu.exercice.evolution && (
                 <>
                   <h4>Variantes</h4>
-                  {apercu.exercice.evolution.split('\n').filter(Boolean).map((l, i) => (
-                    <p key={i}>{l}</p>
-                  ))}
+                  <TexteFiche texte={apercu.exercice.evolution} />
                 </>
               )}
               {usage(apercu.exercice) && (

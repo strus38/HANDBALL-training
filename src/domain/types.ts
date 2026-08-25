@@ -516,6 +516,21 @@ export interface Seance {
   espaceDisponible: Espace | ''
   exercices: Exercice[]
   /**
+   * Ce qu'on ecrit dans la voiture en rentrant.
+   *
+   * La boucle de retour existait par EXERCICE — note, commentaire, duree
+   * reelle. Il manquait celle de la SEANCE : l'ambiance, les absents, ce qui a
+   * capote, ce qu'on reprend jeudi. Ce sont les choses qui ne se rattachent a
+   * aucune fiche et qui se perdent entre deux entrainements.
+   *
+   * Elle ne vaut que si elle REMONTE : un mot ecrit une fois et jamais relu ne
+   * sert a rien. L'application le rappelle donc a l'ouverture de la seance
+   * suivante — voir retourPrecedent().
+   */
+  retour: string
+  /** Jour ou le retour a ete ecrit, pour le dater au rappel. Vide si absent. */
+  retourEcritLe: string
+  /**
    * Instant ISO ou le mode terrain a ete lance, absent sinon.
    *
    * C est l ancre de tout l horaire : les creneaux se calculent a partir
@@ -566,6 +581,24 @@ export function manqueEspace(exercice: Exercice, seance: Seance): Espace | undef
 /** Vrai des qu'un exercice se heurte a l'effectif OU a l'espace du jour. */
 export function exerciceIncompatible(exercice: Exercice, seance: Seance): boolean {
   return manqueEffectif(exercice, seance) !== undefined || manqueEspace(exercice, seance) !== undefined
+}
+
+/**
+ * Le retour de la seance qui precede immediatement celle-ci.
+ *
+ * C'est le mecanisme qui fait vivre le retour a chaud : sans rappel automatique
+ * a l'ouverture de la seance suivante, il serait ecrit une fois et jamais relu.
+ *
+ * La seance « qui precede » est la derniere AVANT la date de celle-ci, et non
+ * la derniere creee : un entraineur prepare souvent deux seances d'avance, et
+ * c'est le dernier entrainement MENE dont il veut se souvenir. Une seance sans
+ * retour est ignoree — on remonte alors a celle d'encore avant, qui a peut-etre
+ * quelque chose a dire.
+ */
+export function retourPrecedent(seance: Seance, toutes: Seance[]): Seance | undefined {
+  return toutes
+    .filter((s) => s.id !== seance.id && s.date < seance.date && s.retour.trim() !== '')
+    .sort((a, b) => b.date.localeCompare(a.date))[0]
 }
 
 /**

@@ -125,6 +125,12 @@ export function dupliquerSeance(seance: Seance, options: OptionsDuplication = {}
     effectifJoueurs: options.effectifJoueurs ?? seance.effectifJoueurs,
     effectifGardiens: options.effectifGardiens ?? seance.effectifGardiens,
     espaceDisponible: options.espaceDisponible ?? seance.espaceDisponible,
+    // Le retour a chaud appartient a la seance qui a ete MENEE. Une copie part
+    // vierge : elle n'a pas encore eu lieu, et heriter du bilan de l'originale
+    // ferait relire jeudi ce qu'on a note mardi comme s'il venait d'arriver.
+    retour: '',
+    retourEcritLe: '',
+    demarreLe: undefined,
     exercices: seance.exercices.map((exercice) => {
       const copie = clonerExercice(exercice, '')
       return options.reinitialiserEvaluations

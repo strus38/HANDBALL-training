@@ -475,6 +475,46 @@ L'alerte informe, elle ne bloque pas : un entraîneur sait adapter un exercice a
 deux joueurs près. Un effectif laisse vide ne déclenche aucune alerte, et un
 exercice qui mobilise moins de monde que le groupe present n'est jamais signale.
 
+## Le retour à chaud
+
+La boucle de retour existait par **exercice** — note, commentaire, durée réelle.
+Il manquait celle de la **séance** : ce qu'on écrit dans la voiture en rentrant.
+L'ambiance, les absents, ce qui a capoté, ce qu'on reprend jeudi. Ce sont les
+choses qui ne se rattachent à aucune fiche et qui se perdent entre deux
+entraînements.
+
+Le champ **Retour à chaud** est en bas des informations de la séance — on
+l'écrit après, pas en la préparant.
+
+Il ne vaut que s'il **remonte**. À l'ouverture de la séance suivante, il
+s'affiche donc en haut de la page, daté, avant tout le reste. Un bilan qu'il
+faudrait aller chercher ne serait jamais relu ; celui-ci se pose sur le chemin.
+
+C'est la **dernière séance antérieure qui en porte un** qui remonte, et non la
+dernière créée : on prépare souvent deux séances d'avance, et c'est du dernier
+entraînement mené qu'on veut se souvenir. Une séance sans retour est enjambée.
+
+Une séance dupliquée part sans retour : elle n'a pas encore eu lieu.
+
+## Le matériel à emporter
+
+La liste consolidée de toute la séance s'affiche sous l'objectif : **« 12 plots,
+6 ballons, 4 haies, chasubles »**. C'est ce qu'on charge dans le coffre.
+
+**Ce n'est pas la somme du matériel des exercices, c'est le maximum.** Les
+exercices se suivent : si le troisième demande 12 plots et le septième 8, on en
+charge 12, pas 20. Une liste qui fait porter huit plots inutiles cesse vite
+d'être regardée.
+
+Sauf pour ce qui se mène **en parallèle** : ces exercices-là se déroulent
+pendant un autre — les gardiens à l'écart — et il faut les deux sur le terrain
+au même moment. Leur matériel s'ajoute. C'est la même règle que pour la durée
+totale, et pour la même raison.
+
+Les **ratios ne se comptent pas**. « 1 ballon pour 2 joueurs » n'est pas un
+ballon : c'est une règle de répartition. Ces articles-là sont listés tels quels,
+une seule fois, sans arithmétique.
+
 ## Espace de la séance
 
 Jumeau de l'effectif, et bâti sur le même principe. Un mardi sur deux le gymnase
@@ -799,6 +839,38 @@ Trois règles tiennent ces fiches :
   temps de jeu et les textes sont écrits pour cette application ; la provenance
   de l'idée est citee dans la fiche.
 
+## Importer sans faire de doublons
+
+Importer **ajoutait**, toujours. C'est la bonne règle par défaut — rien ne doit
+disparaître en silence — mais réimporter un cahier corrigé, ou le même fichier
+deux fois, laissait la bibliothèque pleine de doublons à trier à la main.
+
+Les fiches qui arrivent sont maintenant **rapprochées** de celles déjà là, par
+leur **titre** et non par leur contenu : deux fiches de même titre sont la même
+fiche, même si un mot a changé entre deux versions du cahier. Rapprocher par
+contenu ferait l'inverse — la moindre virgule corrigée produirait un doublon.
+
+Trois sorts, et un seul appelle une décision :
+
+| Ce qui arrive | Ce qui se passe |
+| --- | --- |
+| Un titre inconnu | La fiche entre, sans rien demander |
+| Un titre connu, contenu identique | Il n'y a rien à faire |
+| Un titre connu, contenu différent | **La question est posée** |
+
+Pour ces dernières, trois réponses : **remplacer** par la nouvelle version,
+**ajouter à côté** (le comportement des versions précédentes), ou **laisser de
+côté**.
+
+**Remplacer garde vos annotations.** Le texte est mis à jour, mais votre note,
+votre commentaire et vos compteurs d'utilisation restent : ils sont à vous, pas
+au fichier. L'identifiant de la fiche est conservé lui aussi, sans quoi les
+favoris posés dessus pointeraient dans le vide.
+
+L'importation dit ensuite ce qu'elle a fait : « Import terminé : 14 fiches
+ajoutées, 6 fiches remplacées et 2 fiches déjà présentes. » Les postes vides
+sont tus.
+
 ## Partager des séances et des exercices
 
 - `Exporter la séance` produit un fichier `.hbt.json` contenant toute la séance.
@@ -920,6 +992,12 @@ La fiche reprend la trame utilisée par l'entraîneur, dans son ordre :
 « Régulation » et « Points clés » sont bien deux choses différentes : la
 première releve de la règle, la seconde de l'observation. Une rubrique laissee
 vide ne s'imprime pas.
+
+Une ligne qui commence par « Source : » ou « D'après » est une mention de
+**provenance** : elle s'affiche en italique, à l'écran comme à l'impression.
+L'application n'a pas de champ pour la source — la provenance se dit dans le
+texte, comme les combinaisons du répertoire classique le font — et l'italique
+lui rend sa place sans rien ajouter aux données.
 
 Les fichiers écrits avant cette trame restent lisibles : « Déroulement » devient
 « Fonctionnement », « Variantes » devient « Évolution », et les trois nouvelles
@@ -1252,6 +1330,8 @@ fournir de nouvelles implementations, sans toucher aux composants.
       exercice, déroulement rédige automatiquement à partir du schéma.
 - [x] **Étape 8** — bilan de la saison, export PNG d'un schéma, usage tablette
       au doigt.
+- [x] **Étape 10** — retour à chaud de la séance rappelé à la suivante, matériel
+      consolidé, importation sans doublons, provenance en italique.
 - [x] **Étape 9** — les trois manques du dessin comblés (colonnes et rotation,
       zones coloriées, textes posés sur le terrain) et le contrôle de l'espace
       disponible, jumeau de celui de l'effectif.
