@@ -96,7 +96,54 @@ verifier(
 )
 
 console.log('')
-console.log('5. Les fonctions livrees sont documentees')
+console.log('5. L etat de demonstration ne declenche aucune alerte')
+// Une alerte legitime dans l'application devient un defaut dans la
+// documentation : elle barre le haut de chaque capture, et le produit y a
+// l'air en panne. Le rappel de sauvegarde s'est invite ainsi dans les huit
+// images sans qu'aucun test ne bronche.
+verifier(
+  'la seance de demonstration est marquee comme sauvegardee',
+  captures.includes('derniere-sauvegarde'),
+  '(sinon le bandeau jaune de rappel barre toutes les captures)',
+)
+verifier(
+  'et son equipe est renseignee',
+  captures.includes('mon-equipe'),
+  '(sinon l en-tete affiche le bouton « Mon equipe » a renseigner)',
+)
+
+console.log('')
+console.log('6. Le nom du livrable a une source unique')
+// Le livrable a change de nom : « index.html » ne designe rien pour un
+// entraineur qui range l'application sur une cle. Le nom vit desormais dans
+// outils/livrable.mjs, et un outil qui le reecrirait en dur se remettrait a
+// chercher un fichier qui n'existe plus — sans que rien ne le signale avant
+// l'echec, loin de la cause.
+const OUTILS_ET_TESTS = [
+  'outils/captures.mjs',
+  'tests/fumee.test.mjs',
+  'tests/interface.test.mjs',
+  'tests/materielInterface.test.mjs',
+  'tests/masqueesInterface.test.mjs',
+  'tests/seanceInterface.test.mjs',
+  'tests/sauvegardeInterface.test.mjs',
+]
+for (const chemin of OUTILS_ET_TESTS) {
+  const source = lire(chemin)
+  verifier(
+    `${chemin} passe par la source unique`,
+    !/['\`]dist\/index\.html['\`]|'dist', 'index\.html'/.test(source),
+    '(le nom du livrable y est ecrit en dur)',
+  )
+}
+verifier(
+  'la fabrication renomme le livrable',
+  JSON.parse(lire('package.json')).scripts.build.includes('renommerLivrable'),
+  '(vite ecrirait index.html et plus rien ne le trouverait)',
+)
+
+console.log('')
+console.log('7. Les fonctions livrees sont documentees')
 // Chaque version a ajoute quelque chose : la reference du projet doit en
 // parler, sans quoi personne ne saura que cela existe.
 const SECTIONS_ATTENDUES = [
@@ -107,6 +154,8 @@ const SECTIONS_ATTENDUES = [
   'Espace de la séance',
   'Importer sans faire de doublons',
   'Chaque bouton s’explique',
+  'Dicter plutôt qu’écrire',
+  'Mettre son travail à l’abri',
 ]
 for (const titre of SECTIONS_ATTENDUES) {
   const cherche = titre.replace('’', "'")

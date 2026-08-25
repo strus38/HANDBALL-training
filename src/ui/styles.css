@@ -493,6 +493,21 @@ textarea:focus {
   margin-left: auto;
 }
 
+/*
+  Le rappel de sauvegarde porte deux boutons cote a cote. Le texte prend donc
+  la place restante et les pousse ensemble a droite, plutot que de les separer
+  comme le ferait un margin-left automatique sur chacun.
+*/
+.bandeau.alerte > div {
+  flex: 1;
+}
+
+.bandeau.alerte .bouton {
+  flex: none;
+  align-self: center;
+  white-space: nowrap;
+}
+
 .bandeau strong {
   display: block;
 }

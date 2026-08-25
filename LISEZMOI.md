@@ -8,7 +8,7 @@ Elle fonctionne **entièrement hors ligne**, sans installation et sans compte.
 
 ## Utiliser l'application
 
-Le livrable est un fichier unique : `index.html` (produit dans le dossier
+Le livrable est un fichier unique : `HBPSM-entrainements.html` (produit dans le dossier
 `dist/`).
 
 1. Copiez ce fichier où vous voulez (bureau, clé USB, dossier partagé).
@@ -25,7 +25,7 @@ nouvelle version du fichier redessine donc l'ancien travail avec le nouveau
 dessin, sans conversion ni manipulation.
 
 Concrètement, sur le même ordinateur et dans le même navigateur, le travail est
-retrouvé que l'on écrase l'ancien `index.html`, qu'on ouvre le nouveau depuis un
+retrouvé que l'on écrase l'ancien `HBPSM-entrainements.html`, qu'on ouvre le nouveau depuis un
 autre dossier, ou depuis une clé USB : les trois cas ont été vérifiés.
 
 Deux limites : changer de NAVIGATEUR revient à repartir de zéro, le stockage
@@ -36,7 +36,7 @@ fonctionne partout.
 
 ### Depuis une clé USB
 
-Oui, et sans rien installer : posez `index.html` sur la clé, double-cliquez.
+Oui, et sans rien installer : posez `HBPSM-entrainements.html` sur la clé, double-cliquez.
 L'application démarre et la sauvegarde automatique fonctionne — sous une forme
 allégée, annoncée en haut à droite par **Sauvegarde simplifiée**. Un ordinateur
 n'accorde pas à un fichier ouvert depuis le disque le même stockage qu'à un site
@@ -48,7 +48,7 @@ les séances, elles, restent dans le navigateur de l'ordinateur où vous avez
 travaillé. Branchez la même clé sur un autre poste : l'application s'ouvre,
 vide.
 
-Pour emporter votre travail, posez sur la clé, à côté de `index.html`, le
+Pour emporter votre travail, posez sur la clé, à côté de `HBPSM-entrainements.html`, le
 fichier produit par **Sauvegarder tout**. Sur l'autre poste, ouvrez
 l'application et restaurez-le.
 
@@ -65,6 +65,42 @@ fichier de sauvegarde ailleurs — clé USB, courriel, dossier partagé.
 Restaurer une sauvegarde **ajoute** son contenu à ce qui est déjà là : rien
 n'est jamais écrasé. Restaurer sur une machine vierge redonne le classeur
 complet ; restaurer par-dessus un travail en cours ne le détruit pas.
+
+### Où va le fichier
+
+Le navigateur ouvre la vraie fenêtre **« Enregistrer sous »** de Windows : vous
+choisissez l'endroit, et vous le voyez. Les fois suivantes, elle se rouvre
+**dans le dernier dossier utilisé** — posez votre première sauvegarde à côté de
+l'application, sur votre clé, et vous n'y penserez plus.
+
+Sur les navigateurs qui ne savent pas ouvrir cette fenêtre (Firefox, Safari), le
+fichier part dans le dossier **« Téléchargements »**. L'application vous le dit
+alors, pour que vous puissiez le déplacer vous-même.
+
+Un mot sur les clés USB, parce que la surprise est désagréable : votre travail
+n'est **pas** enregistré sur la clé. Le navigateur le garde sur l'ordinateur où
+vous travaillez. Poser l'application sur une clé permet de l'ouvrir partout,
+mais pour emporter vos séances d'un ordinateur à l'autre, il faut le fichier de
+sauvegarde — c'est exactement à cela qu'il sert.
+
+### Le rappel
+
+Tant que du travail n'existe que dans ce navigateur, un bandeau jaune le
+signale en haut de l'application, avec le nombre de séances concernées. Il
+apparaît à partir de la troisième séance si aucune sauvegarde n'a jamais été
+faite, puis dès que la dernière remonte à plus de quinze jours.
+
+Il ne s'affiche jamais quand rien n'a changé depuis la dernière sauvegarde. Un
+rappel qui parle pour ne rien dire finit par ne plus être lu, et le jour où il
+compte il serait ignoré comme les autres.
+
+**Plus tard** le masque jusqu'à la prochaine ouverture. Le travail à perdre,
+lui, ne diminue pas : le rappel reviendra.
+
+Un cas échappe à ce compte : la navigation privée, et l'ouverture du fichier
+directement depuis le disque sur certains navigateurs. Le travail n'y est pas
+enregistré du tout, même le temps d'une soirée. Un bandeau distinct le dit dès
+l'ouverture — c'est le seul cas où il faut sauvegarder avant de fermer l'onglet.
 
 ## Confirmations et sauvegarde
 
@@ -385,6 +421,22 @@ un reproche permanent ; absent, il ne coûte rien.
 
 La aussi, ce qui est reconnu **s'ajoute** au texte existant : une phrase mal
 comprise ne peut pas effacer un paragraphe.
+
+#### Pourquoi le navigateur redemande l'autorisation du micro
+
+Parce que l'application est un **fichier pose sur votre disque**, et non un site.
+Le navigateur range les autorisations par site ; un fichier n'en est pas un, et
+il n'a donc rien a quoi rattacher durablement votre « Autoriser ».
+
+Aucun réglage de l'application ne peut y changer quoi que ce soit. Une
+autorisation appartient au navigateur, pas à la page : elle ne se range ni dans
+un cookie, ni dans le stockage local, et une page ne sait ni la lire ni
+l'écrire. Ce n'est pas une limite qu'on aurait négligée, c'est précisément la
+protection qui empêche n'importe quelle page d'ouvrir votre micro.
+
+En pratique, le plus simple est de ne pas se battre contre : **dictez sur votre
+téléphone et collez**. C'est gratuit, ça marche sans connexion, ça ne demande
+aucune autorisation au navigateur, et le résultat est meilleur.
 
 ### Et après
 
@@ -1056,7 +1108,7 @@ faire grossir le fichier unique de plusieurs centaines de kilo-octets pour lui
 montrer ce qu'il est en train de regarder.
 
 Les captures sont mises en cache : elles ne sont refaites que si
-`dist/index.html` est plus recent qu'elles.
+`dist/HBPSM-entrainements.html` est plus recent qu'elles.
 
 ## Chaque bouton s'explique
 
@@ -1225,7 +1277,7 @@ logiciel, en images, pour un entraîneur qui ne l'a jamais ouvert. Fichier
 unique d'environ un mega-octet, qui passe en piece jointe.
 
 Les captures ne sont pas des maquettes. `outils/captures.mjs` amorce des
-séances realistes dans localStorage, conduit le vrai `dist/index.html` jusqu'a
+séances realistes dans localStorage, conduit le vrai `dist/HBPSM-entrainements.html` jusqu'a
 l'écran voulu, et laisse Chrome photographier. Une presentation qui montrerait
 autre chose que le logiciel se ferait demasquer à la première ouverture.
 
@@ -1238,7 +1290,7 @@ A relancer APRÈS `npm run build` : Vite vide `dist/` et emporte la page avec.
 
 ### Test de l'interface
 
-`tests/interface.test.mjs` charge `dist/index.html` dans le Chrome de la
+`tests/interface.test.mjs` charge `dist/HBPSM-entrainements.html` dans le Chrome de la
 machine, crée une séance, ouvre une fiche, et vérifie que les commandes
 essentielles répondent : plein écran des deux colonnes, separateur, menu
 deroulant entièrement visible.
@@ -1310,7 +1362,7 @@ fonctionnalité utilisable, et seul un vrai navigateur peut en juger.
 ```
 npm install
 npm run dev        # serveur de developpement
-npm run build      # produit le fichier unique dist/index.html
+npm run build      # produit le fichier unique dist/HBPSM-entrainements.html
 npm test           # test de l'aller-retour export / import
 npm run verifier   # build + tests
 ```

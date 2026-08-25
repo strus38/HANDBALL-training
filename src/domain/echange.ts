@@ -142,7 +142,7 @@ export function importerFichier(contenuTexte: string): ContenuImporte {
   }
   if (nombre(brut.version, 0) > SCHEMA_VERSION) {
     throw new ErreurImport(
-      'Ce fichier a été créé avec une version plus récente de l\'application. Mettez à jour votre fichier index.html.',
+      'Ce fichier a été créé avec une version plus récente de l\'application. Mettez a jour votre fichier HBPSM-entrainements.html.',
     )
   }
   if (!estObjet(brut.contenu)) throw new ErreurImport('Contenu du fichier illisible.')

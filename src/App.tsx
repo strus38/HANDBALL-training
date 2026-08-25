@@ -23,7 +23,11 @@ import {
   type Rapprochement,
 } from './domain/rapprochement'
 import { equipeRenseignee, libelleEquipe } from './domain/equipe'
-import { fichiersNavigateur, nomDeFichierSur } from './platform/fichiers'
+import {
+  fichiersNavigateur,
+  nomDeFichierSur,
+  type ResultatEnregistrement,
+} from './platform/fichiers'
 import {
   EXTENSION,
   ErreurImport,
@@ -36,6 +40,7 @@ import {
 import type { Exercice, Seance } from './domain/types'
 import type { MoyenStockage } from './storage/choisirDepot'
 import { versionComplete, versionCourte } from './domain/version'
+import { evaluerSauvegarde, libelleRappel } from './domain/sauvegarde'
 
 export function App() {
   const atelier = useAtelier()
@@ -47,6 +52,14 @@ export function App() {
   const [colonneRepliee, setColonneRepliee] = useState(false)
   /** Vrai quand le navigateur a bloque la fenetre de la notice. */
   const [messageNotice, setMessageNotice] = useState(false)
+  /**
+   * « Plus tard » sur le rappel de sauvegarde : vrai jusqu'a la prochaine
+   * ouverture. Un bandeau qu'on ne peut pas faire taire se fait detester, et
+   * un entraineur qui prepare sa seance a le droit d'etre tranquille. Mais le
+   * silence ne se garde pas d'une fois sur l'autre : le travail a perdre, lui,
+   * ne diminue pas.
+   */
+  const [rappelRemisAPlusTard, setRappelRemisAPlusTard] = useState(false)
   const [aImprimer, setAImprimer] = useState<Exercice[]>([])
   // Vue courante : la page d'accueil listant toutes les seances, ou une seance
   // ouverte. L'exercice ouvert forme un troisieme niveau a l'interieur.
@@ -216,8 +229,36 @@ export function App() {
     }
   }
 
-  const exporterUneSeance = (cible: Seance) =>
-    fichiersNavigateur.telecharger(nomDeFichierSur(cible.titre, EXTENSION), exporterSeance(cible))
+  /**
+   * Ou est parti le fichier ? Le dire, dans les mots de l'entraineur.
+   *
+   * « enregistre » : il a choisi l'endroit, il sait ou c'est, inutile d'en
+   * rajouter. « telecharge » : le navigateur l'a depose sans rien demander, et
+   * c'est justement le cas ou il faut parler, sans quoi le fichier reste
+   * introuvable. « annule » : il a ferme la boite, rien n'a ete ecrit — et
+   * annoncer une sauvegarde ici serait un mensonge pur et simple.
+   */
+  const direOuEstLeFichier = (resultat: ResultatEnregistrement, quoi: string) => {
+    if (resultat === 'annule') return false
+    if (resultat === 'telecharge') {
+      setMessageImport(
+        `${quoi} Le fichier est parti dans le dossier « Téléchargements » de votre ` +
+          `navigateur : déplacez-le à côté de l’application si vous la rangez sur une clé.`,
+      )
+      return true
+    }
+    setMessageImport(quoi)
+    return true
+  }
+
+  const exporterUneSeance = async (cible: Seance) =>
+    direOuEstLeFichier(
+      await fichiersNavigateur.enregistrer(
+        nomDeFichierSur(cible.titre, EXTENSION),
+        exporterSeance(cible),
+      ),
+      `Séance « ${cible.titre} » enregistrée.`,
+    )
 
   /**
    * Sauvegarde de tout le travail : seances, bibliotheque personnelle, favoris.
@@ -225,10 +266,14 @@ export function App() {
    * Le stockage du navigateur est lie a une machine et disparait avec un
    * nettoyage des donnees de navigation. Ce fichier est la seule copie
    * transportable, et le seul moyen d'emporter la bibliotheque personnelle.
+   *
+   * Le repere de sauvegarde n'est pose QUE si le fichier a reellement ete
+   * ecrit. Fermer la boite sans enregistrer laisse donc le rappel en place :
+   * c'est la seule facon qu'il reste vrai.
    */
-  const sauvegarderTout = () => {
+  const sauvegarderTout = async () => {
     const jour = new Date().toISOString().slice(0, 10)
-    fichiersNavigateur.telecharger(
+    const resultat = await fichiersNavigateur.enregistrer(
       `hbpsm-sauvegarde-${jour}${EXTENSION}`,
       exporterSauvegarde(
         atelier.seances,
@@ -238,19 +283,38 @@ export function App() {
         atelier.monEquipe,
       ),
     )
-    setMessageImport(
+    const ecrit = direOuEstLeFichier(
+      resultat,
       `Sauvegarde de ${atelier.seances.length} séance${atelier.seances.length > 1 ? 's' : ''} ` +
         `et ${atelier.mesModeles.length} exercice${atelier.mesModeles.length > 1 ? 's' : ''} ` +
         `de votre bibliothèque, avec vos ${atelier.favoris.length} favori` +
-        `${atelier.favoris.length > 1 ? 's' : ''}. Conservez ce fichier ailleurs que sur cette machine.`,
+        `${atelier.favoris.length > 1 ? 's' : ''}.`,
     )
+    if (ecrit) void atelier.marquerSauvegarde()
   }
 
-  const exporterUneFiche = (exercice: Exercice) =>
-    fichiersNavigateur.telecharger(
-      nomDeFichierSur(exercice.titre, EXTENSION),
-      exporterExercice(exercice),
+  const exporterUneFiche = async (exercice: Exercice) =>
+    direOuEstLeFichier(
+      await fichiersNavigateur.enregistrer(
+        nomDeFichierSur(exercice.titre, EXTENSION),
+        exporterExercice(exercice),
+      ),
+      `Exercice « ${exercice.titre} » enregistré.`,
     )
+
+  /**
+   * Y a-t-il du travail qui n'existe nulle part ailleurs que dans ce
+   * navigateur ?
+   *
+   * Rien tant que le chargement n'est pas fini — sinon le bandeau apparaitrait
+   * une fraction de seconde sur une liste encore vide. Et rien non plus quand
+   * le stockage est indisponible : ce cas a deja son propre bandeau, plus
+   * grave, et en afficher deux qui disent la meme chose n'aide personne.
+   */
+  const rappelSauvegarde =
+    atelier.chargement || atelier.moyenStockage === 'aucun'
+      ? ({ besoin: false } as const)
+      : evaluerSauvegarde(atelier.derniereSauvegarde, atelier.seances, new Date().toISOString())
 
   return (
     <div className="application">
@@ -317,6 +381,29 @@ export function App() {
             ouverture directe depuis le disque). Le travail en cours reste utilisable, mais il sera
             perdu à la fermeture : exportez vos séances en fichier .hbt.json avant de quitter.
           </div>
+        </div>
+      )}
+
+      {rappelSauvegarde.besoin && !rappelRemisAPlusTard && (
+        <div className="bandeau alerte">
+          <div>
+            <strong>Votre travail n’existe que sur cet ordinateur</strong>
+            {libelleRappel(rappelSauvegarde)}
+          </div>
+          <button
+            className="bouton"
+            onClick={sauvegarderTout}
+            title="Écrire toutes vos séances et votre bibliothèque dans un fichier à conserver ailleurs"
+          >
+            Sauvegarder maintenant
+          </button>
+          <button
+            className="bouton discret"
+            onClick={() => setRappelRemisAPlusTard(true)}
+            title="Masquer ce rappel jusqu’à la prochaine ouverture de l’application"
+          >
+            Plus tard
+          </button>
         </div>
       )}
 

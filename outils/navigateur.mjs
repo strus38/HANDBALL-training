@@ -1,7 +1,7 @@
 /**
  * Pilote de navigateur minimal, par le protocole DevTools.
  *
- * Sert au test de fumee : ouvrir le livrable `dist/index.html` dans un vrai
+ * Sert au test de fumee : ouvrir le livrable `dist/HBPSM-entrainements.html` dans un vrai
  * navigateur, et verifier ce que les tests de domaine ne peuvent pas voir —
  * la mise en page imprimee, la superposition des colonnes, l'animation.
  *
@@ -128,12 +128,20 @@ export async function ouvrirNavigateur() {
       await new Promise((r) => setTimeout(r, 900))
     },
 
-    /** Evalue une expression dans la page et renvoie sa valeur. */
-    async evaluer(expression) {
+    /**
+     * Evalue une expression dans la page et renvoie sa valeur.
+     *
+     * `avecGeste` fait passer l'appel pour une action de l'utilisateur. Sans
+     * lui, les API qui exigent un geste — l'ouverture d'une boite « Enregistrer
+     * sous », par exemple — echouent sur ce motif et jamais sur celui qu'on
+     * voulait eprouver, ce qui fait passer un test pour la mauvaise raison.
+     */
+    async evaluer(expression, avecGeste = false) {
       const reponse = await envoyer('Runtime.evaluate', {
         expression: `(async () => { ${expression} })()`,
         awaitPromise: true,
         returnByValue: true,
+        userGesture: avecGeste,
       })
       if (reponse.exceptionDetails) {
         throw new Error(

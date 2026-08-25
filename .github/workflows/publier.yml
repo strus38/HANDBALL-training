@@ -1,7 +1,7 @@
 # Publication d'une version : sur une etiquette v1.2.3, ou a la demande.
 #
 # Les trois fichiers sont attaches a la Release GitHub. C'est ce lien qu'on
-# envoie aux entraineurs : ils telechargent index.html, double-cliquent, et
+# envoie aux entraineurs : ils telechargent HBPSM-entrainements.html, double-cliquent, et
 # c'est fini. Pas de compte, pas d'installation, pas de depot a cloner.
 name: Publier
 
@@ -61,14 +61,14 @@ jobs:
           # indente pour rester dans le bloc YAML, un heredoc produirait un
           # fichier decale de dix espaces, que Markdown rendrait en bloc de code.
           {
-            echo "Telechargez **index.html** et double-cliquez dessus : l'application s'ouvre"
+            echo "Telechargez **HBPSM-entrainements.html** et double-cliquez dessus : l'application s'ouvre"
             echo "dans votre navigateur, sans installation et sans connexion."
             echo
             echo "- **LISEZMOI.html** : le mode d'emploi, illustre"
             echo "- **PRESENTATION.html** : ce que fait le logiciel, en images"
           } > notes.md
           gh release create "$VERSION" \
-            dist/index.html \
+            dist/HBPSM-entrainements.html \
             dist/LISEZMOI.html \
             dist/PRESENTATION.html \
             --title "$VERSION" \

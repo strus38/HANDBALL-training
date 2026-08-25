@@ -22,7 +22,8 @@ function revision(): string {
   }
 }
 
-// Le livrable est un fichier index.html unique et autonome :
+// Le livrable est un fichier HTML unique et autonome, renomme juste apres
+// la fabrication par outils/renommerLivrable.mjs :
 // double-clic, aucun serveur, aucun acces internet.
 // base: './' pour que le fichier fonctionne aussi en file://
 export default defineConfig({

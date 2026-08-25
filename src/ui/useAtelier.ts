@@ -15,6 +15,10 @@ import type { Exercice, Seance } from '../domain/types'
 import { basculerFavori, fusionnerFavoris } from '../domain/favoris'
 import { basculerMasquee, fusionnerMasquees } from '../domain/masquees'
 import { AUCUNE_EQUIPE, equipeRenseignee, type MonEquipe } from '../domain/equipe'
+import {
+  JAMAIS_SAUVEGARDE,
+  type DerniereSauvegarde,
+} from '../domain/sauvegarde'
 
 const DELAI_SAUVEGARDE_MS = 600
 
@@ -29,6 +33,8 @@ export function useAtelier() {
   const [favoris, setFavoris] = useState<string[]>([])
   const [masquees, setMasquees] = useState<string[]>([])
   const [monEquipe, setMonEquipe] = useState<MonEquipe>(AUCUNE_EQUIPE)
+  const [derniereSauvegarde, setDerniereSauvegarde] =
+    useState<DerniereSauvegarde>(JAMAIS_SAUVEGARDE)
   const [etatSauvegarde, setEtatSauvegarde] = useState<EtatSauvegarde>('inactif')
 
   const minuteries = useRef(new Map<string, ReturnType<typeof setTimeout>>())
@@ -60,12 +66,14 @@ export function useAtelier() {
           const etoiles = await choix.depot.lireFavoris()
           const retirees = await choix.depot.lireMasquees()
           const mienne = await choix.depot.lireMonEquipe()
+          const filet = await choix.depot.lireDerniereSauvegarde()
           if (annule) return
           setSeances(existantes)
           setMesModeles(modeles)
           setFavoris(etoiles)
           setMasquees(retirees)
           setMonEquipe(mienne)
+          setDerniereSauvegarde(filet)
           setSeanceCouranteId(existantes[0]?.id)
         } catch {
           if (!annule) {
@@ -285,6 +293,28 @@ export function useAtelier() {
   }, [])
 
   /**
+   * Note qu'une sauvegarde complete vient d'etre ecrite.
+   *
+   * Appele par la vue APRES le telechargement du fichier, et non a sa place :
+   * c'est le fichier qui protege, pas l'intention de le produire.
+   *
+   * Ecriture immediate, comme l'equipe : le geste est isole, et le repere doit
+   * survivre a une fermeture dans la foulee — c'est meme le cas le plus
+   * probable, on sauvegarde souvent juste avant de partir.
+   */
+  const marquerSauvegarde = useCallback(async () => {
+    const filet: DerniereSauvegarde = { faiteLe: new Date().toISOString() }
+    setDerniereSauvegarde(filet)
+    try {
+      await depot.current?.enregistrerDerniereSauvegarde(filet)
+    } catch {
+      // Le repere n'a pas pu s'ecrire : le rappel reviendra a la prochaine
+      // ouverture. Insister ici avec « Echec de sauvegarde » ferait croire que
+      // le fichier telecharge est mauvais, alors qu'il est bon.
+    }
+  }, [])
+
+  /**
    * Restaure une sauvegarde complete.
    *
    * Le contenu est AJOUTE a l'existant : les identifiants ont ete renouveles a
@@ -368,6 +398,8 @@ export function useAtelier() {
     basculerMasquee: basculerMasqueeDe,
     monEquipe,
     definirMonEquipe,
+    derniereSauvegarde,
+    marquerSauvegarde,
     restaurer,
     enregistrerModele,
     supprimerModele,

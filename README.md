@@ -65,6 +65,23 @@ Il produit un `.hbt.json` dans `import/`, dossier ignoré par git : ces cahiers
 sont des oeuvres sous droits, et ce qui en sort appartient au seul entraîneur
 qui les a achetés.
 
+Un second outil lit une sauvegarde renvoyée par un entraîneur :
+
+```
+npm run lire-retour -- "chemin/vers/sauvegarde.hbt.json"
+```
+
+L'application ne mesure rien — pas de compte, pas de mouchard, et c'est un
+choix. Mais un `.hbt.json` porte déjà tout ce qu'il faut savoir : quand les
+séances ont été préparées, si elles ont été menées, si un retour a été écrit,
+d'où viennent les exercices, si les schémas ont servi. L'outil en tire un
+tableau et pointe les endroits où regarder.
+
+Il ne conclut pas. « Aucun retour écrit en quatorze séances » peut vouloir dire
+que la fonction est inutile, introuvable, ou qu'elle arrive au mauvais moment :
+trois remèdes opposés, que seule une question à l'entraîneur départage. Il lit
+un fichier, n'écrit rien et n'envoie rien.
+
 ## Ce qui structure le code
 
 - **Les coordonnees du terrain sont en mètres**, jamais en pixels : un schéma
@@ -76,6 +93,9 @@ qui les a achetés.
 - **Ce qui appartient à l'entraîneur est rangé à part des séances** : son
   équipe, ses favoris, les fiches qu'il a retirées. Ce sont des préférences,
   pas des données de séance.
+- **Une alerte qui parle pour ne rien dire n'est plus lue.** Le rappel de
+  sauvegarde se tait tant que rien n'a changé, et laisse passer les premières
+  séances : il ne se dépense que là où il y a vraiment quelque chose à perdre.
 - **Les automatismes pré-remplissent, ils ne décident pas.** Le planning, le
   titre par défaut, l'orientation d'un joueur : chacun se corrige à la main, et
   ce qui a été saisi n'est jamais écrasé.

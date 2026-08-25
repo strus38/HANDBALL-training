@@ -7,7 +7,7 @@
  * ne pouvaient rien voir : ils testent des fonctions pures. Aucun ne tombe si
  * une commande devient inatteignable.
  *
- * Ce test charge le LIVRABLE - dist/index.html, le fichier qu'on donne a
+ * Ce test charge le LIVRABLE - dist/HBPSM-entrainements.html, le fichier qu'on donne a
  * l'entraineur - dans le Chrome de la machine, cree une seance, ouvre une
  * fiche, et verifie que les commandes essentielles sont la et fonctionnent.
  * Il ne remplace pas un oeil humain, mais il attrape la disparition d'un bouton
@@ -23,6 +23,7 @@
  */
 
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { CHEMIN_LIVRABLE } from '../outils/livrable.mjs'
 import { execFileSync } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -463,7 +464,7 @@ console.log('')
 console.log("1. Interface, dans un vrai navigateur")
 
 const chrome = CHROMES.find((c) => existsSync(c))
-const livrable = join(racine, 'dist', 'index.html')
+const livrable = join(racine, CHEMIN_LIVRABLE)
 
 if (!chrome) {
   console.log('        Chrome introuvable sur cette machine : test ignore.')
@@ -473,7 +474,7 @@ if (!chrome) {
 }
 
 if (!existsSync(livrable)) {
-  console.log('  ECHEC dist/index.html absent : lancez npm run build avant npm test')
+  console.log(`  ECHEC ${CHEMIN_LIVRABLE} absent : lancez npm run build avant npm test`)
   process.exit(1)
 }
 

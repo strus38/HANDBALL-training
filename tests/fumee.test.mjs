@@ -13,6 +13,7 @@
  */
 
 import { ouvrirNavigateur } from '../outils/navigateur.mjs'
+import { CHEMIN_LIVRABLE } from '../outils/livrable.mjs'
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 
@@ -30,7 +31,7 @@ if (!navigateur) {
   process.exit(0)
 }
 
-const livrable = pathToFileURL(resolve('dist/index.html')).href
+const livrable = pathToFileURL(resolve(CHEMIN_LIVRABLE)).href
 
 /**
  * Seance de demonstration, volontairement variee.

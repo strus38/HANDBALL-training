@@ -11,6 +11,11 @@ import type { Exercice, Seance } from '../domain/types'
 import { lireFavoris } from '../domain/favoris'
 import { lireMasquees } from '../domain/masquees'
 import { AUCUNE_EQUIPE, lireMonEquipe, type MonEquipe } from '../domain/equipe'
+import {
+  JAMAIS_SAUVEGARDE,
+  lireDerniereSauvegarde,
+  type DerniereSauvegarde,
+} from '../domain/sauvegarde'
 
 export interface Depot {
   /** Toutes les seances, de la plus recemment modifiee a la plus ancienne. */
@@ -50,6 +55,15 @@ export interface Depot {
    */
   lireMonEquipe(): Promise<MonEquipe>
   enregistrerMonEquipe(equipe: MonEquipe): Promise<void>
+  /**
+   * Quand tout le contenu a-t-il ete ecrit dans un fichier pour la derniere
+   * fois ? Quatrieme preference, meme rangement que les trois autres.
+   *
+   * Elle ne sert qu'a savoir quand prevenir l'entraineur que son travail n'est
+   * plus a l'abri. Voir domain/sauvegarde.ts.
+   */
+  lireDerniereSauvegarde(): Promise<DerniereSauvegarde>
+  enregistrerDerniereSauvegarde(derniere: DerniereSauvegarde): Promise<void>
   /** Verifie que le stockage est reellement utilisable (mode file://, navigation privee...). */
   verifierDisponibilite(): Promise<boolean>
 }
@@ -64,6 +78,7 @@ const MAGASIN_PREFERENCES = 'preferences'
 const CLE_FAVORIS = 'favoris'
 const CLE_MASQUEES = 'fiches-masquees'
 const CLE_EQUIPE = 'mon-equipe'
+const CLE_SAUVEGARDE = 'derniere-sauvegarde'
 /**
  * Au-dela, on considere qu'IndexedDB ne repondra pas et on passe au depot
  * suivant. Mieux vaut une sauvegarde en localStorage qu'une application qui
@@ -206,6 +221,29 @@ export const depotIndexedDB: Depot = {
   async enregistrerMonEquipe(equipe) {
     await transaction(MAGASIN_PREFERENCES, 'readwrite', (m) =>
       m.put({ cle: CLE_EQUIPE, valeur: equipe }),
+    )
+  },
+
+  async lireDerniereSauvegarde() {
+    // Meme tolerance que les autres preferences. Une lecture qui echoue rend
+    // « jamais sauvegarde » : l'application rappellera peut-etre pour rien,
+    // ce qui est moins grave que de se taire alors qu'il y a du travail a
+    // perdre.
+    try {
+      const enregistrement = await transaction<{ cle: string; valeur: unknown } | undefined>(
+        MAGASIN_PREFERENCES,
+        'readonly',
+        (m) => m.get(CLE_SAUVEGARDE),
+      )
+      return lireDerniereSauvegarde(enregistrement?.valeur)
+    } catch {
+      return JAMAIS_SAUVEGARDE
+    }
+  },
+
+  async enregistrerDerniereSauvegarde(derniere) {
+    await transaction(MAGASIN_PREFERENCES, 'readwrite', (m) =>
+      m.put({ cle: CLE_SAUVEGARDE, valeur: derniere }),
     )
   },
 

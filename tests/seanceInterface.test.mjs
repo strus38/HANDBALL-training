@@ -17,6 +17,7 @@
 
 import { build as construire } from 'esbuild'
 import { ouvrirNavigateur } from '../outils/navigateur.mjs'
+import { CHEMIN_LIVRABLE } from '../outils/livrable.mjs'
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 import { existsSync, writeFileSync, mkdirSync } from 'node:fs'
@@ -83,8 +84,8 @@ divergente.fonctionnement = 'Texte corrigé du cahier.'
 const inconnue = fiche('Montée de balle rapide', ['2 ballons'], 'Nouvelle fiche.')
 const aImporter = exporterSauvegarde([], [identique, divergente, inconnue])
 
-if (!existsSync(resolve('dist/index.html'))) {
-  console.log('  (dist/index.html absent : lancez npm run build)')
+if (!existsSync(resolve(CHEMIN_LIVRABLE))) {
+  console.log(`  (${CHEMIN_LIVRABLE} absent : lancez npm run build)`)
   process.exit(0)
 }
 
@@ -100,7 +101,7 @@ const verifier = (nom, condition, detail = '') => {
   else { ko++; console.log('  ECHEC ' + nom + ' ' + detail) }
 }
 
-const livrable = pathToFileURL(resolve('dist/index.html')).href
+const livrable = pathToFileURL(resolve(CHEMIN_LIVRABLE)).href
 await n.aller(livrable)
 
 // --- Depose les donnees dans IndexedDB, puis recharge.

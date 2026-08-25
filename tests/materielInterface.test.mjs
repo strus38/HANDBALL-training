@@ -16,6 +16,7 @@
  */
 
 import { ouvrirNavigateur } from '../outils/navigateur.mjs'
+import { CHEMIN_LIVRABLE } from '../outils/livrable.mjs'
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 import { existsSync } from 'node:fs'
@@ -32,9 +33,9 @@ const verifier = (nom, condition, detail = '') => {
   }
 }
 
-const livrable = pathToFileURL(resolve('dist/index.html')).href
-if (!existsSync(resolve('dist/index.html'))) {
-  console.log('\n  (dist/index.html absent : lancez npm run build)')
+const livrable = pathToFileURL(resolve(CHEMIN_LIVRABLE)).href
+if (!existsSync(resolve(CHEMIN_LIVRABLE))) {
+  console.log(`\n  (${CHEMIN_LIVRABLE} absent : lancez npm run build)`)
   process.exit(0)
 }
 

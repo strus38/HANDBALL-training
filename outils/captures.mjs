@@ -1,7 +1,7 @@
 /**
  * Captures d'ecran de l'application, pour la page de presentation.
  *
- * Le principe : on prend le LIVRABLE (dist/index.html), on lui ajoute un
+ * Le principe : on prend le LIVRABLE (dist/HBPSM-entrainements.html), on lui ajoute un
  * script qui amorce des donnees realistes puis conduit l'interface jusqu'a
  * l'ecran voulu, et on laisse Chrome photographier le resultat.
  *
@@ -19,6 +19,7 @@
  */
 
 import { execFileSync } from 'node:child_process'
+import { CHEMIN_LIVRABLE } from './livrable.mjs'
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -372,6 +373,15 @@ try {
     'handball-training:mon-equipe',
     JSON.stringify({ equipe: 'Seniors garçons', categorieAge: '+18 ans' }),
   )
+  // L'entraineur de demonstration a sauvegarde son travail. Sans ce repere,
+  // ses trois seances jamais mises a l'abri declenchent le rappel, et un
+  // bandeau jaune barre le haut de CHAQUE capture de la notice et de la
+  // presentation. L'application y aurait l'air en panne alors qu'elle fait
+  // exactement son travail.
+  localStorage.setItem(
+    'handball-training:derniere-sauvegarde',
+    JSON.stringify({ faiteLe: new Date().toISOString() }),
+  )
 } catch (e) {}
 </script>
 <script>
@@ -415,7 +425,7 @@ const suite = setInterval(() => {
 /**
  * Une capture reste valable tant que le livrable n'a pas change.
  *
- * On compare le CONTENU, pas les dates : vite build reecrit dist/index.html a
+ * On compare le CONTENU, pas les dates : vite build reecrit le livrable a
  * chaque fois, meme quand rien n'a bouge, et une comparaison de dates
  * relancerait donc six navigateurs a chaque build pour rien.
  */
@@ -445,8 +455,8 @@ export async function capturer(noms) {
   const chrome = trouverChrome()
   if (!chrome) throw new Error('Chrome introuvable : impossible de produire les captures.')
 
-  const livrable = join(racine, 'dist', 'index.html')
-  if (!existsSync(livrable)) throw new Error('dist/index.html absent : lancez npm run build.')
+  const livrable = join(racine, CHEMIN_LIVRABLE)
+  if (!existsSync(livrable)) throw new Error(`${CHEMIN_LIVRABLE} absent : lancez npm run build.`)
 
   mkdirSync(DOSSIER_CAPTURES, { recursive: true })
   const base = readFileSync(livrable, 'utf8')

@@ -55,7 +55,7 @@ jobs:
       - name: Controler que les trois livrables sont la
         run: |
           manquant=0
-          for f in dist/index.html dist/LISEZMOI.html dist/PRESENTATION.html; do
+          for f in dist/HBPSM-entrainements.html dist/LISEZMOI.html dist/PRESENTATION.html; do
             if [ -s "$f" ]; then
               echo "$f  $(du -h "$f" | cut -f1)"
             else
@@ -69,7 +69,7 @@ jobs:
         with:
           name: livrables
           path: |
-            dist/index.html
+            dist/HBPSM-entrainements.html
             dist/LISEZMOI.html
             dist/PRESENTATION.html
           if-no-files-found: error

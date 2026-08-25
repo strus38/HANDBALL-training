@@ -273,7 +273,7 @@ ${sections}
   <div class="demarrer">
     <h2>Pour l'essayer</h2>
     <ol>
-      <li>Enregistrez le fichier <code>index.html</code> où vous voulez : bureau, clé USB, dossier partagé.</li>
+      <li>Enregistrez le fichier <code>HBPSM-entrainements.html</code> où vous voulez : bureau, clé USB, dossier partagé.</li>
       <li>Double-cliquez dessus. Il s'ouvre dans votre navigateur.</li>
       <li>Ouvrez la bibliothèque, prenez trois exercices, imprimez. Vous avez une séance.</li>
     </ol>

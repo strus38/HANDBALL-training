@@ -12,12 +12,14 @@ import type { Exercice, Seance } from '../domain/types'
 import { lireFavoris } from '../domain/favoris'
 import { lireMasquees } from '../domain/masquees'
 import { AUCUNE_EQUIPE, lireMonEquipe } from '../domain/equipe'
+import { JAMAIS_SAUVEGARDE, lireDerniereSauvegarde } from '../domain/sauvegarde'
 
 const CLE = 'handball-training:seances'
 const CLE_MODELES = 'handball-training:modeles'
 const CLE_FAVORIS = 'handball-training:favoris'
 const CLE_MASQUEES = 'handball-training:fiches-masquees'
 const CLE_EQUIPE = 'handball-training:mon-equipe'
+const CLE_SAUVEGARDE = 'handball-training:derniere-sauvegarde'
 const CLE_TEST = 'handball-training:test'
 
 function lireListe<T>(cle: string): T[] {
@@ -114,6 +116,19 @@ export const depotLocalStorage: Depot = {
 
   async enregistrerMonEquipe(equipe) {
     localStorage.setItem(CLE_EQUIPE, JSON.stringify(equipe))
+  },
+
+  async lireDerniereSauvegarde() {
+    try {
+      const brut = localStorage.getItem(CLE_SAUVEGARDE)
+      return brut ? lireDerniereSauvegarde(JSON.parse(brut)) : JAMAIS_SAUVEGARDE
+    } catch {
+      return JAMAIS_SAUVEGARDE
+    }
+  },
+
+  async enregistrerDerniereSauvegarde(derniere) {
+    localStorage.setItem(CLE_SAUVEGARDE, JSON.stringify(derniere))
   },
 
   async verifierDisponibilite() {
