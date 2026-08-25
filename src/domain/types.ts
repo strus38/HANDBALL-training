@@ -65,6 +65,8 @@ export type TypeJeton =
    * croire a douze joueurs actifs simultanement.
    */
   | 'colonne'
+  /** Cerceau pose au sol : appui, cible, zone de reception. */
+  | 'cerceau'
 
 /** Poste handball, optionnel, utilise pour l'etiquette automatique du jeton. */
 export type Poste = 'AlG' | 'ArG' | 'DC' | 'ArD' | 'AlD' | 'PIV' | 'GB'

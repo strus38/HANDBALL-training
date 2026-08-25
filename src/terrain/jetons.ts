@@ -15,7 +15,15 @@
 
 import type { TypeJeton, VueTerrain } from '../domain/types'
 
-export type Forme = 'joueur' | 'cercle' | 'triangle' | 'carre' | 'losange' | 'rectangle' | 'colonne'
+export type Forme =
+  | 'joueur'
+  | 'cercle'
+  | 'triangle'
+  | 'carre'
+  | 'losange'
+  | 'rectangle'
+  | 'colonne'
+  | 'anneau'
 
 export interface ApparenceJeton {
   libelle: string
@@ -144,9 +152,31 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     etiquetteParDefaut: '×4',
     feminin: true,
   },
+  cerceau: {
+    libelle: 'Cerceau',
+    aide: 'Cerceau posé au sol : appui, cible, zone de réception',
+    forme: 'anneau',
+    // Un anneau ne se remplit pas : c'est le contour qui porte la couleur, et
+    // le terrain se voit par le trou. Le violet ne sert nulle part ailleurs
+    // dans la palette, et reste franc une fois imprime en gris.
+    remplissage: 'none',
+    contour: '#7048e8',
+    couleurTexte: '#3b1f96',
+    rayon: 0.5,
+    etiquetteParDefaut: '',
+  },
 }
 
 /** Ordre d'affichage dans la palette. */
+/**
+ * Ordre d'affichage dans la palette.
+ *
+ * « But mobile » n'y figure plus : aucun club de la taille du notre n'en sort
+ * un a l'entrainement, et il occupait une place dans une liste qu'on parcourt
+ * a chaque fiche. Le TYPE, lui, existe toujours : les fiches ou un entraineur
+ * en avait pose un continuent de s'afficher et de s'imprimer telles quelles.
+ * Retirer le type aurait efface un jeton de leurs schemas sans prevenir.
+ */
 export const PALETTE: TypeJeton[] = [
   'attaquant',
   'defenseur',
@@ -154,7 +184,7 @@ export const PALETTE: TypeJeton[] = [
   'gardien',
   'ballon',
   'plot',
-  'but',
+  'cerceau',
   'entraineur',
   'haie',
 ]

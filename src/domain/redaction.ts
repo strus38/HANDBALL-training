@@ -27,6 +27,7 @@ export function nommer(schema: Schema, jetonId: string | undefined): string {
     but: 'le but',
     haie: 'une haie',
     colonne: 'la colonne',
+    cerceau: 'un cerceau',
   }
   return roles[jeton.type] ?? 'un joueur'
 }

@@ -1,6 +1,6 @@
 {
   "name": "handball-training",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "private": true,
   "type": "module",
   "description": "Application de preparation de seances d'entrainement de handball",
@@ -11,7 +11,7 @@
     "test": "esbuild tests/entree.ts --bundle --format=esm --platform=neutral --outfile=.build-tests/domaine.mjs && node tests/echange.test.mjs && node tests/geometrie.test.mjs && node tests/mouvement.test.mjs && node tests/impression.test.mjs && node tests/resume.test.mjs && node tests/deplacement.test.mjs && node tests/assistance.test.mjs && node tests/bilan.test.mjs && node tests/catalogue.test.mjs && node tests/notice.test.mjs && node tests/analyse.test.mjs && node tests/interface.test.mjs && node tests/utilisation.test.mjs && node tests/favoris.test.mjs && node tests/masquees.test.mjs && node tests/equipe.test.mjs && node tests/terrain-zones.test.mjs && node tests/version.test.mjs && node tests/deroulement.test.mjs && node tests/dictee.test.mjs && node tests/combinaisons.test.mjs",
     "verifier": "npm run build && npm test && npm run fumee",
     "notice": "node outils/notice.mjs",
-    "fumee": "node tests/fumee.test.mjs && node tests/masqueesInterface.test.mjs",
+    "fumee": "node tests/fumee.test.mjs && node tests/masqueesInterface.test.mjs && node tests/materielInterface.test.mjs",
     "presentation": "node outils/presentation.mjs"
   },
   "dependencies": {

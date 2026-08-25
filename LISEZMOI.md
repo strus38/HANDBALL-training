@@ -144,8 +144,9 @@ permet de repartir sans eux.
 
 Le schéma se construit à gauche de la fiche.
 
-**Placer les joueurs.** Cliquez un élément de la palette, puis faites-le glisser
-sur le terrain. Les joueurs sont vus de dessus, épaules et bras vers l'avant :
+**Placer les joueurs.** Le bouton **+ Ajouter** ouvre la palette : joueurs,
+gardien, ballon, plots, cerceaux, haies, colonnes et entraîneur. Choisissez un
+élément, puis faites-le glisser sur le terrain. Les joueurs sont vus de dessus, épaules et bras vers l'avant :
 on voit ou ils regardent et de quel côté ils peuvent recevoir. Le numéro reste
 toujours à l'endroit, même quand le joueur regarde vers le bas du terrain.
 
@@ -929,6 +930,13 @@ rédaction, qui est le vrai espace de travail. Le choix est mémorise.
 Les trois nombres sont regroupes et portent leur unité au lieu d'une étiquette
 en capitales, et les intitules du rôle des gardiens ne repetent plus le mot
 « gardiens » : ils debordaient de la liste deroulante.
+
+## Le champ « Matériel »
+
+Une liste, saisie comme une phrase : « 3 ballons, 6 plots, chasubles rouges ».
+Les articles se séparent par des virgules, et un article peut contenir des
+espaces. La liste sert au récapitulatif de la séance, qui rassemble le matériel
+de tous les exercices sans doublon.
 
 ## Petits écrans
 

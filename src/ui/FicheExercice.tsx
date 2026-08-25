@@ -1256,22 +1256,10 @@ export function FicheExercice({
             />
             <textarea rows={3} placeholder="Simplifier, complexifier, faire évoluer" {...champ('evolution')} />
           </label>
-          <label className="champ">
-            <span>Matériel</span>
-            <input
-              type="text"
-              placeholder="ballons, plots, chasubles (séparés par des virgules)"
-              value={exercice.materiel.join(', ')}
-              onChange={(e) =>
-                onModifier({
-                  materiel: e.target.value
-                    .split(',')
-                    .map((m) => m.trim())
-                    .filter(Boolean),
-                })
-              }
-            />
-          </label>
+          <ChampMateriel
+            materiel={exercice.materiel}
+            onChanger={(materiel) => onModifier({ materiel })}
+          />
 
           <div className="bloc-evaluation">
             <div className="entete-evaluation">
@@ -1374,6 +1362,63 @@ function BoutonPleinEcran({
         />
       </svg>
     </button>
+  )
+}
+
+/**
+ * Champ « Materiel » : une liste, saisie comme une phrase.
+ *
+ * Le champ affichait `materiel.join(', ')` et redecoupait la chaine a CHAQUE
+ * frappe. La virgule qu'on venait de taper produisait donc un element vide,
+ * aussitot ecarte par le filtre, et disparaissait sous les doigts — suivie de
+ * l'espace, mange par le trim. Separer les elements par des virgules etait
+ * litteralement impossible, alors que le champ le demandait.
+ *
+ * Le texte en cours de saisie est donc conserve tel quel, ici, et n'est
+ * redecoupe que pour alimenter le modele. Les deux ne se resynchronisent que
+ * si le modele change POUR UNE AUTRE RAISON que la frappe — un annuler, un
+ * texte dicte colle — ce que la comparaison des listes decoupees detecte sans
+ * avoir a surveiller le focus.
+ */
+function decouperMateriel(texte: string): string[] {
+  return texte
+    .split(',')
+    .map((m) => m.trim())
+    .filter(Boolean)
+}
+
+function ChampMateriel({
+  materiel,
+  onChanger,
+}: {
+  materiel: string[]
+  onChanger: (materiel: string[]) => void
+}) {
+  const [texte, setTexte] = useState(() => materiel.join(', '))
+  const duModele = materiel.join(', ')
+
+  useEffect(() => {
+    // « ballons, » se decoupe en ['ballons'], qui se recompose en « ballons » :
+    // identique au modele, donc on ne touche pas au brouillon et la virgule
+    // reste. Un annuler qui remplace la liste, lui, ne se recompose pas a
+    // l'identique et reprend la main.
+    if (decouperMateriel(texte).join(', ') !== duModele) setTexte(duModele)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duModele])
+
+  return (
+    <label className="champ">
+      <span>Matériel</span>
+      <input
+        type="text"
+        placeholder="ballons, plots, chasubles (séparés par des virgules)"
+        value={texte}
+        onChange={(e) => {
+          setTexte(e.target.value)
+          onChanger(decouperMateriel(e.target.value))
+        }}
+      />
+    </label>
   )
 }
 

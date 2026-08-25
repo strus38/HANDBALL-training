@@ -120,6 +120,25 @@ export function DessinJeton({ forme, r, apparence }: Props) {
         </g>
       )
 
+    /**
+     * Cerceau : un anneau, pas un disque.
+     *
+     * Le trou compte autant que le trait — on voit le terrain au travers, et
+     * un joueur pose dessus reste visible. Un disque plein aurait masque le
+     * pied qu'il sert justement a placer.
+     */
+    case 'anneau':
+      return (
+        <circle
+          cx={0}
+          cy={0}
+          r={0.82 * r}
+          fill="none"
+          stroke={contour}
+          strokeWidth={r * 0.3}
+        />
+      )
+
     case 'triangle':
       return (
         <polygon
