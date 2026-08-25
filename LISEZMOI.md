@@ -202,6 +202,7 @@ Le bouton 🧲 la désactive, et la touche **Alt** la neutralise le temps d'un
 geste quand vous voulez viser librement.
 
 ### Les colonnes, et ce qui se passe après le tir
+<!-- notice:capture schema -->
 
 L'organisation la plus fréquente du handball est la **file d'attente** : le
 groupe attend, passe un par un, et le joueur qui vient de tirer repart au fond
@@ -550,6 +551,7 @@ deux joueurs près. Un effectif laisse vide ne déclenche aucune alerte, et un
 exercice qui mobilise moins de monde que le groupe present n'est jamais signale.
 
 ## Le retour à chaud
+<!-- notice:capture seance-suivante -->
 
 La boucle de retour existait par **exercice** — note, commentaire, durée réelle.
 Il manquait celle de la **séance** : ce qu'on écrit dans la voiture en rentrant.

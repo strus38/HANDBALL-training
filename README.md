@@ -10,6 +10,22 @@ officielles à gauche, le détail de l'exercice à droite. 62 fiches sont livré
 avec l'application, de l'échauffement au bilan de saison, dont les combinaisons
 nommées du repertoire classique.
 
+## Ce que l'application sait faire
+
+- **Préparer une séance** : ordonner les exercices, voir le temps se recalculer,
+  et emporter la liste de matériel consolidée.
+- **Dessiner le mouvement** : la flèche EST le déplacement. Joueurs, colonnes
+  d'attente, zones coloriées, textes posés sur le terrain, et une lecture animée
+  de l'enchaînement.
+- **Imprimer** : une feuille A4 par exercice, un seul schéma portant tout
+  l'enchaînement, la mise en page calculée pour le plus grand terrain lisible.
+- **Suivre la saison** : notes, compteurs d'utilisation, bilan par catégorie —
+  et un retour à chaud qui remonte à l'ouverture de la séance suivante.
+- **S'appuyer sur le planning du club** : jour, horaire, durée du créneau et
+  espace disponible pré-remplissent la séance, et signalent un plan trop long.
+- **Mener l'entraînement** : le mode terrain affiche un exercice à la fois, avec
+  le temps restant et le relevé de ce qui a vraiment été fait.
+
 ## Documentation
 
 **[LISEZMOI.md](LISEZMOI.md) est la référence du projet** : usage, choix de
@@ -39,6 +55,16 @@ npm run verifier   # build + tests
 fabrication de la notice et de la presentation — captures d'écran comprises,
 prises en pilotant le livrable lui-même.
 
+Un outil à part importe un cahier d'exercices PDF en fiches :
+
+```
+npm run importer -- "chemin/vers/Cahier.pdf"
+```
+
+Il produit un `.hbt.json` dans `import/`, dossier ignoré par git : ces cahiers
+sont des oeuvres sous droits, et ce qui en sort appartient au seul entraîneur
+qui les a achetés.
+
 ## Ce qui structure le code
 
 - **Les coordonnees du terrain sont en mètres**, jamais en pixels : un schéma
@@ -47,6 +73,12 @@ prises en pilotant le livrable lui-même.
   les nouvelles positions, ce qui rend le mouvement traçable et animable.
 - **Les fiches fournies portent une référence stable**, indépendante de leur
   titre, pour que rien de ce qui s'y accroche ne se perde à un renommage.
+- **Ce qui appartient à l'entraîneur est rangé à part des séances** : son
+  équipe, ses favoris, les fiches qu'il a retirées. Ce sont des préférences,
+  pas des données de séance.
+- **Les automatismes pré-remplissent, ils ne décident pas.** Le planning, le
+  titre par défaut, l'orientation d'un joueur : chacun se corrige à la main, et
+  ce qui a été saisi n'est jamais écrasé.
 
 Le détail de ces principes, et les raisons derrière, sont dans
 [LISEZMOI.md](LISEZMOI.md).

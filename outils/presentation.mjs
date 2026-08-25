@@ -53,6 +53,12 @@ const SECTIONS = [
       "L'ordre se change en montant ou descendant une ligne. Le total de temps se recalcule tout seul, et le travail des gardiens mené en parallèle ne s'y ajoute pas.",
   },
   {
+    capture: 'seance-suivante',
+    titre: 'Ce qu’on a noté mardi remonte vendredi',
+    texte:
+      "Le retour écrit après l’entraînement s’affiche en haut de la séance suivante : l’ambiance, les absents, ce qu’on avait dit de reprendre. Le créneau vient du planning du club — jour, horaire, durée, espace disponible — et la liste du matériel à emporter s’additionne toute seule à partir des exercices.",
+  },
+  {
     capture: 'bibliotheque',
     titre: 'FICHES exercices déjà écrits',
     texte:
@@ -69,6 +75,12 @@ const SECTIONS = [
     titre: 'Le mouvement se découpe en étapes',
     texte:
       "Vous posez les joueurs, vous tracez une flèche : la position suivante en découle, le ballon suit son porteur. Le bouton Lire rejoue l'enchaînement. Le terrain est aux cotes officielles, le schéma s'imprime à n'importe quelle taille sans se déformer.",
+  },
+  {
+    capture: 'schema',
+    titre: 'Une colonne, une zone, un mot posé sur le terrain',
+    texte:
+      "L’organisation la plus fréquente du handball — la file d’attente — se dessine d’un jeton, et la flèche de rotation dit ce qui se passe après le tir. Les zones coloriées délimitent un secteur interdit ou un espace de jeu sans masquer les lignes officielles, et un texte se pose là où il se lit.",
   },
   {
     capture: 'bilan',

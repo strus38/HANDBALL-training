@@ -57,6 +57,9 @@ const LEGENDES = {
   bilan: 'Le bilan, ici sur tout l historique.',
   'mode-terrain': 'Le mode terrain : un exercice à la fois, avec le temps restant.',
   collage: 'Un texte dicté sur le téléphone, collé et réparti dans les champs.',
+  'seance-suivante':
+    'Le retour du mardi rappelé en haut de la séance suivante, avec le créneau du club et le matériel à emporter.',
+  schema: 'Une colonne d attente, une zone délimitée et un texte posés sur le terrain.',
 }
 
 /** Remplit les emplacements de capture, ou les retire s'il n'y en a pas. */
@@ -296,7 +299,23 @@ writeFileSync(join(racine, 'src', 'notice', 'notice.genere.html'), html)
 console.log('Notice ecrite : src/notice/notice.genere.html')
 
 if (versDist) {
-  const captures = await capturer(['accueil', 'terrain', 'bibliotheque', 'bilan', 'mode-terrain', 'collage'])
+  /*
+    Les captures demandees sont celles que le DOCUMENT reclame.
+
+    Elles etaient enumerees ici, a la main. Poser une marque
+    « notice:capture » dans LISEZMOI.md sans penser a completer cette liste ne
+    produisait alors aucune image, et rien ne le signalait : la notice sortait
+    avec un emplacement vide. C'est ainsi que deux sections ajoutees sont
+    restees sans illustration.
+  */
+  const demandees = [
+    ...new Set(
+      // Ancre en debut de ligne : la section technique cite la syntaxe du
+      // marqueur, et une reconnaissance laxiste y verrait une capture « nom ».
+      [...pourLesCoachs(lire('LISEZMOI.md')).matchAll(/^<!-- notice:capture ([a-z-]+) -->$/gm)].map((m) => m[1]),
+    ),
+  ]
+  const captures = await capturer(demandees)
   const images = new Map(
     captures.map(({ nom, chemin }) => [nom, readFileSync(chemin).toString('base64')]),
   )

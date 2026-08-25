@@ -175,23 +175,24 @@ verifier(
   `(${marques} demandees, ${emplacements} posees)`,
 )
 
-// Une capture nommee dans le Markdown ne suffit pas : elle doit AUSSI etre
-// demandee au navigateur et avoir une legende, dans outils/notice.mjs. Les
-// trois listes vivent a des endroits differents, et en illustrer une section
-// de plus sans toucher aux deux autres laisse un emplacement vide, sans
-// erreur ni message - la notice part alors amputee d une image.
+// Une capture nommee dans le Markdown doit AUSSI avoir une legende.
+//
+// Elle devait autrefois figurer, en plus, dans une liste ecrite a la main au
+// bas de outils/notice.mjs. Cette liste n'existe plus : elle se deduisait mal
+// — illustrer une section de plus sans y penser laissait un emplacement vide,
+// sans erreur ni message, et c'est ainsi que deux sections ajoutees sont
+// restees sans image. La liste vient desormais du document lui-meme, et ce
+// test verifie que ce soit toujours le cas.
 const outil = readFileSync(new URL('../outils/notice.mjs', import.meta.url), 'utf8')
-const ouvre = outil.indexOf('await capturer([')
-const demandees = ouvre < 0 ? '' : outil.slice(ouvre, outil.indexOf(']', ouvre))
 const noms = [...pourLesCoachs(source).matchAll(/<!-- notice:capture ([a-z-]+) -->/g)].map(
   (m) => m[1],
 )
+verifier(
+  'la notice deduit ses captures du document',
+  /matchAll\(\/\^<!-- notice:capture/.test(outil),
+  '(la liste des captures semble a nouveau ecrite en dur dans outils/notice.mjs)',
+)
 for (const nom of noms) {
-  verifier(
-    `la capture « ${nom} » est demandee au navigateur`,
-    demandees.includes(`'${nom}'`),
-    '(a ajouter dans capturer([...]) de outils/notice.mjs)',
-  )
   verifier(
     `la capture « ${nom} » a une legende`,
     outil.includes(`${nom}:`) || outil.includes(`'${nom}':`),

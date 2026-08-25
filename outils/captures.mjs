@@ -95,7 +95,50 @@ async function seances() {
   // ce qui fait tomber toute la fabrication des captures loin d'ici.
   const parRef = (ref) => tous.find((m) => m.ref === ref)
 
-  const composer = (titre, decalage, objectif, refsModeles, notes) => {
+  /**
+   * Pose sur un schema ce que la palette sait dessiner depuis la version 1.3 :
+   * une colonne d'attente, une zone coloriee, un texte, et la fleche de
+   * rotation qui renvoie au fond de la file.
+   *
+   * Sans ce decor, les captures montraient un terrain d'avant ces ajouts — et
+   * la presentation restait celle d'une application qui a change depuis.
+   */
+  const decorer = (exercice) => {
+    exercice.schema.jetons.push({
+      id: 'demo-colonne',
+      type: 'colonne',
+      etiquette: '×4',
+      orientation: 90,
+    })
+    for (const etape of exercice.schema.etapes) {
+      etape.positions['demo-colonne'] = { x: 22, y: 3.5 }
+    }
+    exercice.schema.zones = [
+      {
+        id: 'demo-zone',
+        // Posee dans la moitie libre du demi-terrain : sur les 9 m, son libelle
+        // passait sous les defenseurs et ne se lisait plus.
+        x: 20.5,
+        y: 6.5,
+        largeur: 7,
+        hauteur: 5.5,
+        teinte: 'jaune',
+        libelle: 'Zone interdite',
+      },
+    ]
+    exercice.schema.annotations = [
+      { id: 'demo-texte', x: 24.5, y: 16.5, texte: 'Défense 6-0' },
+    ]
+    exercice.schema.etapes[0].fleches.push({
+      id: 'demo-rotation',
+      type: 'rotation',
+      depart: { x: 27, y: 6 },
+      arrivee: { x: 22.5, y: 4.5 },
+    })
+    return exercice
+  }
+
+  const composer = (titre, decalage, objectif, refsModeles, notes, options = {}) => {
     const seance = nouvelleSeance(titre)
     seance.date = jour(decalage)
     seance.equipe = 'Seniors garçons'
@@ -103,6 +146,14 @@ async function seances() {
     seance.objectifSeance = objectif
     seance.effectifJoueurs = 12
     seance.effectifGardiens = 2
+    // L'espace du soir et le retour a chaud : deux champs sans lesquels les
+    // captures ne montreraient ni la liste de materiel, ni le rappel qui
+    // remonte a l'ouverture de la seance suivante.
+    seance.espaceDisponible = 'complet'
+    if (options.retour) {
+      seance.retour = options.retour
+      seance.retourEcritLe = jour(decalage)
+    }
     seance.exercices = refsModeles.map((ref, rang) => {
       const exercice = construireExercice(parRef(ref))
       const note = notes?.[rang]
@@ -116,6 +167,7 @@ async function seances() {
       }
       return exercice
     })
+    if (options.decorer) decorer(seance.exercices[options.decorer])
     return seance
   }
 
@@ -133,10 +185,15 @@ async function seances() {
         'match-a-theme-deux-passes-minimum-apres-recuperation',
       ],
       [4, 5, 4, 5, 0, 4],
+      {
+        retour:
+          'Six absents, le groupe a mis du temps à entrer dedans. Le croisé arrière-ailier a bien pris : on le reprend jeudi.',
+        decorer: 1,
+      },
     ),
     composer(
-      'Jeudi 17 septembre - défense et transition',
-      2,
+      'Vendredi 18 septembre - défense et transition',
+      3,
       'Tenir le bloc, puis repartir vite dès la récupération.',
       [
         'protocole-d-echauffement-en-quatre-temps',
@@ -148,8 +205,8 @@ async function seances() {
       [0, 5, 3, 4, 0],
     ),
     composer(
-      'Samedi 19 septembre - physique et tests',
-      4,
+      'Mardi 22 septembre - physique et tests',
+      7,
       'Point de forme de début de saison.',
       [
         'reveil-neuromusculaire-appuis-et-changements-de-dire',
@@ -182,6 +239,32 @@ const SCENARIOS = [
     taille: '1400,900',
     etapes: `
       pas(() => clicContenant('.liste-seances button', 'attaque placée'))
+    `,
+  },
+  {
+    /*
+      La seance du jeudi : c'est elle qui porte le rappel du retour ecrit le
+      mardi, la liste de materiel consolidee, et ce que le planning du club
+      sait du creneau. Trois choses ajoutees depuis, qu'aucune capture ne
+      montrait.
+    */
+    nom: 'seance-suivante',
+    taille: '1400,900',
+    etapes: `
+      pas(() => clicContenant('.liste-seances button', 'défense et transition'))
+    `,
+  },
+  {
+    /* Le terrain avec ce que la palette sait poser : colonne, zone, texte. */
+    nom: 'schema',
+    taille: '1500,950',
+    etapes: `
+      pas(() => clicContenant('.liste-seances button', 'attaque placée'))
+      pas(() => clicContenant('.lien-exercice', 'Croisé arrière'))
+      pas(() => {
+        const b = tous('.colonne-terrain .barre-outils .bouton.plein-ecran')[0]
+        if (b) b.click()
+      })
     `,
   },
   {
@@ -367,7 +450,12 @@ export async function capturer(noms) {
 
   mkdirSync(DOSSIER_CAPTURES, { recursive: true })
   const base = readFileSync(livrable, 'utf8')
-  const empreinteActuelle = empreinte(base)
+  // L'empreinte couvre le livrable ET CE FICHIER : les scenarios et le jeu de
+  // donnees d'exemple vivent ici. Sans lui, ajouter une capture ou enrichir la
+  // seance de demonstration ne rafraichissait rien, et la documentation
+  // continuait d'illustrer une version anterieure de l'application — le defaut
+  // qui a fait publier une presentation sans les fonctions ajoutees depuis.
+  const empreinteActuelle = empreinte(base + readFileSync(new URL(import.meta.url), 'utf8'))
   const empreintes = empreintesConnues()
   const voulus = noms ? SCENARIOS.filter((s) => noms.includes(s.nom)) : SCENARIOS
   const aJour = (nom) =>
