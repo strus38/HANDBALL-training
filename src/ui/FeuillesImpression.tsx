@@ -11,7 +11,8 @@
  */
 
 import { Terrain } from '../terrain/Terrain'
-import { choisirMiseEnPage, nombreSchemas, type MiseEnPage } from '../impression/miseEnPage'
+import { choisirMiseEnPage, type MiseEnPage } from '../impression/miseEnPage'
+import { synthetiser } from '../domain/mouvement'
 import {
   dureeTotale,
   LIBELLES_CATEGORIE,
@@ -54,7 +55,14 @@ function Feuille({
   total: number
 }) {
   const page = choisirMiseEnPage(exercice)
-  const schemas = exercice.schema.etapes.slice(0, nombreSchemas(exercice))
+  /*
+    Un SEUL schema sur la feuille, portant tout l'enchainement.
+    Quatre vignettes reduisaient chaque terrain au quart de la page et
+    obligeaient a reconstituer le mouvement en passant de l'une a l'autre. Les
+    titres et consignes des etapes restent listes dans la colonne de texte :
+    ils servent de legende aux fleches numerotees.
+  */
+  const schemaSynthetise = synthetiser(exercice.schema)
 
   return (
     <article
@@ -96,40 +104,12 @@ function Feuille({
 
       <div className="feuille-corps" style={styleCorps(page)}>
         <div className="feuille-schema">
-          {schemas.length === 1 ? (
-            <Terrain
-              schema={exercice.schema}
-              etape={schemas[0]}
-              etapeIndex={0}
-              interactif={false}
-            />
-          ) : (
-            <div
-              className="grille-etapes"
-              style={{ gridTemplateColumns: `repeat(${page.grille.colonnes}, 1fr)` }}
-            >
-              {/* Au dela de quatre etapes, les suivantes ne sont pas dessinees
-                  pour que la fiche tienne sur une page ; leur consigne reste
-                  listee dans la colonne de texte. */}
-              {schemas.map((etape, i) => (
-                <figure key={etape.id}>
-                  {/* etapeIndex est indispensable : sans lui, les quatre
-                      vignettes resolvaient leurs fleches et leurs orientations
-                      sur l'etape 1. */}
-                  <Terrain
-                    schema={exercice.schema}
-                    etape={etape}
-                    etapeIndex={i}
-                    etapePrecedente={i > 0 ? exercice.schema.etapes[i - 1] : undefined}
-                    interactif={false}
-                  />
-                  <figcaption>
-                    {i + 1}. {etape.titre}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          )}
+          <Terrain
+            schema={schemaSynthetise}
+            etape={schemaSynthetise.etapes[0]}
+            etapeIndex={0}
+            interactif={false}
+          />
         </div>
 
         <div className="feuille-texte" style={styleTexte(page)}>

@@ -526,10 +526,27 @@ retient celle qui donne le **plus grand schéma**. A surface comparable, il
 préfère la police la plus lisible. Une fiche très bavarde fait donc reculer le
 schéma et resserrer le texte, jamais déborder sur une deuxième page.
 
-Un exercice a plusieurs étapes voit ses schémas imprimes en grille, jusqu'a
-quatre. L'arrangement suit la même logique : deux terrains complets sont
-empiles, deux vues de zone sont mises côte à côte. Au dela de quatre étapes, les
-suivantes restent décrites en texte.
+### Un seul schéma, tout l'enchaînement dessus
+
+Sur le papier, une fiche à quatre étapes n'imprime pas quatre terrains : elle en
+imprime **un seul**, portant tout l'enchaînement, les flèches numérotées 1, 2,
+3… racontant la succession. C'est la notation d'un tableau blanc, et c'est ainsi
+qu'un entraîneur lit un exercice une feuille à la main.
+
+Les joueurs sont dessinés à leur **position de départ**. Ce sont les flèches qui
+disent la suite : un joueur qui bouge à l'étape 1 puis à l'étape 3 laisse deux
+flèches qui s'enchaînent bout à bout, sans que rien n'ait à être recalculé.
+
+Quatre vignettes réduisaient chaque terrain au quart de la page — un exercice
+riche s'imprimait donc plus petit qu'un exercice pauvre, ce qui est l'inverse du
+besoin. Le schéma unique prend maintenant toute la place disponible, quelle que
+soit la longueur de l'exercice.
+
+Les titres et les consignes des étapes restent listés dans la colonne de texte :
+ils servent de légende aux flèches numérotées.
+
+À l'écran, rien ne change : la fiche se lit toujours étape par étape, et
+s'anime.
 
 Pensez a activer les **couleurs d'arrière-plan** dans la boite de dialogue
 d'impression du navigateur si le terrain sort en blanc.
@@ -1020,6 +1037,39 @@ vert. Des fonctions pures ne disent rien de l'atteignabilite d'un bouton.
 Le test passe si Chrome est introuvable, pour ne pas bloquer une machine qui
 n'en a pas. Il porte sur `dist/`, donc après `npm run build` - ce que
 `npm run verifier` enchaîne.
+
+### Importer un cahier d'exercices PDF
+
+Certains entraîneurs possèdent des cahiers d'exercices achetés, dont la trame
+est celle de la fédération — donc celle de cette application. L'outil
+`outils/importerCahier.mjs` en extrait le **texte** et le convertit en fiches :
+
+```
+npm run importer -- "chemin/vers/Cahier.pdf"
+```
+
+Il produit un fichier `.hbt.json` dans `import/`, à restaurer par « Importer ».
+Chaque fiche arrive complète — titre, objectif, mise en place, fonctionnement,
+régulation, points clés, durée, effectif, matériel — avec un **terrain vide**.
+
+Les schémas ne sont pas repris : dans le PDF ce sont des images aplaties, dont
+on ne peut pas retrouver les jetons et les flèches. C'est de toute façon en le
+redessinant qu'on obtient un schéma animable, symétrisable et adaptable à son
+effectif.
+
+**Ces cahiers sont des oeuvres commerciales.** Le fichier produit est destiné au
+seul entraîneur qui les a achetés : `import/` est ignoré par git, et rien de ce
+qui en sort n'entre dans la bibliothèque livrée ni dans l'application
+distribuée. Chaque fiche importée porte la mention de sa source, qui la suit
+dans les exports et sur les feuilles imprimées.
+
+Deux réparations que l'outil fait au passage, et qu'il faut connaître :
+
+- le cahier encode la ligature « ﬁ » suivie d'une espace — le PDF contient
+  réellement « enfi n » et « fi xer ». Les mots sont recollés ;
+- le bandeau de caractéristiques et le pied de page sont bornés par leur
+  position, sinon « 1 ballon » devenait « 1 ballon 7 » en ramassant le numéro
+  de page.
 
 ### Retirer une fiche fournie : le parcours entier
 

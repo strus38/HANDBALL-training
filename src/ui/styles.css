@@ -3279,27 +3279,6 @@ button,
     border-radius: 3px;
   }
 
-  .grille-etapes {
-    display: grid;
-    gap: 4mm;
-    min-height: 0;
-    height: 100%;
-  }
-
-  .grille-etapes figure {
-    margin: 0;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .grille-etapes figcaption {
-    font-size: 7.5pt;
-    font-weight: 600;
-    margin-top: 1px;
-    text-align: center;
-  }
-
   .feuille-texte {
     line-height: 1.32;
     overflow: hidden;

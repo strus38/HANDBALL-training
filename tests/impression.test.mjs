@@ -65,9 +65,13 @@ console.log('')
 console.log('2. Grilles d etapes')
 verifier('une etape = une case', grillesPossibles(1).length === 1)
 verifier('deux etapes : empilees ou cote a cote', grillesPossibles(2).length === 2)
-verifier('au dela de quatre schemas, on plafonne a quatre',
-  nombreSchemas(fiche({ etapes: 9 })) === 4)
-verifier('une fiche sans etape compte quand meme un schema',
+// La feuille imprimee ne montre plus une vignette par etape mais UN schema de
+// synthese, ou l'enchainement se lit en suivant les fleches numerotees. Quelle
+// que soit la longueur de l'exercice, il n'y a donc qu'un rectangle a placer,
+// et il prend toute la hauteur de la page.
+verifier('une fiche a neuf etapes n imprime qu un schema',
+  nombreSchemas(fiche({ etapes: 9 })) === 1)
+verifier('une fiche sans etape aussi',
   nombreSchemas(nouvelExercice('X')) === 1)
 verifier('empiler deux schemas larges reduit le rapport',
   ratioGrille(1.9, { colonnes: 1, lignes: 2 }) < ratioGrille(1.9, { colonnes: 2, lignes: 1 }))
@@ -143,16 +147,25 @@ verifier('une fiche courte garde la police confortable', avecPeu.policePt >= 8.6
   '(' + avecPeu.policePt + ' pt)')
 
 console.log('')
-console.log('6. Plusieurs etapes')
+console.log('6. Un seul schema, quel que soit le nombre d etapes')
+//
+// La feuille ne montre plus une vignette par etape mais UN schema de synthese.
+// Ce que ces tests gardent : qu'une fiche longue n'est pas penalisee a
+// l'impression. Avec quatre vignettes, chaque terrain tombait au quart de la
+// page — un exercice riche s'imprimait donc plus petit qu'un exercice pauvre,
+// ce qui est exactement l'inverse du besoin.
 const quatre = choisirMiseEnPage(fiche({ vue: 'demi', etapes: 4 }))
-verifier('quatre etapes tiennent en grille', quatre.grille.colonnes * quatre.grille.lignes >= 4,
-  JSON.stringify(quatre.grille))
-const deuxComplet = choisirMiseEnPage(fiche({ vue: 'complet', etapes: 2 }))
-verifier('deux terrains complets sont empiles', deuxComplet.grille.lignes === 2,
-  JSON.stringify(deuxComplet.grille))
-const deuxZone = choisirMiseEnPage(fiche({ vue: 'zone', etapes: 2 }))
-verifier('deux vues zone sont cote a cote', deuxZone.grille.colonnes === 2,
-  JSON.stringify(deuxZone.grille))
+verifier('quatre etapes tiennent dans une seule case',
+  quatre.grille.colonnes === 1 && quatre.grille.lignes === 1, JSON.stringify(quatre.grille))
+const une = choisirMiseEnPage(fiche({ vue: 'demi', etapes: 1 }))
+verifier('et occupent autant de place qu une seule etape',
+  Math.abs(quatre.surfaceSchemaCm2 - une.surfaceSchemaCm2) < 0.1,
+  `${quatre.surfaceSchemaCm2.toFixed(1)} contre ${une.surfaceSchemaCm2.toFixed(1)} cm2`)
+for (const vue of ['demi', 'complet', 'zone']) {
+  const page = choisirMiseEnPage(fiche({ vue, etapes: 3 }))
+  verifier(`la vue « ${vue} » garde une case unique`,
+    page.grille.colonnes === 1 && page.grille.lignes === 1, JSON.stringify(page.grille))
+}
 
 console.log('')
 console.log('=== ' + ok + ' reussis, ' + ko + ' echoues ===')

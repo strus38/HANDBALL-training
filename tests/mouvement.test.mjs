@@ -6,6 +6,8 @@
  */
 
 import {
+  synthetiser,
+  resoudreFleches,
   exporterSeance,
   importerFichier,
   normaliserSeance,
@@ -163,6 +165,66 @@ verifier('la courbure deplace le milieu', courbe.milieu.y < 10,
 verifier('un point sur la fleche est a distance nulle',
   distanceAFleche(fleche, { x: 33, y: 10 }) < 0.01)
 verifier('un point eloigne est bien loin', distanceAFleche(fleche, { x: 33, y: 16 }) > 5)
+
+console.log('')
+console.log('Synthese : tout l enchainement sur un seul terrain')
+//
+// Ce que ces tests gardent : que les fleches deviennent LIBRES. Le schema
+// synthetise n'a qu'une etape ; une fleche restee liee a son jeton y
+// chercherait sa position a une etape suivante qui n'existe plus, et
+// disparaitrait sans bruit. C'est le genre de defaut qui ne se voit qu'a
+// l'impression, sur une feuille qu'on decouvre au gymnase.
+{
+  const schema = {
+    vue: 'demi',
+    jetons: [
+      { id: 'a1', type: 'attaquant', etiquette: '1' },
+      { id: 'a2', type: 'attaquant', etiquette: '2' },
+    ],
+    etapes: [
+      { id: 'e1', titre: 'Mise en place', consigne: '', fleches: [],
+        positions: { a1: { x: 30, y: 6 }, a2: { x: 30, y: 14 } } },
+      { id: 'e2', titre: 'Etape 2', consigne: '', fleches: [],
+        positions: { a1: { x: 34, y: 8 }, a2: { x: 30, y: 14 } } },
+      { id: 'e3', titre: 'Etape 3', consigne: '', fleches: [],
+        positions: { a1: { x: 34, y: 8 }, a2: { x: 33, y: 12 } } },
+    ],
+  }
+  schema.etapes[0].fleches = [{ id: 'f1', type: 'course', jetonId: 'a1' }]
+  schema.etapes[1].fleches = [{ id: 'f2', type: 'course', jetonId: 'a2' }]
+
+  const vue = synthetiser(schema)
+  verifier('le schema synthetise n a qu une etape', vue.etapes.length === 1)
+  verifier('il garde les positions de DEPART',
+    vue.etapes[0].positions.a1.x === 30 && vue.etapes[0].positions.a1.y === 6)
+  verifier('il rassemble les fleches de toutes les etapes', vue.etapes[0].fleches.length === 2)
+  verifier('elles sont devenues libres, sans jeton',
+    vue.etapes[0].fleches.every((f) => f.jetonId === undefined))
+  verifier('chacune porte ses deux extremites',
+    vue.etapes[0].fleches.every((f) => f.depart && f.arrivee))
+
+  const resolues = resoudreFleches(vue, 0)
+  verifier('et elles se dessinent toutes sur l unique etape', resolues.length === 2,
+    `${resolues.length} au lieu de 2`)
+  verifier('la premiere part bien du depart du joueur',
+    resolues[0].depart.x === 30 && resolues[0].arrivee.x === 34)
+  verifier('l ordre des etapes fait l ordre des numeros',
+    resolues[0].id === 'f1' && resolues[1].id === 'f2')
+
+  // Un jeton qui bouge deux fois enchaine ses fleches bout a bout : l arrivee
+  // de la premiere est le depart de la seconde, sans qu on ait a le calculer.
+  const deuxFois = JSON.parse(JSON.stringify(schema))
+  deuxFois.etapes[1].fleches = [{ id: 'f3', type: 'course', jetonId: 'a1' }]
+  deuxFois.etapes[2].positions.a1 = { x: 37, y: 11 }
+  const chaine = resoudreFleches(synthetiser(deuxFois), 0)
+  const [premiere, seconde] = chaine
+  verifier('deux deplacements du meme joueur s enchainent',
+    premiere.arrivee.x === seconde.depart.x && premiere.arrivee.y === seconde.depart.y,
+    JSON.stringify([premiere.arrivee, seconde.depart]))
+
+  const vide = synthetiser({ vue: 'demi', jetons: [], etapes: [] })
+  verifier('un schema sans etape ne fait pas tomber la synthese', vide.etapes.length === 1)
+}
 
 console.log('')
 console.log('=== ' + ok + ' reussis, ' + ko + ' echoues ===')

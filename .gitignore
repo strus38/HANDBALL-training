@@ -7,3 +7,7 @@ dist/
 
 # Notice engendree depuis LISEZMOI.md par outils/notice.mjs
 src/notice/notice.genere.html
+
+# Fiches importees depuis des cahiers d'exercices sous droits : elles
+# appartiennent a l'entraineur qui a achete les cahiers, pas au depot.
+import/

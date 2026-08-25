@@ -1,6 +1,6 @@
 {
   "name": "handball-training",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "private": true,
   "type": "module",
   "description": "Application de preparation de seances d'entrainement de handball",
@@ -12,7 +12,8 @@
     "verifier": "npm run build && npm test && npm run fumee",
     "notice": "node outils/notice.mjs",
     "fumee": "node tests/fumee.test.mjs && node tests/masqueesInterface.test.mjs && node tests/materielInterface.test.mjs",
-    "presentation": "node outils/presentation.mjs"
+    "presentation": "node outils/presentation.mjs",
+    "importer": "node outils/importerCahier.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -22,10 +23,11 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "esbuild": "^0.24.2",
+    "pdfjs-dist": "^6.2.108",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
-    "vite-plugin-singlefile": "^2.1.0",
-    "esbuild": "^0.24.2"
+    "vite-plugin-singlefile": "^2.1.0"
   },
   "license": "MIT"
 }

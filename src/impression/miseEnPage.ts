@@ -167,9 +167,21 @@ export function grillesPossibles(nombreSchemas: number): Grille[] {
 
 // ------------------------------------------------------- Choix de la page
 
-/** Nombre de schemas reellement dessines sur la fiche. */
-export function nombreSchemas(exercice: Exercice): number {
-  return Math.min(4, Math.max(1, exercice.schema.etapes.length))
+/**
+ * Nombre de schemas reellement dessines sur la fiche : un seul, toujours.
+ *
+ * La feuille imprimee ne montre plus une vignette par etape mais un schema de
+ * SYNTHESE, ou l'enchainement se lit en suivant les fleches numerotees. La
+ * mise en page n'a donc plus qu'un rectangle a placer, et il peut prendre
+ * toute la hauteur — la ou quatre vignettes reduisaient chaque terrain au
+ * quart de la page.
+ *
+ * La fonction est conservee plutot qu'effacee : c'est elle qui dit a
+ * choisirMiseEnPage() combien de cases prevoir, et une fiche pourrait un jour
+ * en demander plusieurs a nouveau.
+ */
+export function nombreSchemas(_exercice: Exercice): number {
+  return 1
 }
 
 interface Candidat extends MiseEnPage {

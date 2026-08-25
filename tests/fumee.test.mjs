@@ -198,19 +198,16 @@ try {
           const corps = f.querySelector('.feuille-corps');
           const style = getComputedStyle(corps);
           const texte = f.querySelector('.feuille-texte');
-          const vignettes = [...f.querySelectorAll('.grille-etapes svg.terrain')];
-          const signature = (svg) => [...svg.querySelectorAll('.jeton')]
-            .map((g) => g.getAttribute('transform')).join('|');
+          const terrains = [...f.querySelectorAll('.feuille-schema svg.terrain')];
           return {
             titre: f.querySelector('h1').textContent.trim().slice(0, 34),
             hauteur: Math.round(f.getBoundingClientRect().height),
             lignes: style.gridTemplateRows,
             colonnes: style.gridTemplateColumns,
             texteCache: texte ? texte.scrollHeight - texte.clientHeight : 0,
-            nbVignettes: vignettes.length,
-            vignettesIdentiques: vignettes.length > 1
-              ? new Set(vignettes.map(signature)).size === 1 : null,
-            flechesParVignette: vignettes.map((s) => s.querySelectorAll('.fleche').length),
+            nbTerrains: terrains.length,
+            nbFleches: terrains[0] ? terrains[0].querySelectorAll('.fleche').length : 0,
+            nbEtapesListees: f.querySelectorAll('.liste-etapes-impression li').length,
           };
         }),
       };
@@ -239,17 +236,25 @@ try {
     `(${papier.capture?.pagesEstimees} pages pour ${papier.exercices} exercices)`)
 
   console.log('')
-  console.log('5. Vignettes d etapes : chacune montre SON etape')
-  const aVignettes = feuilles.filter((f) => f.nbVignettes > 1)
-  if (aVignettes.length === 0) {
+  console.log('5. Un seul terrain par feuille, portant tout l enchainement')
+  //
+  // Le piege que garde cette section : les fleches du schema de synthese sont
+  // recopiees en fleches LIBRES, avec leurs deux extremites. Si l'une d'elles
+  // restait liee a son jeton, elle chercherait sa position a une etape suivante
+  // qui n'existe plus dans le schema synthetise — et disparaitrait sans bruit.
+  // La feuille sortirait alors avec un terrain muet, ce qui ne se decouvrirait
+  // qu'au gymnase, l'exercice en main.
+  for (const f of feuilles) {
+    verifier(`« ${f.titre} » : un seul terrain`, f.nbTerrains === 1,
+      `(${f.nbTerrains} terrains)`)
+  }
+  const enchainements = feuilles.filter((f) => f.nbEtapesListees > 1)
+  if (enchainements.length === 0) {
     console.log('        (aucune fiche a plusieurs etapes dans cette seance)')
   } else {
-    for (const f of aVignettes) {
-      verifier(`« ${f.titre} » : les vignettes different`, f.vignettesIdentiques === false,
-        `(${f.nbVignettes} vignettes strictement identiques)`)
-      verifier(`« ${f.titre} » : les fleches different d une vignette a l autre`,
-        new Set(f.flechesParVignette).size > 1,
-        `(fleches : ${JSON.stringify(f.flechesParVignette)})`)
+    for (const f of enchainements) {
+      verifier(`« ${f.titre} » : ses ${f.nbEtapesListees} etapes laissent des fleches`,
+        f.nbFleches > 0, '(le terrain imprime est muet)')
     }
   }
 

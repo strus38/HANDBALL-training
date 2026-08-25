@@ -417,6 +417,45 @@ export function retirerFleche(schemaInitial: Schema, index: number, flecheId: st
   return schema
 }
 
+// ------------------------------------------------------------- Synthese
+
+/**
+ * Schema « tout en un » : la mise en place, et tout l'enchainement dessus.
+ *
+ * A l'ecran, une fiche se lit etape par etape et s'anime. Sur le PAPIER, non :
+ * quatre terrains cote a cote reduisent chaque schema au quart d'une page A4,
+ * et l'entraineur doit reconstituer mentalement le mouvement en passant de
+ * l'un a l'autre. Un tableau blanc ne fonctionne pas comme ca — on y dessine
+ * une fois le terrain, et les fleches numerotees racontent la suite.
+ *
+ * Les jetons sont poses a leur position de DEPART, et rien qu'elle : ce sont
+ * les fleches qui disent la suite. Comme le depart d'une fleche est la position
+ * de son jeton a son etape, et son arrivee celle de l'etape suivante, un joueur
+ * qui bouge a l'etape 1 puis a l'etape 3 produit deux fleches qui s'enchainent
+ * d'elles-memes, bout a bout.
+ *
+ * Les fleches deviennent LIBRES — elles portent leurs deux extremites au lieu
+ * de les deduire d'un jeton. Sans cela, le schema synthetise n'ayant qu'une
+ * seule etape, chaque fleche aurait cherche la position de son jeton a une
+ * etape suivante qui n'existe plus, et aurait disparu.
+ */
+export function synthetiser(schema: Schema): Schema {
+  const fleches: Fleche[] = []
+  schema.etapes.forEach((_, index) => {
+    for (const resolue of resoudreFleches(schema, index)) {
+      fleches.push({
+        id: resolue.id,
+        type: resolue.type,
+        depart: resolue.depart,
+        arrivee: resolue.arrivee,
+        courbure: resolue.courbure,
+      })
+    }
+  })
+  const premiere = schema.etapes[0] ?? nouvelleEtape()
+  return { ...schema, etapes: [{ ...premiere, fleches }] }
+}
+
 // ------------------------------------------------------------- Migration
 
 /**
