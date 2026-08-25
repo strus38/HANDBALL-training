@@ -16,6 +16,8 @@ import {
   grillesPossibles,
   nombreSchemas,
   ZONE,
+  ZONE_PAYSAGE,
+  ZONE_PORTRAIT,
   nouvelExercice,
   CATALOGUE,
   construireExercice,
@@ -179,7 +181,7 @@ console.log('7. La lisibilite passe avant les derniers centimetres carres')
 // est imprime, il occupe la moitie de la page sans effort : lui sacrifier
 // encore du texte revient a payer en lisibilite un agrandissement qu'on ne voit
 // pas.
-const catalogue = CATALOGUE.map(construireExercice).map(choisirMiseEnPage)
+const catalogue = CATALOGUE.map(construireExercice).map((e) => choisirMiseEnPage(e))
 const sousHuit = catalogue.filter((p) => p.policePt < 8).length
 verifier('presque aucune fiche livree ne descend sous 8 pt',
   sousHuit <= 5, `(${sousHuit} fiches sur ${catalogue.length})`)
@@ -204,6 +206,42 @@ verifier('le meme exercice donne toujours la meme mise en page',
   }))
 verifier('aucune fiche ne perd plus que la tolerance annoncee',
   catalogue.every((p) => p.surfaceSchemaCm2 > 0))
+
+console.log('')
+console.log('8. La feuille sort dans les deux sens')
+//
+// Ce que garde cette section : la fiche DEMANDE le paysage, mais la boite de
+// dialogue du navigateur passe outre — un entraineur a envoye un PDF en
+// 210 x 297. La mise en page etait alors calculee pour 279 mm de large et
+// rendue dans 192 : le texte s'entassait dans une colonne trop etroite, et la
+// feuille s'arretait au tiers de la page. Les deux mises en page sont
+// desormais calculees, et c'est la page reelle qui choisit.
+verifier('la zone paysage est plus large que haute',
+  ZONE_PAYSAGE.largeur > ZONE_PAYSAGE.hauteur)
+verifier('la zone portrait est plus haute que large',
+  ZONE_PORTRAIT.hauteur > ZONE_PORTRAIT.largeur)
+verifier('ZONE reste le paysage, que la fiche demande',
+  ZONE.largeur === ZONE_PAYSAGE.largeur && ZONE.hauteur === ZONE_PAYSAGE.hauteur)
+
+const enPortrait = CATALOGUE.map(construireExercice).map((e) => choisirMiseEnPage(e, ZONE_PORTRAIT))
+verifier('aucune fiche ne deborde de la largeur portrait',
+  enPortrait.every((p) => p.partSchema > 0 && p.partSchema <= 1))
+const sousHuitPortrait = enPortrait.filter((p) => p.policePt < 8).length
+verifier('le portrait reste lisible lui aussi',
+  sousHuitPortrait <= 5, `(${sousHuitPortrait} fiches sous 8 pt)`)
+verifier('le schema garde une surface utile en portrait',
+  enPortrait.every((p) => p.surfaceSchemaCm2 > 80),
+  `(le plus petit fait ${Math.min(...enPortrait.map((p) => p.surfaceSchemaCm2)).toFixed(0)} cm2)`)
+
+// Les deux calculs doivent VRAIMENT differer : s'ils rendaient la meme chose,
+// c'est que la zone ne serait pas prise en compte.
+const enPaysage = CATALOGUE.map(construireExercice).map((e) => choisirMiseEnPage(e, ZONE_PAYSAGE))
+const differentes = enPortrait.filter((p, i) =>
+  p.disposition !== enPaysage[i].disposition ||
+  p.colonnesTexte !== enPaysage[i].colonnesTexte ||
+  Math.abs(p.partSchema - enPaysage[i].partSchema) > 0.01).length
+verifier('la mise en page portrait n est pas celle du paysage',
+  differentes > CATALOGUE.length / 2, `(${differentes} fiches sur ${CATALOGUE.length})`)
 
 console.log('')
 console.log('=== ' + ok + ' reussis, ' + ko + ' echoues ===')

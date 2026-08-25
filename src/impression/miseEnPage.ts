@@ -27,8 +27,32 @@
 import { cadrage } from '../terrain/geometrie'
 import type { Exercice } from '../domain/types'
 
-/** Zone imprimable en millimetres, entete et pied de page deduits. */
-export const ZONE = { largeur: 279, hauteur: 168 }
+export interface Zone {
+  largeur: number
+  hauteur: number
+}
+
+/**
+ * Zone imprimable en millimetres, entete et pied de page deduits.
+ *
+ * DEUX zones, parce que la feuille peut sortir dans les deux sens. La fiche
+ * demande le paysage — c'est la largeur qui commande la taille d'un terrain —
+ * mais la boite de dialogue du navigateur passe outre, et un entraineur qui
+ * imprime en portrait n'a aucune raison d'y perdre.
+ *
+ * Sans la seconde zone, la mise en page etait calculee pour 279 mm de large et
+ * rendue dans 192 : les proportions ne correspondaient plus a rien, le texte
+ * s'entassait dans une colonne trop etroite, et la feuille s'arretait au tiers
+ * de la page.
+ *
+ * A4 : 297 x 210 en paysage, 210 x 297 en portrait ; 9 mm de marges de chaque
+ * cote ; 24 mm pour l'entete et le pied de page.
+ */
+export const ZONE_PAYSAGE: Zone = { largeur: 279, hauteur: 168 }
+export const ZONE_PORTRAIT: Zone = { largeur: 192, hauteur: 255 }
+
+/** Zone par defaut : celle que la fiche demande. */
+export const ZONE = ZONE_PAYSAGE
 
 /** Espace entre le schema et le texte. */
 const ECART = 6
@@ -208,7 +232,7 @@ interface Candidat extends MiseEnPage {
   rangPolice: number
 }
 
-export function choisirMiseEnPage(exercice: Exercice): MiseEnPage {
+export function choisirMiseEnPage(exercice: Exercice, zone: Zone = ZONE_PAYSAGE): MiseEnPage {
   const ratioUnitaire = cadrage(exercice.schema.vue).ratio
   const grilles = grillesPossibles(nombreSchemas(exercice))
   const candidats: Candidat[] = []
@@ -219,13 +243,13 @@ export function choisirMiseEnPage(exercice: Exercice): MiseEnPage {
 
       // --- Disposition 1 : schema a gauche, texte a droite -----------------
       for (const partSchema of [0.42, 0.47, 0.52, 0.58, 0.64]) {
-        const largeurUtile = ZONE.largeur - ECART
+        const largeurUtile = zone.largeur - ECART
         const largeurTexte = largeurUtile * (1 - partSchema)
         const besoin = hauteurTexte(exercice, largeurTexte, policePt, 1)
-        if (besoin > ZONE.hauteur) continue
+        if (besoin > zone.hauteur) continue
         const rendu = ajuster(ratio, {
           largeur: largeurUtile * partSchema,
-          hauteur: ZONE.hauteur,
+          hauteur: zone.hauteur,
         })
         candidats.push({
           disposition: 'cote-a-cote',
@@ -243,14 +267,14 @@ export function choisirMiseEnPage(exercice: Exercice): MiseEnPage {
       // Le texte occupe alors toute la largeur : il lui faut plusieurs colonnes,
       // sinon les lignes font 28 cm de long et deviennent penibles a lire.
       for (const colonnesTexte of [2, 3]) {
-        const largeurColonne = (ZONE.largeur - ECART * (colonnesTexte - 1)) / colonnesTexte
+        const largeurColonne = (zone.largeur - ECART * (colonnesTexte - 1)) / colonnesTexte
         const besoin = hauteurTexte(exercice, largeurColonne, policePt, colonnesTexte)
-        const hauteurDisponible = ZONE.hauteur - besoin - ECART
+        const hauteurDisponible = zone.hauteur - besoin - ECART
         if (hauteurDisponible <= 20) continue
-        const rendu = ajuster(ratio, { largeur: ZONE.largeur, hauteur: hauteurDisponible })
+        const rendu = ajuster(ratio, { largeur: zone.largeur, hauteur: hauteurDisponible })
         candidats.push({
           disposition: 'dessus',
-          partSchema: rendu.hauteur / ZONE.hauteur,
+          partSchema: rendu.hauteur / zone.hauteur,
           colonnesTexte,
           policePt,
           grille,
@@ -262,7 +286,7 @@ export function choisirMiseEnPage(exercice: Exercice): MiseEnPage {
     }
   }
 
-  if (candidats.length === 0) return miseEnPageDeSecours(ratioUnitaire, grilles)
+  if (candidats.length === 0) return miseEnPageDeSecours(ratioUnitaire, grilles, zone)
 
   const { rangPolice: _, ...retenu } = choisirParmi(candidats)
   return retenu
@@ -285,6 +309,10 @@ export function choisirMiseEnPage(exercice: Exercice): MiseEnPage {
 function choisirParmi(candidats: Candidat[]): Candidat {
   const meilleure = Math.max(...candidats.map((c) => c.surfaceSchemaCm2))
   const seuil = meilleure * (1 - TOLERANCE_SURFACE)
+  // Le meilleur candidat est toujours accepte : il sert de point de depart et
+  // garantit que la reduction ne porte jamais sur une liste vide, quoi qu'aient
+  // valu les surfaces.
+  const reference = candidats.find((c) => c.surfaceSchemaCm2 === meilleure) ?? candidats[0]
   const acceptables = candidats.filter((c) => c.surfaceSchemaCm2 >= seuil)
   return acceptables.reduce((retenu, candidat) => {
     if (candidat.rangPolice !== retenu.rangPolice) {
@@ -294,7 +322,7 @@ function choisirParmi(candidats: Candidat[]): Candidat {
       return candidat.disposition === 'cote-a-cote' ? candidat : retenu
     }
     return candidat.surfaceSchemaCm2 > retenu.surfaceSchemaCm2 ? candidat : retenu
-  })
+  }, reference)
 }
 
 
@@ -303,13 +331,17 @@ function choisirParmi(candidats: Candidat[]): Candidat {
  * bavarde. On garde la page unique, avec la police la plus serree et le texte
  * sur trois colonnes, et on signale que ce sera dense.
  */
-function miseEnPageDeSecours(ratioUnitaire: number, grilles: Grille[]): MiseEnPage {
+function miseEnPageDeSecours(
+  ratioUnitaire: number,
+  grilles: Grille[],
+  zone: Zone = ZONE_PAYSAGE,
+): MiseEnPage {
   const policePt = POLICES[POLICES.length - 1]
   const grille = grilles[0]
   const partSchema = 0.3
   const rendu = ajuster(ratioGrille(ratioUnitaire, grille), {
-    largeur: ZONE.largeur,
-    hauteur: ZONE.hauteur * partSchema,
+    largeur: zone.largeur,
+    hauteur: zone.hauteur * partSchema,
   })
   return {
     disposition: 'dessus',

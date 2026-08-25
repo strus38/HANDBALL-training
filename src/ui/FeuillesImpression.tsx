@@ -11,7 +11,12 @@
  */
 
 import { Terrain } from '../terrain/Terrain'
-import { choisirMiseEnPage, type MiseEnPage } from '../impression/miseEnPage'
+import {
+  choisirMiseEnPage,
+  ZONE_PAYSAGE,
+  ZONE_PORTRAIT,
+  type MiseEnPage,
+} from '../impression/miseEnPage'
 import { synthetiser } from '../domain/mouvement'
 import { TexteFiche } from './TexteFiche'
 import {
@@ -55,7 +60,25 @@ function Feuille({
   index: number
   total: number
 }) {
-  const page = choisirMiseEnPage(exercice)
+  /*
+    DEUX mises en page, une par orientation de papier.
+
+    La feuille demande le paysage — c'est la largeur qui commande la taille
+    d'un terrain — mais la boite de dialogue du navigateur passe outre, et
+    l'entraineur ne s'en apercoit qu'une fois la feuille sortie. La mise en
+    page etait alors calculee pour 279 mm de large et rendue dans 192 : le
+    texte s'entassait dans une colonne trop etroite et la feuille s'arretait au
+    tiers de la page.
+
+    Les deux sont donc calculees ici et emises ensemble ; c'est la page reelle
+    qui choisit, par une requete de media. On ne peut pas connaitre son
+    orientation au moment du calcul — mais on n'a pas besoin de la connaitre si
+    l'on prevoit les deux.
+  */
+  const paysage = choisirMiseEnPage(exercice, ZONE_PAYSAGE)
+  const portrait = choisirMiseEnPage(exercice, ZONE_PORTRAIT)
+  const page = paysage
+  const classe = `feuille-${index}`
   /*
     Un SEUL schema sur la feuille, portant tout l'enchainement.
     Quatre vignettes reduisaient chaque terrain au quart de la page et
@@ -67,10 +90,12 @@ function Feuille({
 
   return (
     <article
-      className="feuille"
+      className={`feuille ${classe}`}
       data-disposition={page.disposition}
       data-police={page.policePt}
     >
+      {/* Les deux mises en page, la seconde ne prenant effet qu'en portrait. */}
+      <style>{reglesDe(classe, paysage, portrait)}</style>
       <header className="feuille-entete">
         <div>
           <h1>
@@ -103,7 +128,7 @@ function Feuille({
         </ul>
       </header>
 
-      <div className="feuille-corps" style={styleCorps(page)}>
+      <div className="feuille-corps">
         <div className="feuille-schema">
           <Terrain
             schema={schemaSynthetise}
@@ -113,7 +138,7 @@ function Feuille({
           />
         </div>
 
-        <div className="feuille-texte" style={styleTexte(page)}>
+        <div className="feuille-texte">
           {exercice.objectifs && (
             <section>
               <h2>Objectifs</h2>
@@ -196,20 +221,38 @@ function Feuille({
  * Cote a cote : deux colonnes. En banniere : deux lignes, le schema recevant
  * exactement la hauteur que le texte lui laisse.
  */
-function styleCorps(page: MiseEnPage): React.CSSProperties {
+function grilleDe(page: MiseEnPage): string {
   const part = `${(page.partSchema * 100).toFixed(1)}%`
   return page.disposition === 'cote-a-cote'
-    ? { gridTemplateColumns: `${part} 1fr`, gridTemplateRows: '1fr' }
-    : { gridTemplateColumns: '1fr', gridTemplateRows: `${part} 1fr` }
+    ? `grid-template-columns: ${part} 1fr; grid-template-rows: 1fr;`
+    : `grid-template-columns: 1fr; grid-template-rows: ${part} 1fr;`
 }
 
-function styleTexte(page: MiseEnPage): React.CSSProperties {
-  return {
-    fontSize: `${page.policePt}pt`,
-    columnCount: page.colonnesTexte > 1 ? page.colonnesTexte : undefined,
-    columnGap: page.colonnesTexte > 1 ? '6mm' : undefined,
-  }
+function texteDe(page: MiseEnPage): string {
+  const colonnes = page.colonnesTexte > 1 ? `column-count: ${page.colonnesTexte}; column-gap: 6mm;` : 'column-count: auto;'
+  return `font-size: ${page.policePt}pt; ${colonnes}`
 }
+
+/**
+ * Les deux mises en page d'une feuille, en CSS.
+ *
+ * Elles ne peuvent pas etre posees en style EN LIGNE : un style en ligne ne se
+ * decline pas par requete de media, et c'est justement l'orientation reelle de
+ * la page qui doit trancher. La regle porte donc sur une classe propre a la
+ * feuille, pour qu'une seance de sept exercices n'applique pas la mise en page
+ * du premier aux six autres.
+ */
+function reglesDe(classe: string, paysage: MiseEnPage, portrait: MiseEnPage): string {
+  return [
+    `.${classe} .feuille-corps { ${grilleDe(paysage)} }`,
+    `.${classe} .feuille-texte { ${texteDe(paysage)} }`,
+    '@media print and (orientation: portrait) {',
+    `  .${classe} .feuille-corps { ${grilleDe(portrait)} }`,
+    `  .${classe} .feuille-texte { ${texteDe(portrait)} }`,
+    '}',
+  ].join(' ')
+}
+
 
 function lignes(texte: string) {
   return <TexteFiche texte={texte} />

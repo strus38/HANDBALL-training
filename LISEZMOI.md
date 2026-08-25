@@ -479,8 +479,16 @@ corrige là quand un créneau change.
 Trois choses en découlent, sans une seule saisie de plus.
 
 **La date.** Une séance neuve ne se date plus d'aujourd'hui mais du **prochain
-entraînement de votre équipe**. Créée un mercredi pour les moins de 13, elle
-s'ouvre au vendredi. Le jour même compte : on prépare souvent la séance du soir.
+entraînement à préparer**. Créée un mercredi pour les moins de 13, elle s'ouvre
+au vendredi. Le jour même compte : on prépare souvent la séance du soir.
+
+Les séances **déjà écrites** entrent dans le calcul, et c'est le repère le plus
+tardif qui l'emporte. Si le mardi est déjà préparé, la suivante tombe au
+vendredi, puis au mardi d'après : trois « + Séance » d'affilée, un dimanche
+soir, donnent trois entraînements différents au lieu de trois fois le même
+mardi. Une séance passée, elle, ne retient rien — on ne repart jamais en
+arrière — et les séances d'une autre équipe sont ignorées, pour qu'un dépannage
+chez les seniors ne décale pas la préparation des moins de 13.
 
 **La durée du créneau.** L'application savait additionner vos exercices ; elle
 ne savait pas combien de temps vous aviez. Le compteur affiche désormais
@@ -504,6 +512,28 @@ Déplacer une séance **recale** tout : les moins de 13 ont 90 minutes le mardi 
 75 le vendredi, et la séance déplacée le sait. Rien de tout cela n'est
 verrouillé : la durée du créneau, l'espace, la date restent modifiables à la
 main, et une équipe hors planning ne déclenche rien du tout.
+
+## Le titre de la séance
+
+Une séance neuve s'appelle **par sa date** : « Mardi 1 septembre 2026 ».
+
+« Nouvelle séance » ne disait rien, et le restait — personne ne renomme trente
+séances à la main. La liste finissait par aligner trente lignes identiques, où
+seule la date en petits caractères distinguait le mardi du vendredi. Pour un
+entraînement, la date **est** le nom.
+
+Le titre reste un champ libre, et c'est là qu'est la règle : tant qu'il porte la
+date, il **suit** la date. Déplacer la séance du mardi au vendredi la renomme, y
+compris sur la feuille imprimée. Dès que vous écrivez autre chose — « Reprise
+après les vacances », « Séance avant le tournoi » — le titre vous appartient et
+ne bouge plus jamais, quels que soient les changements de date.
+
+La duplication suit le même partage : une séance nommée par sa date prend celle
+de la copie, une séance que vous avez nommée garde son nom suivi de « (copie) ».
+
+Là où le titre est déjà la date, l'application **cesse de la répéter** : la
+carte d'une séance affiche « dans 3 jours » sans réécrire le jour juste sous le
+titre, et la liste latérale montre directement le nombre d'exercices.
 
 ## Effectif de la séance
 
@@ -625,10 +655,24 @@ au lieu de trente, et dix-neuf s'impriment en 11 pt. Le schéma moyen passe de
 237 à 212 cm² sur une page qui en compte 536 : il reste, de loin, l'élément le
 plus grand de la feuille.
 
-**La feuille demande le paysage** — `@page { size: A4 landscape }` — et Chrome
-le respecte : un PDF forcé en portrait par les options d'impression ressort
-quand même en 297 × 210 mm. Si votre aperçu montre une page à moitié vide,
-vérifiez l'orientation dans la boîte de dialogue avant d'imprimer.
+### Portrait ou paysage, la feuille s'adapte
+
+La fiche **demande le paysage** — `@page { size: A4 landscape }` — parce que
+c'est la largeur qui commande la taille d'un terrain. Mais la boîte de dialogue
+de votre navigateur passe outre si elle est réglée sur portrait, et vous ne le
+découvrez qu'une fois la feuille sortie.
+
+**Les deux mises en page sont donc calculées**, et c'est la page réelle qui
+choisit. En portrait, la feuille remplit les 279 mm utiles au lieu de s'arrêter
+aux 192 mm d'une paysage, et la répartition schéma / texte est recalculée pour
+une largeur de 192 mm.
+
+Avant, la mise en page était calculée pour 279 mm de large et rendue dans 192 :
+le texte s'entassait dans une colonne trop étroite et un tiers de la page
+restait blanc.
+
+Le paysage reste préférable — un demi-terrain y gagne, et l'ensemble se lit
+mieux en largeur — mais le portrait n'est plus une sortie dégradée.
 
 ### Un seul schéma, tout l'enchaînement dessus
 

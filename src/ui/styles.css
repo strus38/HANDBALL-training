@@ -3353,6 +3353,21 @@ button,
     break-after: auto;
   }
 
+  /*
+    Impression en portrait : la feuille suit la page.
+    L'orientation d'une requete de media, en impression, s'evalue contre LA
+    PAGE — verifie en produisant de vrais PDF dans les deux sens. La feuille
+    remplit donc les 279 mm utiles d'une A4 portrait au lieu de s'arreter aux
+    192 mm d'une paysage, et src/ui/FeuillesImpression.tsx bascule au meme
+    moment sur la mise en page calculee pour cette largeur.
+  */
+  @media (orientation: portrait) {
+    .feuille {
+      height: 279mm;
+      max-height: 279mm;
+    }
+  }
+
   }
 
   .feuille-entete {
