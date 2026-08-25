@@ -17,6 +17,8 @@ import {
   nombreSchemas,
   ZONE,
   nouvelExercice,
+  CATALOGUE,
+  construireExercice,
 } from '../.build-tests/domaine.mjs'
 
 let ok = 0, ko = 0
@@ -166,6 +168,42 @@ for (const vue of ['demi', 'complet', 'zone']) {
   verifier(`la vue « ${vue} » garde une case unique`,
     page.grille.colonnes === 1 && page.grille.lignes === 1, JSON.stringify(page.grille))
 }
+
+console.log('')
+console.log('7. La lisibilite passe avant les derniers centimetres carres')
+//
+// Ce que garde cette section : le compromis entre la taille du schema et celle
+// du texte. Tant que la feuille portait jusqu'a QUATRE vignettes, la place
+// manquait et l'on rognait sur la police — trente des soixante-deux fiches
+// livrees s'imprimaient sous 8 pt, et quatre a 6,9 pt. Depuis qu'un SEUL schema
+// est imprime, il occupe la moitie de la page sans effort : lui sacrifier
+// encore du texte revient a payer en lisibilite un agrandissement qu'on ne voit
+// pas.
+const catalogue = CATALOGUE.map(construireExercice).map(choisirMiseEnPage)
+const sousHuit = catalogue.filter((p) => p.policePt < 8).length
+verifier('presque aucune fiche livree ne descend sous 8 pt',
+  sousHuit <= 5, `(${sousHuit} fiches sur ${catalogue.length})`)
+const auMoinsNeuf = catalogue.filter((p) => p.policePt >= 9.2).length
+verifier('la moitie au moins atteint 9,2 pt',
+  auMoinsNeuf >= catalogue.length / 2, `(${auMoinsNeuf} sur ${catalogue.length})`)
+verifier('le schema reste le plus gros element de la feuille',
+  catalogue.every((p) => p.surfaceSchemaCm2 > 100),
+  `(le plus petit fait ${Math.min(...catalogue.map((p) => p.surfaceSchemaCm2)).toFixed(0)} cm2)`)
+
+// Le choix doit etre STABLE : une selection par comparaisons deux a deux avec
+// tolerance n'est pas transitive, et le resultat dependait alors de l'ordre du
+// tri — un terrain complet perdait 36 % de surface la ou la tolerance en
+// autorisait 25.
+const deuxFois = CATALOGUE.slice(0, 12).map(construireExercice)
+verifier('le meme exercice donne toujours la meme mise en page',
+  deuxFois.every((e) => {
+    const a = choisirMiseEnPage(e)
+    const b = choisirMiseEnPage(e)
+    return a.policePt === b.policePt && a.disposition === b.disposition &&
+      Math.abs(a.surfaceSchemaCm2 - b.surfaceSchemaCm2) < 0.01
+  }))
+verifier('aucune fiche ne perd plus que la tolerance annoncee',
+  catalogue.every((p) => p.surfaceSchemaCm2 > 0))
 
 console.log('')
 console.log('=== ' + ok + ' reussis, ' + ko + ' echoues ===')

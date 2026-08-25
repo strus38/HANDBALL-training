@@ -443,8 +443,16 @@ irréversible de la rangee se trouvait à un pixel des plus frequentes.
 
 Un entraîneur suit **une** équipe. La question n'est donc posée qu'**une fois** :
 le bouton de l'en-tête, à droite du numéro de version, ouvre « Mon équipe » et
-demande le nom de l'équipe et la catégorie d'âge. Tant qu'elle n'est pas
-renseignée, ce bouton est jaune.
+propose **la liste des équipes du club** — des moins de 11 aux seniors, du baby
+hand au hand ensemble. Tant qu'elle n'est pas renseignée, ce bouton est jaune.
+
+Une liste plutôt que deux champs libres, parce que le nom choisi ouvre la porte
+au reste : la catégorie d'âge s'inscrit toute seule, et les **créneaux** de
+l'équipe s'affichent aussitôt sous la liste — c'est le planning du club, décrit
+plus bas, qui prendra ensuite en charge la date, la durée et l'espace de chaque
+séance. Une équipe hors club — une sélection, un remplacement ailleurs — se
+saisit toujours à la main derrière **« Autre équipe »** ; elle n'a simplement
+pas de créneau, et rien ne se pré-remplit.
 
 Ensuite, chaque nouvelle séance naît avec cette équipe déjà inscrite, et chaque
 feuille imprimée la porte dans son en-tête. Elle n'est **jamais redemandée** —
@@ -460,6 +468,42 @@ les deux champs. Une séance qui porte alors une équipe différente de la vôtr
 est signalée sur sa carte, et ses champs s'ouvrent d'emblée quand on l'ouvre —
 c'est justement là qu'il y a quelque chose à voir. Un bouton **« Reprendre… »**
 la ramène à votre équipe habituelle.
+
+## Le planning du club
+
+Le tableau affiché au gymnase — qui s'entraîne quel jour, à quelle heure, et
+avec qui sur le terrain — est **recopié dans l'application**. Une donnée, pas
+une règle : elle tient en dix-sept lignes dans `src/domain/planning.ts`, et se
+corrige là quand un créneau change.
+
+Trois choses en découlent, sans une seule saisie de plus.
+
+**La date.** Une séance neuve ne se date plus d'aujourd'hui mais du **prochain
+entraînement de votre équipe**. Créée un mercredi pour les moins de 13, elle
+s'ouvre au vendredi. Le jour même compte : on prépare souvent la séance du soir.
+
+**La durée du créneau.** L'application savait additionner vos exercices ; elle
+ne savait pas combien de temps vous aviez. Le compteur affiche désormais
+« 95 min **sur 90** », et signale les **minutes de trop**. Un plan trop long se
+voyait au gymnase, en sautant le dernier atelier ; il se voit maintenant en le
+préparant.
+
+**L'espace disponible.** Un créneau porté par deux équipes, c'est deux
+entraîneurs, deux séances, et un gymnase coupé en deux : l'espace disponible se
+met tout seul sur **demi-terrain**, et les exercices dessinés sur terrain
+complet sont signalés sans que vous ayez rien déclaré. Seule sur le créneau,
+l'équipe récupère tout le terrain.
+
+Sous l'équipe et la date, une ligne rappelle ce que le planning sait de ce
+soir-là : *« mardi 17h15 – 18h45 · 90 min · demi-terrain, Moins de 13 filles sur
+l'autre moitié · Moins de 15 garçons enchaîne ensuite »*. Les créneaux se
+touchent sans trou — déborder, ce n'est pas prendre cinq minutes de plus, c'est
+prendre le terrain du groupe suivant.
+
+Déplacer une séance **recale** tout : les moins de 13 ont 90 minutes le mardi et
+75 le vendredi, et la séance déplacée le sait. Rien de tout cela n'est
+verrouillé : la durée du créneau, l'espace, la date restent modifiables à la
+main, et une équipe hors planning ne déclenche rien du tout.
 
 ## Effectif de la séance
 
@@ -522,7 +566,9 @@ est partagé — avec le basket, avec une autre catégorie — et la moitié d'u
 séance préparée sur terrain complet tombe à l'eau une fois sur place.
 
 Chaque fiche déclare l'**espace nécessaire** : un quart de salle, un demi-terrain
-ou le terrain complet. Chaque séance déclare l'**espace disponible** ce soir-là.
+ou le terrain complet. Chaque séance déclare l'**espace disponible** ce soir-là —
+et depuis que le planning du club est connu, elle le déclare **toute seule**
+quand le créneau est partagé.
 Les exercices qui demandent plus de place sont alors signalés, dans la liste de
 la séance comme dans la fiche, exactement comme un manque d'effectif — et dans
 le même bandeau quand les deux manquent à la fois.
@@ -561,10 +607,28 @@ de surface — d'ou le choix. Un schéma carre ou vertical, lui, n'a rien a y
 gagner : il reste en colonne, et le texte garde des lignes confortables.
 
 Le calcul essaie toutes les combinaisons de disposition, de répartition, de
-nombre de colonnes et de taille de police, ecarte celles ou le texte déborde, et
-retient celle qui donne le **plus grand schéma**. A surface comparable, il
-préfère la police la plus lisible. Une fiche très bavarde fait donc reculer le
-schéma et resserrer le texte, jamais déborder sur une deuxième page.
+nombre de colonnes et de taille de police, écarte celles où le texte déborde, et
+retient celle qui donne le plus grand schéma **sans sacrifier la lisibilité**.
+Une fiche très bavarde fait reculer le schéma et resserrer le texte, jamais
+déborder sur une deuxième page.
+
+**Le compromis a changé avec le schéma unique.** Tant que la feuille portait
+jusqu'à quatre vignettes, la place manquait et l'on rognait sur la police :
+trente des soixante-deux fiches livrées s'imprimaient sous 8 pt, quatre à
+6,9 pt. Depuis qu'un seul schéma est imprimé, il occupe la moitié de la page
+sans effort — lui sacrifier encore du texte revient à payer en lisibilité un
+agrandissement qu'on ne voit pas.
+
+Le schéma peut donc céder jusqu'à un quart de sa surface pour gagner une taille
+de police. Sur les 62 fiches livrées, il ne reste que **trois fiches sous 8 pt**
+au lieu de trente, et dix-neuf s'impriment en 11 pt. Le schéma moyen passe de
+237 à 212 cm² sur une page qui en compte 536 : il reste, de loin, l'élément le
+plus grand de la feuille.
+
+**La feuille demande le paysage** — `@page { size: A4 landscape }` — et Chrome
+le respecte : un PDF forcé en portrait par les options d'impression ressort
+quand même en 297 × 210 mm. Si votre aperçu montre une page à moitié vide,
+vérifiez l'orientation dans la boîte de dialogue avant d'imprimer.
 
 ### Un seul schéma, tout l'enchaînement dessus
 

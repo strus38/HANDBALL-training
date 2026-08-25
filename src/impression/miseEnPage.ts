@@ -36,8 +36,27 @@ const ECART = 6
 /** Hauteur de la legende sous chaque schema d'etape. */
 const LEGENDE = 4.5
 
-/** Tailles de police essayees, de la plus confortable a la plus serree. */
-const POLICES = [9.2, 8.6, 8, 7.4, 6.9]
+/**
+ * Tailles de police essayees, de la plus confortable a la plus serree.
+ *
+ * La liste commence plus haut qu'avant. Tant que la feuille portait jusqu'a
+ * quatre vignettes, la place manquait et 9,2 pt etait deja un luxe. Depuis
+ * qu'un SEUL schema est imprime, il occupe la moitie de la page sans effort :
+ * ce qui reste peut nourrir un texte qu'on lit debout, au bord du terrain, et
+ * non plus penche dessus.
+ */
+const POLICES = [11, 10.2, 9.6, 9.2, 8.6, 8, 7.4, 6.9]
+
+/**
+ * De combien le schema peut retrecir pour gagner une taille de police.
+ *
+ * L'ancienne valeur etait de 8 % : un terrain complet passait donc a 7,4 pt
+ * pour gagner 10 % de surface, alors qu'il occupait deja 277 cm2 sur une page
+ * qui en compte 536. On payait en lisibilite un agrandissement qu'on ne voyait
+ * pas. Un quart de surface est un prix acceptable pour un texte lisible ; le
+ * schema reste, de loin, l'element le plus grand de la feuille.
+ */
+const TOLERANCE_SURFACE = 0.25
 
 export type Disposition = 'cote-a-cote' | 'dessus'
 
@@ -245,26 +264,39 @@ export function choisirMiseEnPage(exercice: Exercice): MiseEnPage {
 
   if (candidats.length === 0) return miseEnPageDeSecours(ratioUnitaire, grilles)
 
-  candidats.sort(comparer)
-  const { rangPolice: _, ...retenu } = candidats[0]
+  const { rangPolice: _, ...retenu } = choisirParmi(candidats)
   return retenu
 }
 
 /**
- * Classement des candidats.
+ * Retient le meilleur candidat.
  *
- * La surface du schema decide, mais un ecart de moins de 8 % ne justifie pas de
- * rapetisser le texte : a surface comparable, on garde la police la plus
- * lisible, puis la disposition cote a cote, qui reprend celle de l'ecran.
+ * La selection est GLOBALE, et non un tri par comparaisons deux a deux. Une
+ * tolerance appliquee par paires n'est pas transitive : A bat B, B bat C, et C
+ * peut battre A. Le resultat dependait alors de l'ordre dans lequel le tri
+ * comparait les candidats — un terrain complet perdait ainsi 36 % de surface
+ * alors que la tolerance etait de 25 %.
+ *
+ * On calcule donc d'abord la meilleure surface possible, on ecarte ce qui perd
+ * plus que la tolerance, et on choisit parmi le reste : d'abord la police la
+ * plus lisible, puis la disposition qui reprend celle de l'ecran, puis la plus
+ * grande surface.
  */
-function comparer(a: Candidat, b: Candidat): number {
-  const meilleure = Math.max(a.surfaceSchemaCm2, b.surfaceSchemaCm2)
-  const ecart = Math.abs(a.surfaceSchemaCm2 - b.surfaceSchemaCm2) / (meilleure || 1)
-  if (ecart > 0.08) return b.surfaceSchemaCm2 - a.surfaceSchemaCm2
-  if (a.rangPolice !== b.rangPolice) return a.rangPolice - b.rangPolice
-  if (a.disposition !== b.disposition) return a.disposition === 'cote-a-cote' ? -1 : 1
-  return b.surfaceSchemaCm2 - a.surfaceSchemaCm2
+function choisirParmi(candidats: Candidat[]): Candidat {
+  const meilleure = Math.max(...candidats.map((c) => c.surfaceSchemaCm2))
+  const seuil = meilleure * (1 - TOLERANCE_SURFACE)
+  const acceptables = candidats.filter((c) => c.surfaceSchemaCm2 >= seuil)
+  return acceptables.reduce((retenu, candidat) => {
+    if (candidat.rangPolice !== retenu.rangPolice) {
+      return candidat.rangPolice < retenu.rangPolice ? candidat : retenu
+    }
+    if (candidat.disposition !== retenu.disposition) {
+      return candidat.disposition === 'cote-a-cote' ? candidat : retenu
+    }
+    return candidat.surfaceSchemaCm2 > retenu.surfaceSchemaCm2 ? candidat : retenu
+  })
 }
+
 
 /**
  * Aucune disposition ne laisse tenir le texte : la fiche est exceptionnellement

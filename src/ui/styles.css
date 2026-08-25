@@ -576,6 +576,48 @@ textarea:focus {
   content: '—';
 }
 
+/*
+  Le creneau lu dans le planning du club : « mardi 17h15 – 18h45 · 90 min ·
+  demi-terrain ». Ce n'est pas un champ, c'est une CONSTATATION — d'ou le fond
+  pose et l'absence de bordure de saisie. L'entraineur doit voir au premier
+  coup d'oeil que la ligne est deduite, et non quelque chose qu'il aurait
+  oublie de remplir.
+*/
+.creneau-seance {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border-radius: var(--rayon-petit);
+  background: var(--bleu-050);
+  border-left: 3px solid var(--bleu-100);
+  font-size: 13px;
+  color: var(--texte-doux);
+}
+
+.creneau-seance strong {
+  color: var(--bleu-700);
+  text-transform: capitalize;
+}
+
+/* Les creneaux d'une equipe, listes au moment de la choisir. */
+.creneaux-equipe {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--rayon-petit);
+  background: var(--bleu-050);
+  font-size: 12.5px;
+  color: var(--texte-doux);
+}
+
+.creneaux-equipe li + li {
+  margin-top: 5px;
+}
+
+.creneaux-equipe strong {
+  color: var(--bleu-700);
+  text-transform: capitalize;
+}
+
 .lien-discret {
   border: 0;
   background: none;
@@ -3268,12 +3310,34 @@ button,
     page-break-inside: avoid;
     break-inside: avoid;
     /*
-      Hauteur EXPLICITE, et non 100 %.
-      Un pourcentage se resout contre un parent de hauteur automatique : il
-      valait donc « auto », et toute la mise en page calculee par
-      src/impression/miseEnPage.ts etait ignoree — le terrain prenait sa
-      hauteur naturelle et chaque fiche debordait sur une deuxieme page.
-      210 mm de haut moins 2 x 9 mm de marges.
+      Hauteur EXPLICITE, et relative a LA PAGE.
+
+      Un pourcentage ne marche pas : il se resout contre un parent de hauteur
+      automatique, vaut donc « auto », et toute la mise en page calculee par
+      src/impression/miseEnPage.ts est ignoree — le terrain prend sa hauteur
+      naturelle et la fiche deborde sur une deuxieme page.
+
+      Une hauteur en millimetres ne marche pas non plus. Elle fige le format :
+      192 mm est la hauteur utile d'une A4 PAYSAGE, et si l'entraineur imprime
+      en portrait — sa boite de dialogue peut passer outre @page — la feuille
+      s'arrete au tiers de la page et laisse 87 mm de blanc, schema et texte
+      rapetisses d'autant.
+
+      Les unites de fenetre ne marchent pas davantage : « 100vh » se resout
+      contre la FENETRE et non contre la page. Dans un navigateur haut de
+      900 px, chaque fiche reclamait alors 238 mm et debordait sur une seconde
+      page — sept exercices en quatorze pages.
+
+      Reste la valeur en millimetres : 210 mm de haut moins 2 x 9 mm de marges,
+      soit la hauteur utile d'une A4 PAYSAGE, celle que @page demande juste
+      au-dessus. Et Chrome la respecte : un PDF force en portrait par les
+      options d'impression ressort quand meme en 297 x 210.
+
+      Une regle « @media (orientation: portrait) » a ete essayee pour couvrir
+      un navigateur qui passerait outre. Elle a ete retiree : l'orientation s'y
+      evalue contre la FENETRE et non contre la page, si bien qu'une fenetre
+      etroite faisait reclamer 279 mm a chaque fiche — deux pages chacune. Le
+      remede etait pire que le mal qu'il visait.
     */
     height: 192mm;
     max-height: 192mm;
@@ -3287,6 +3351,8 @@ button,
   .feuille:last-child {
     page-break-after: auto;
     break-after: auto;
+  }
+
   }
 
   .feuille-entete {
