@@ -22,6 +22,7 @@
  */
 
 import { readFileSync } from 'node:fs'
+import { CATALOGUE } from '../.build-tests/domaine.mjs'
 
 let ok = 0,
   ko = 0
@@ -143,7 +144,39 @@ verifier(
 )
 
 console.log('')
-console.log('7. Les fonctions livrees sont documentees')
+console.log('7. Le nombre de fiches annonce est le vrai')
+// La presentation promettait 53 exercices quand l'application en affichait 62.
+// Elle comptait les titres de trois fichiers de bibliotheque nommes a la main,
+// et deux bibliotheques ajoutees depuis n'y figuraient pas : un calcul qui se
+// croyait deduit, mais deduit du mauvais endroit.
+//
+// Personne ne recompte une bibliotheque a la main pour verifier une plaquette.
+// Le chiffre etait donc faux depuis des mois, sur le document meme qu'on envoie
+// aux entraineurs pour leur donner envie.
+verifier(
+  'la presentation compte sur le CATALOGUE',
+  /CATALOGUE\.length/.test(presentation),
+  '(un comptage par nom de fichier oublie la prochaine bibliotheque ajoutee)',
+)
+for (const [nom, source] of [
+  ['LISEZMOI.md', lisezmoi],
+  ['README.md', lire('README.md')],
+]) {
+  // Tout nombre suivi de « fiches livrees » ou « exercices » se lit comme une
+  // promesse faite a l'entraineur : elle doit valoir le catalogue.
+  const annonces = [...source.matchAll(/(\d+)\s+(?:fiches livrées|exercices sont livrés)/g)].map(
+    (m) => Number(m[1]),
+  )
+  const faux = annonces.filter((n) => n !== CATALOGUE.length)
+  verifier(
+    `${nom} annonce ${CATALOGUE.length} fiches partout`,
+    faux.length === 0,
+    `(${[...new Set(faux)].join(', ')} au lieu de ${CATALOGUE.length})`,
+  )
+}
+
+console.log('')
+console.log('8. Les fonctions livrees sont documentees')
 // Chaque version a ajoute quelque chose : la reference du projet doit en
 // parler, sans quoi personne ne saura que cela existe.
 const SECTIONS_ATTENDUES = [

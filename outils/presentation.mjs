@@ -20,19 +20,55 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { build as empaqueter } from 'esbuild'
 import { capturer } from './captures.mjs'
 import { jetonsDeStyle, logo } from './marque.mjs'
 
 const racine = join(dirname(fileURLToPath(import.meta.url)), '..')
 
-/** Nombre de fiches livrees, compte a la source plutot qu'ecrit en dur. */
-function nombreDeFiches() {
-  const compter = (fichier) =>
-    (readFileSync(join(racine, 'src', 'bibliotheque', fichier), 'utf8').match(/^ {4}titre: /gm) ?? [])
-      .length
-  return (
-    compter('seniorsMasculins.ts') + compter('gardiens.ts') + compter('sansBallon.ts')
+/**
+ * Nombre de fiches livrees, compte sur le CATALOGUE lui-meme.
+ *
+ * La version precedente comptait les titres dans trois fichiers de
+ * bibliotheque, nommes a la main. Elle se croyait « comptee a la source » — et
+ * elle l'etait, mais a cote de la bonne : deux bibliotheques ajoutees depuis,
+ * les combinaisons nommees et les fiches du club, n'y figuraient pas. La page
+ * promettait 53 exercices quand l'application en affichait 62.
+ *
+ * On lit donc le meme tableau que l'application, celui qui remplit sa
+ * bibliotheque. Aucun nom de fichier a tenir a jour : ajouter une bibliotheque
+ * au catalogue suffit desormais.
+ */
+async function nombreDeFiches() {
+  // Ni fichier d'entree ni fichier de sortie : tout passe par la memoire.
+  //
+  // La premiere version ecrivait le paquet dans .build-tests puis l'importait.
+  // Elle marchait presque toujours — et echouait par intermittence, Node lisant
+  // parfois un fichier qu'esbuild finissait d'ecrire. Un module incomplet n'a
+  // pas d'export CATALOGUE, et le destructurer rendait « undefined » SANS RIEN
+  // DIRE : la panne se manifestait plus loin, sur un « .length » incomprehensible.
+  const resultat = await empaqueter({
+    stdin: {
+      contents: "export { CATALOGUE } from './src/bibliotheque/catalogue'",
+      resolveDir: racine,
+      loader: 'ts',
+    },
+    bundle: true,
+    format: 'esm',
+    platform: 'neutral',
+    write: false,
+  })
+  const code = resultat.outputFiles[0].text
+  const module = await import(
+    `data:text/javascript;base64,${Buffer.from(code, 'utf8').toString('base64')}`
   )
+  // Et si le catalogue n'arrivait plus, la fabrication s'arrete ici plutot que
+  // de livrer une page annoncant « undefined exercices » — ou pire, un chiffre
+  // faux qui passerait inapercu.
+  if (!Array.isArray(module.CATALOGUE)) {
+    throw new Error('CATALOGUE illisible : la presentation ne peut pas annoncer un nombre de fiches.')
+  }
+  return module.CATALOGUE.length
 }
 
 /**
@@ -221,7 +257,7 @@ async function construire() {
     captures.map(({ nom, chemin }) => [nom, readFileSync(chemin).toString('base64')]),
   )
 
-  const fiches = nombreDeFiches()
+  const fiches = await nombreDeFiches()
 
   const sections = SECTIONS.map(
     ({ capture, titre, texte }) => `
