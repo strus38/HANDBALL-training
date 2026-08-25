@@ -87,10 +87,18 @@ export function TableauSeances({
           >
             Sauvegarder tout
           </button>
-          <button className="bouton" onClick={onImporter}>
+          <button
+            className="bouton"
+            onClick={onImporter}
+            title="Relire un fichier .hbt.json : une séance reçue, ou une sauvegarde à restaurer"
+          >
             Importer
           </button>
-          <button className="bouton principal" onClick={onNouvelle}>
+          <button
+            className="bouton principal"
+            onClick={onNouvelle}
+            title="Préparer un nouvel entraînement, daté du prochain créneau libre"
+          >
             + Nouvelle séance
           </button>
         </div>
@@ -109,18 +117,21 @@ export function TableauSeances({
             <button
               className={`bouton segment${tri === 'date-desc' ? ' actif' : ''}`}
               onClick={() => setTri('date-desc')}
+              title="Les séances à venir en premier"
             >
               Plus récentes
             </button>
             <button
               className={`bouton segment${tri === 'date-asc' ? ' actif' : ''}`}
               onClick={() => setTri('date-asc')}
+              title="Les séances les plus anciennes en premier, pour remonter la saison"
             >
               Plus anciennes
             </button>
             <button
               className={`bouton segment${tri === 'titre' ? ' actif' : ''}`}
               onClick={() => setTri('titre')}
+              title="Classer par nom plutôt que par date"
             >
               Par titre
             </button>
@@ -132,10 +143,18 @@ export function TableauSeances({
         <div className="vide">
           <p>Créez votre première séance, ou importez un fichier reçu d'un autre entraîneur.</p>
           <div className="actions-vide">
-            <button className="bouton principal" onClick={onNouvelle}>
+            <button
+              className="bouton principal"
+              onClick={onNouvelle}
+              title="Préparer votre premier entraînement"
+            >
               Créer une séance
             </button>
-            <button className="bouton" onClick={onImporter}>
+            <button
+              className="bouton"
+              onClick={onImporter}
+              title="Reprendre une séance reçue d’un autre entraîneur, ou restaurer une sauvegarde"
+            >
               Importer un fichier
             </button>
           </div>
@@ -189,7 +208,11 @@ function CarteSeance({
 
   return (
     <li className={`carte-seance${passee ? ' passee' : ''}`}>
-      <button className="zone-ouverture" onClick={onOuvrir}>
+      <button
+        className="zone-ouverture"
+        onClick={onOuvrir}
+        title="Ouvrir cette séance pour la préparer ou la modifier"
+      >
         <div className="entete-carte">
           <div>
             <h3>{seance.titre || 'Sans titre'}</h3>
@@ -294,10 +317,19 @@ function CarteSeance({
       </button>
 
       <div className="actions-carte">
-        <button className="bouton principal" onClick={onDupliquer}>
+        <button
+          className="bouton principal"
+          onClick={onDupliquer}
+          title="Rejouer cette séance à une autre date, sans toucher à l’originale"
+        >
           Dupliquer
         </button>
-        <button className="bouton" onClick={onImprimer} disabled={resume.nombreExercices === 0}>
+        <button
+          className="bouton"
+          onClick={onImprimer}
+          disabled={resume.nombreExercices === 0}
+          title="Sortir une feuille par exercice, à emporter au bord du terrain"
+        >
           Imprimer
         </button>
         <button

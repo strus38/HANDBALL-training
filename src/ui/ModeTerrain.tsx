@@ -136,7 +136,11 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
     return (
       <div className="mode-terrain vide">
         <p>Cette séance ne contient aucun exercice.</p>
-        <button className="bouton principal geant" onClick={onFermer}>
+        <button
+          className="bouton principal geant"
+          onClick={onFermer}
+          title="Quitter le mode terrain et revenir à la préparation"
+        >
           Revenir à la séance
         </button>
       </div>
@@ -235,6 +239,7 @@ export function ModeTerrain({ seance, onModifier, onFermer }: Props) {
           className={`bouton geant marquer-mene${fait ? ' actif' : ''}`}
           aria-pressed={fait}
           onClick={basculerFait}
+          title="Cocher l’exercice une fois mené : le temps réellement passé est relevé"
         >
           {fait ? '☑ Mené' : '☐ Marquer mené'}
         </button>

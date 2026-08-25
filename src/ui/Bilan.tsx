@@ -38,12 +38,14 @@ export function Bilan({ seances }: Props) {
             <button
               className={`bouton segment${surLaSaison ? ' actif' : ''}`}
               onClick={() => setSurLaSaison(true)}
+              title="Ne compter que les séances de la saison en cours"
             >
               Saison en cours
             </button>
             <button
               className={`bouton segment${!surLaSaison ? ' actif' : ''}`}
               onClick={() => setSurLaSaison(false)}
+              title="Compter toutes les séances enregistrées, saisons précédentes comprises"
             >
               Tout l'historique
             </button>

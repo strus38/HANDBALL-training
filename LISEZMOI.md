@@ -1056,6 +1056,29 @@ montrer ce qu'il est en train de regarder.
 Les captures sont mises en cache : elles ne sont refaites que si
 `dist/index.html` est plus recent qu'elles.
 
+## Chaque bouton s'explique
+
+Un entraîneur n'est pas un familier du vocabulaire de l'application.
+« Vers la bibliothèque », « Mode terrain », « Dupliquer » disent quelque chose à
+qui a écrit le logiciel, rien à qui l'ouvre le mardi soir.
+
+**Les 114 boutons portent donc une infobulle**, visible au survol. Elle ne
+répète jamais le libellé : elle dit ce qui **se passe** quand on clique, et
+quand c'est utile, ce que ça implique.
+
+> **Dupliquer** — Recopier cette séance pour un autre jour, sans toucher à
+> l'originale
+>
+> **Vers la bibliothèque** — Mettre à jour la version gardée dans votre
+> bibliothèque, pour la reprendre dans d'autres séances
+>
+> **↑** — Faire passer cet exercice plus tôt dans la séance
+
+La règle est tenue par un test, [tests/infobulles.test.mjs](tests/infobulles.test.mjs),
+qui échoue si un bouton nouveau arrive sans infobulle, si elle se réduit à un
+mot, si elle recopie le libellé, ou si elle n'est pas écrite en français
+accentué comme le reste de l'interface.
+
 ## Raccourcis clavier
 
 | Touche | Effet |

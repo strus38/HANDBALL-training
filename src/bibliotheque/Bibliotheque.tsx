@@ -248,6 +248,7 @@ export function Bibliotheque({
                 setSource('fournie')
                 setChoisi(undefined)
               }}
+              title="Les exercices livrés avec l’application : un point de départ à reprendre et à ajuster"
             >
               Bibliothèque de base ({CATALOGUE.length - masqueesConnues})
             </button>
@@ -257,6 +258,7 @@ export function Bibliotheque({
                 setSource('personnelle')
                 setChoisi(undefined)
               }}
+              title="Vos propres fiches : celles que vous avez créées ou reprises"
             >
               Ma bibliothèque ({mesModeles.length})
             </button>
@@ -271,7 +273,11 @@ export function Bibliotheque({
               setChoisi(undefined)
             }}
           />
-          <button className="bouton discret" onClick={onFermer} title="Fermer">
+          <button
+            className="bouton discret"
+            onClick={onFermer}
+            title="Fermer la bibliothèque et revenir à la séance"
+          >
             ✕
           </button>
         </header>
@@ -285,6 +291,7 @@ export function Bibliotheque({
                 setFiltre(f.cle)
                 setChoisi(undefined)
               }}
+              title={`N’afficher que les fiches : ${f.libelle.toLowerCase()}`}
             >
               {f.libelle}
             </button>
@@ -372,6 +379,7 @@ export function Bibliotheque({
                 <button
                   className={`carte-modele${entree.cle === apercu?.cle ? ' active' : ''}`}
                   onClick={() => setChoisi(entree.cle)}
+                  title="Afficher cette fiche en détail avant de décider"
                 >
                   <span className="titre-modele">{entree.exercice.titre || 'Sans titre'}</span>
                   <span className="meta-modele">
@@ -481,6 +489,7 @@ export function Bibliotheque({
                 <button
                   className="bouton principal"
                   onClick={() => onAjouter(clonerExercice(apercu.exercice, ''))}
+                  title="Poser une copie de cette fiche dans la séance ouverte : la modifier ensuite ne touchera pas l’originale"
                 >
                   Ajouter à la séance
                 </button>

@@ -137,17 +137,28 @@ export function MenuActions({
             role="menuitemcheckbox"
             aria-checked={aimantation}
             onClick={choisir(onAimantation)}
+            title="Les joueurs lâchés près d’un poste ou d’une ligne s’y accrochent. La touche Alt la neutralise le temps d’un geste."
           >
             <span className="icone-menu">🧲</span>
             Aimantation
             <em>{aimantation ? 'active' : 'désactivée'}</em>
           </button>
-          <button className="entree-menu" role="menuitem" onClick={choisir(onSymetrie)}>
+          <button
+            className="entree-menu"
+            role="menuitem"
+            onClick={choisir(onSymetrie)}
+            title="Retourner tout le schéma comme dans un miroir, pour travailler le même mouvement de l’autre côté"
+          >
             <span className="icone-menu">⇅</span>
             Symétrie
             <em>refaire de l'autre côté</em>
           </button>
-          <button className="entree-menu" role="menuitem" onClick={choisir(onImage)}>
+          <button
+            className="entree-menu"
+            role="menuitem"
+            onClick={choisir(onImage)}
+            title="Enregistrer le schéma en image, à coller dans un message ou un document"
+          >
             <span className="icone-menu">🖼</span>
             Exporter en image
             <em>PNG du schéma</em>
@@ -157,6 +168,7 @@ export function MenuActions({
             role="menuitem"
             onClick={choisir(onProposer)}
             disabled={!proposerPossible}
+            title="Lire le texte du fonctionnement et proposer les flèches qui lui correspondent, à valider avant de les poser"
           >
             <span className="icone-menu">⤳</span>
             Proposer des mouvements
@@ -167,6 +179,7 @@ export function MenuActions({
             role="menuitem"
             onClick={choisir(onRediger)}
             disabled={!redigerPossible}
+            title="Écrire le déroulement à partir du schéma : chaque flèche devient une phrase, à relire et à retoucher"
           >
             <span className="icone-menu">✎</span>
             Rédiger le déroulement

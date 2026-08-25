@@ -635,10 +635,18 @@ export function FicheExercice({
             note={exercice.evaluation.note}
             onChanger={(note) => onModifier({ evaluation: { ...exercice.evaluation, note } })}
           />
-          <button className="bouton" onClick={onEnregistrerDansBibliotheque}>
+          <button
+            className="bouton"
+            onClick={onEnregistrerDansBibliotheque}
+            title="Mettre à jour la version gardée dans votre bibliothèque, pour la reprendre dans d’autres séances"
+          >
             Vers la bibliothèque
           </button>
-          <button className="bouton" onClick={onImprimer}>
+          <button
+            className="bouton"
+            onClick={onImprimer}
+            title="Sortir cette seule fiche sur une feuille, schéma et consignes"
+          >
             Imprimer
           </button>
         </div>
@@ -935,6 +943,7 @@ export function FicheExercice({
               <button
                 className="bouton danger"
                 onClick={() => supprimerFleche(flecheSelectionnee.id)}
+                title="Effacer ce mouvement : le joueur redevient immobile"
               >
                 Effacer le tracé
               </button>
@@ -969,7 +978,11 @@ export function FicheExercice({
               <span className="aide-terrain sans-marge">
                 Faites glisser la zone pour la déplacer, le carré du coin pour la redimensionner.
               </span>
-              <button className="bouton danger" onClick={() => supprimerZone(zoneSelectionnee.id)}>
+              <button
+                className="bouton danger"
+                onClick={() => supprimerZone(zoneSelectionnee.id)}
+                title="Retirer cette zone coloriée du terrain"
+              >
                 Effacer la zone
               </button>
             </div>
@@ -991,6 +1004,7 @@ export function FicheExercice({
               <button
                 className="bouton danger"
                 onClick={() => supprimerAnnotation(annotationSelectionnee.id)}
+                title="Retirer ce texte du terrain"
               >
                 Effacer le texte
               </button>
@@ -1275,6 +1289,7 @@ export function FicheExercice({
                     },
                   })
                 }
+                title="Compter une utilisation de plus : la bibliothèque saura que vous l’avez mené, et quand"
               >
                 Marquer comme réalisé
               </button>

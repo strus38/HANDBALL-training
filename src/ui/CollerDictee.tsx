@@ -55,7 +55,11 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
       >
         <header className="modale-entete">
           <h2>Coller un texte dicté</h2>
-          <button className="bouton discret" onClick={onFermer} title="Fermer">
+          <button
+            className="bouton discret"
+            onClick={onFermer}
+            title="Fermer sans rien répartir dans la fiche"
+          >
             ✕
           </button>
         </header>
@@ -111,7 +115,7 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
         </div>
 
         <div className="actions-modale">
-          <button className="bouton" onClick={onFermer}>
+          <button className="bouton" onClick={onFermer} title="Fermer sans rien répartir dans la fiche">
             Annuler
           </button>
           <button
@@ -126,6 +130,7 @@ export function CollerDictee({ onAppliquer, onFermer }: Props) {
             className="bouton principal"
             disabled={!propre}
             onClick={() => onAppliquer(reparti)}
+            title="Répartir ce texte dans les rubriques de la fiche"
           >
             {reconnus.length > 0 ? 'Répartir dans les champs' : 'Ajouter au fonctionnement'}
           </button>

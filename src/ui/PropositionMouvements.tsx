@@ -104,11 +104,21 @@ export function PropositionMouvements({ schema, propositions, onAppliquer, onAnn
         )}
 
         <div className="dialogue-actions">
-          <button ref={actions.length === 0 ? premier : undefined} className="bouton" onClick={onAnnuler}>
+          <button
+            ref={actions.length === 0 ? premier : undefined}
+            className="bouton"
+            onClick={onAnnuler}
+            title="Fermer sans rien poser sur le terrain"
+          >
             {actions.length === 0 ? 'Fermer' : 'Annuler'}
           </button>
           {actions.length > 0 && (
-            <button ref={premier} className="bouton principal" onClick={onAppliquer}>
+            <button
+              ref={premier}
+              className="bouton principal"
+              onClick={onAppliquer}
+              title="Tracer ces flèches sur le schéma : elles resteront modifiables"
+            >
               Ajouter ces mouvements
             </button>
           )}

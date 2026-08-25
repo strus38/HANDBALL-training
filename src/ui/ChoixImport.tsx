@@ -148,10 +148,19 @@ export function ChoixImport({ divergentes, nouvelles, identiques, onChoisir, onA
         </p>
 
         <div className="dialogue-actions">
-          <button type="button" className="bouton" onClick={onAnnuler}>
+          <button
+            type="button"
+            className="bouton"
+            onClick={onAnnuler}
+            title="Renoncer : aucune fiche ne sera ajoutée ni modifiée"
+          >
             Annuler l'import
           </button>
-          <button type="submit" className="bouton principal">
+          <button
+            type="submit"
+            className="bouton principal"
+            title="Appliquer le choix retenu et ajouter les fiches"
+          >
             Importer
           </button>
         </div>

@@ -176,15 +176,16 @@ export function ReglageEquipe({ monEquipe, onValider, onAnnuler }: Props) {
           type="button"
           className="lien-discret"
           onClick={() => setAutre((valeur) => !valeur)}
+          title="Saisir librement le nom d’une équipe qui ne figure pas au planning du club"
         >
           {autre ? 'Choisir dans les équipes du club' : 'Autre équipe (hors planning du club)'}
         </button>
 
         <div className="dialogue-actions">
-          <button type="button" className="bouton" onClick={onAnnuler}>
+          <button type="button" className="bouton" onClick={onAnnuler} title="Fermer sans rien changer">
             Annuler
           </button>
-          <button type="submit" className="bouton principal">
+          <button type="submit" className="bouton principal" title="Retenir cette équipe : les nouvelles séances la reprendront">
             Enregistrer
           </button>
         </div>

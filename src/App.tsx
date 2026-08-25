@@ -323,7 +323,11 @@ export function App() {
       {messageImport && (
         <div className="bandeau information">
           <div>{messageImport}</div>
-          <button className="bouton discret" onClick={() => setMessageImport(undefined)}>
+          <button
+            className="bouton discret"
+            onClick={() => setMessageImport(undefined)}
+            title="Masquer ce message"
+          >
             ✕
           </button>
         </div>
@@ -336,7 +340,11 @@ export function App() {
             La fenêtre n'a pas pu s'ouvrir : autorisez les fenêtres surgissantes pour cette page,
             ou ouvrez le fichier <code>LISEZMOI.html</code> livré à côté de l'application.
           </div>
-          <button className="bouton discret" onClick={() => setMessageNotice(false)}>
+          <button
+            className="bouton discret"
+            onClick={() => setMessageNotice(false)}
+            title="Masquer ce message"
+          >
             ✕
           </button>
         </div>

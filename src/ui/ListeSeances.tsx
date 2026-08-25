@@ -43,7 +43,11 @@ export function ListeSeances({
         </button>
       </div>
       <div className="barre">
-        <button className="bouton principal" onClick={onNouvelle}>
+        <button
+          className="bouton principal"
+          onClick={onNouvelle}
+          title="Préparer un nouvel entraînement, daté du prochain créneau libre"
+        >
           + Séance
         </button>
         <button className="bouton" onClick={onImporter} title="Ouvrir un fichier .hbt.json">
@@ -75,6 +79,7 @@ export function ListeSeances({
               <button
                 className={seance.id === seanceCouranteId ? 'active' : undefined}
                 onClick={() => onSelectionner(seance.id)}
+                title="Ouvrir cette séance"
               >
                 <span className="titre-seance">{seance.titre || 'Sans titre'}</span>
                 <span className="meta-seance">

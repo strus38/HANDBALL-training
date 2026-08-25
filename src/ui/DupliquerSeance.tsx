@@ -209,10 +209,14 @@ export function DupliquerSeance({ seance, seances, onValider, onAnnuler }: Props
         </label>
 
         <div className="dialogue-actions">
-          <button type="button" className="bouton" onClick={onAnnuler}>
+          <button type="button" className="bouton" onClick={onAnnuler} title="Fermer sans créer de copie">
             Annuler
           </button>
-          <button type="submit" className="bouton principal">
+          <button
+            type="submit"
+            className="bouton principal"
+            title="Créer une séance indépendante avec les mêmes exercices"
+          >
             Créer la copie
           </button>
         </div>

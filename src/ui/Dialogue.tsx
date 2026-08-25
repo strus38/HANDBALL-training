@@ -153,6 +153,7 @@ function BoiteConfirmation({
             ref={danger ? premierBouton : undefined}
             className="bouton"
             onClick={() => onRepondre(false)}
+            title="Fermer sans rien changer"
           >
             {libelleAnnuler}
           </button>
@@ -160,6 +161,7 @@ function BoiteConfirmation({
             ref={danger ? undefined : premierBouton}
             className={`bouton ${danger ? 'danger-plein' : 'principal'}`}
             onClick={() => onRepondre(true)}
+            title={danger ? 'Cette action est définitive' : 'Confirmer'}
           >
             {libelleConfirmer}
           </button>

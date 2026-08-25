@@ -121,7 +121,11 @@ export function DetailSeance({
 
   return (
     <div className="panneau-principal">
-      <button className="fil-ariane" onClick={onRetourAccueil}>
+      <button
+        className="fil-ariane"
+        onClick={onRetourAccueil}
+        title="Revenir à la liste de toutes vos séances"
+      >
         ← Toutes les séances
       </button>
 
@@ -215,7 +219,12 @@ export function DetailSeance({
         ) : (
           <p className="equipe-seance">
             <span>{libelleEquipe(seance) || 'Aucune équipe indiquée'}</span>
-            <button type="button" className="lien-discret" onClick={() => setEquipeDepliee(true)}>
+            <button
+              type="button"
+              className="lien-discret"
+              onClick={() => setEquipeDepliee(true)}
+              title="Mener cette séance avec un autre groupe que le vôtre : un tournoi, un collègue remplacé"
+            >
               Autre équipe pour cette séance
             </button>
           </p>
@@ -391,7 +400,11 @@ export function DetailSeance({
             se trouvait a un pixel des plus frequentes.
           */}
 
-          <button className="bouton danger" onClick={onSupprimerSeance}>
+          <button
+            className="bouton danger"
+            onClick={onSupprimerSeance}
+            title="Effacer définitivement cette séance et ses exercices"
+          >
             Supprimer la séance
           </button>
           <span className="separateur-actions" aria-hidden="true" />
@@ -412,10 +425,19 @@ export function DetailSeance({
           >
             Sauvegarder
           </button>
-          <button className="bouton" onClick={onDupliquer}>
+          <button
+            className="bouton"
+            onClick={onDupliquer}
+            title="Recopier cette séance pour un autre jour, sans toucher à l’originale"
+          >
             Dupliquer
           </button>
-          <button className="bouton" onClick={onImprimerSeance} disabled={seance.exercices.length === 0}>
+          <button
+            className="bouton"
+            onClick={onImprimerSeance}
+            disabled={seance.exercices.length === 0}
+            title="Sortir une feuille par exercice, schéma et consignes, à emporter au bord du terrain"
+          >
             Imprimer la séance
           </button>
           <button
@@ -426,10 +448,18 @@ export function DetailSeance({
           >
             ▶ Mode terrain
           </button>
-          <button className="bouton" onClick={onOuvrirBibliotheque}>
+          <button
+            className="bouton"
+            onClick={onOuvrirBibliotheque}
+            title="Choisir un exercice déjà écrit et l’ajouter à cette séance"
+          >
             Bibliothèque
           </button>
-          <button className="bouton principal" onClick={ajouter}>
+          <button
+            className="bouton principal"
+            onClick={ajouter}
+            title="Créer une fiche vide et l’ouvrir pour la remplir"
+          >
             + Exercice
           </button>
         </div>
@@ -439,10 +469,18 @@ export function DetailSeance({
         <div className="vide">
           <p>Cette séance ne contient encore aucun exercice.</p>
           <div className="actions-vide">
-            <button className="bouton principal" onClick={ajouter}>
+            <button
+              className="bouton principal"
+              onClick={ajouter}
+              title="Créer une fiche vide et l’ouvrir pour la remplir"
+            >
               Créer une fiche
             </button>
-            <button className="bouton" onClick={onOuvrirBibliotheque}>
+            <button
+              className="bouton"
+              onClick={onOuvrirBibliotheque}
+              title="Reprendre un exercice déjà écrit plutôt que d’en créer un"
+            >
               Choisir dans la bibliothèque
             </button>
           </div>
@@ -452,7 +490,11 @@ export function DetailSeance({
           {seance.exercices.map((exercice, index) => (
             <li className="ligne-exercice" key={exercice.id}>
               <span className="rang">{index + 1}</span>
-              <button className="lien-exercice" onClick={() => onOuvrirExercice(exercice.id)}>
+              <button
+                className="lien-exercice"
+                onClick={() => onOuvrirExercice(exercice.id)}
+                title="Ouvrir cette fiche : son schéma, ses consignes, son déroulement"
+              >
                 <span className="titre-exercice">{exercice.titre || 'Sans titre'}</span>
                 <span className="meta-exercice">
                   <span>
@@ -483,7 +525,7 @@ export function DetailSeance({
               <div className="actions">
                 <button
                   className="bouton discret"
-                  title="Monter"
+                  title="Faire passer cet exercice plus tôt dans la séance"
                   disabled={index === 0}
                   onClick={() => deplacer(index, -1)}
                 >
@@ -491,7 +533,7 @@ export function DetailSeance({
                 </button>
                 <button
                   className="bouton discret"
-                  title="Descendre"
+                  title="Faire passer cet exercice plus tard dans la séance"
                   disabled={index === seance.exercices.length - 1}
                   onClick={() => deplacer(index, 1)}
                 >
@@ -499,7 +541,7 @@ export function DetailSeance({
                 </button>
                 <button
                   className="bouton discret"
-                  title="Dupliquer"
+                  title="Recopier cet exercice juste en dessous, pour en faire une variante"
                   onClick={() =>
                     majExercices((liste) => [
                       ...liste.slice(0, index + 1),
@@ -519,7 +561,7 @@ export function DetailSeance({
                 </button>
                 <button
                   className="bouton discret"
-                  title="Supprimer"
+                  title="Retirer cet exercice de la séance"
                   onClick={async () => {
                     const accepte = await confirmer({
                       titre: 'Supprimer cet exercice ?',
