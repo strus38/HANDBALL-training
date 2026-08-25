@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { ListeSeances } from './ui/ListeSeances'
-import { ouvrirNotice } from './notice/notice'
 import { DetailSeance } from './ui/DetailSeance'
 import { FicheExercice } from './ui/FicheExercice'
 import { FeuillesImpression } from './ui/FeuillesImpression'
@@ -50,8 +49,6 @@ export function App() {
   const [bibliothequeOuverte, setBibliothequeOuverte] = useState(false)
   const [modeTerrain, setModeTerrain] = useState(false)
   const [colonneRepliee, setColonneRepliee] = useState(false)
-  /** Vrai quand le navigateur a bloque la fenetre de la notice. */
-  const [messageNotice, setMessageNotice] = useState(false)
   /**
    * « Plus tard » sur le rappel de sauvegarde : vrai jusqu'a la prochaine
    * ouverture. Un bandeau qu'on ne peut pas faire taire se fait detester, et
@@ -361,15 +358,6 @@ export function App() {
         >
           {equipeRenseignee(atelier.monEquipe) ? libelleEquipe(atelier.monEquipe) : 'Mon équipe'}
         </button>
-        <button
-          className="bouton discret"
-          onClick={() => {
-            if (!ouvrirNotice()) setMessageNotice(true)
-          }}
-          title="Ouvrir la notice dans une fenêtre à part"
-        >
-          Notice
-        </button>
         <IndicateurSauvegarde etat={atelier.etatSauvegarde} moyen={atelier.moyenStockage} />
       </header>
 
@@ -413,23 +401,6 @@ export function App() {
           <button
             className="bouton discret"
             onClick={() => setMessageImport(undefined)}
-            title="Masquer ce message"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      {messageNotice && (
-        <div className="bandeau information">
-          <div>
-            <strong>Notice bloquée par le navigateur</strong>
-            La fenêtre n'a pas pu s'ouvrir : autorisez les fenêtres surgissantes pour cette page,
-            ou ouvrez le fichier <code>LISEZMOI.html</code> livré à côté de l'application.
-          </div>
-          <button
-            className="bouton discret"
-            onClick={() => setMessageNotice(false)}
             title="Masquer ce message"
           >
             ✕

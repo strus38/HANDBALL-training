@@ -64,12 +64,10 @@ jobs:
             echo "Telechargez **HBPSM-entrainements.html** et double-cliquez dessus : l'application s'ouvre"
             echo "dans votre navigateur, sans installation et sans connexion."
             echo
-            echo "- **LISEZMOI.html** : le mode d'emploi, illustre"
-            echo "- **PRESENTATION.html** : ce que fait le logiciel, en images"
+            echo "- **PRISE-EN-MAIN.html** : de quoi mener sa premiere seance, en dix minutes"
           } > notes.md
           gh release create "$VERSION" \
             dist/HBPSM-entrainements.html \
-            dist/LISEZMOI.html \
-            dist/PRESENTATION.html \
+            dist/PRISE-EN-MAIN.html \
             --title "$VERSION" \
             --notes-file notes.md

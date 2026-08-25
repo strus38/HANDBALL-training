@@ -1,110 +1,97 @@
 # HBPSM — Préparation de séances de handball
 
-Application de préparation d'entraînements pour le Handball Pays de
-Saint-Marcellin. Le livrable est **un seul fichier HTML** : on le copie ou l'on
-veut, on double-clique, il s'ouvre dans le navigateur. Pas d'installation, pas
-de compte, pas de connexion internet — y compris dans un gymnase.
+**Un seul fichier. Double-cliquez, l'application s'ouvre dans votre navigateur.
+Pas d'installation, pas de compte, pas de connexion.**
 
-Chaque exercice est une fiche autonome : un schéma de terrain aux cotes
-officielles à gauche, le détail de l'exercice à droite. 62 fiches sont livrées
-avec l'application, de l'échauffement au bilan de saison, dont les combinaisons
-nommées du repertoire classique.
+Écrit pour les entraîneurs du Handball Pays de Saint-Marcellin, et utilisable
+par n'importe quel club : préparer une séance, la dessiner, l'imprimer, la mener
+au gymnase, et se souvenir de ce qui a marché.
 
-## Ce que l'application sait faire
+[**→ Télécharger la dernière version**](../../releases/latest)
 
-- **Préparer une séance** : ordonner les exercices, voir le temps se recalculer,
-  et emporter la liste de matériel consolidée.
-- **Dessiner le mouvement** : la flèche EST le déplacement. Joueurs, colonnes
-  d'attente, zones coloriées, textes posés sur le terrain, et une lecture animée
-  de l'enchaînement.
-- **Imprimer** : une feuille A4 par exercice, un seul schéma portant tout
-  l'enchaînement, la mise en page calculée pour le plus grand terrain lisible.
-- **Suivre la saison** : notes, compteurs d'utilisation, bilan par catégorie —
-  et un retour à chaud qui remonte à l'ouverture de la séance suivante.
-- **S'appuyer sur le planning du club** : jour, horaire, durée du créneau et
-  espace disponible pré-remplissent la séance, et signalent un plan trop long.
-- **Mener l'entraînement** : le mode terrain affiche un exercice à la fois, avec
-  le temps restant et le relevé de ce qui a vraiment été fait.
+![Une fiche d'exercice : le schéma à gauche, le détail à droite](docs/fiche.png)
 
-## Documentation
+## Pourquoi celui-ci plutôt qu'un autre
 
-**[LISEZMOI.md](LISEZMOI.md) est la référence du projet** : usage, choix de
-conception, organisation du code. Ce fichier-ci n'en est que la porte d'entrée.
+- **62 exercices sont déjà écrits.** Échauffement, attaque, défense, montée de
+  balle, gardiens, préparation physique — avec objectifs, points clés et
+  variantes. Vous en prenez un, vous l'ajustez ; l'original reste intact.
+- **Le terrain est aux cotes officielles.** Vous posez les joueurs, vous tirez
+  une flèche, la position suivante en découle. Le mouvement se rejoue en
+  animation et s'imprime à n'importe quelle taille sans se déformer.
+- **Ça fonctionne au gymnase.** Sans réseau, sans batterie de serveur : une
+  feuille par exercice à emporter, ou le mode terrain sur un téléphone posé sur
+  le banc.
+- **Ce que vous notez vous revient.** Le mot écrit après l'entraînement remonte
+  en haut de la séance suivante. C'est ce qui distingue l'application d'un
+  carnet.
+- **Vos données sont à vous.** Rien ne part nulle part. Tout vit dans votre
+  navigateur, et un fichier `.hbt.json` emporte l'ensemble d'un ordinateur à
+  l'autre.
 
-Deux documents en sont engendres automatiquement, destines aux entraîneurs :
+![La bibliothèque : 62 exercices, filtrables, avec leur schéma](docs/bibliotheque.png)
 
-| Fichier | Pour qui |
-| --- | --- |
-| `dist/LISEZMOI.html` | Le mode d'emploi, illustre, a joindre à un courriel |
-| `dist/PRESENTATION.html` | Ce que fait le logiciel, en images |
+## Prendre en main en dix minutes
 
-Les parties techniques de `LISEZMOI.md` sont retirees de ces deux documents :
-ils s'adressent aux entraîneurs, pas aux developpeurs.
+Le fichier **PRISE-EN-MAIN.html**, livré à côté de l'application dans chaque
+[release](../../releases/latest), conduit un entraîneur de la première ouverture
+à sa première séance imprimée. C'est le seul document, et il est illustré de
+captures prises dans l'application elle-même.
 
-## Développement
+![Une séance, exercice par exercice, avec le temps qui se recalcule](docs/seance.png)
+
+## Ce qu'il ne fait pas
+
+Pas de gestion de licences, de convocations ni de feuilles de match. Pas de
+statistiques de match. Pas de partage en ligne : une séance s'échange en
+envoyant un fichier. C'est un outil de préparation d'entraînement, et rien
+d'autre.
+
+## Contribuer
+
+Le projet est en TypeScript et React, sans dépendance à l'exécution : le
+livrable est un seul fichier HTML autonome, produit par Vite.
 
 ```
 npm install
-npm run dev        # serveur de developpement
-npm run build      # produit les trois livrables dans dist/
-npm test           # la suite de tests
-npm run verifier   # build + tests
+npm run dev          # serveur de developpement
+npm run verifier     # fabrication + tests + tests de fumee
 ```
 
 `npm run build` enchaîne le typage, le bundle en fichier unique, puis la
-fabrication de la notice et de la presentation — captures d'écran comprises,
-prises en pilotant le livrable lui-même.
+fabrication de la prise en main — captures comprises, prises en pilotant le
+livrable lui-même.
 
-Un outil à part importe un cahier d'exercices PDF en fiches :
+**La suite de tests compte plus de mille assertions** et tourne à chaque
+poussée. Le domaine est pur — aucun React, aucun DOM — et se teste sans
+navigateur ; ce qui ne peut se vérifier que dans un vrai navigateur (mise en
+page imprimée, animation, champs contrôlés) a ses propres tests, pilotés par le
+protocole DevTools.
 
-```
-npm run importer -- "chemin/vers/Cahier.pdf"
-```
+### Ce qui structure le code
 
-Il produit un `.hbt.json` dans `import/`, dossier ignoré par git : ces cahiers
-sont des oeuvres sous droits, et ce qui en sort appartient au seul entraîneur
-qui les a achetés.
-
-Un second outil lit une sauvegarde renvoyée par un entraîneur :
-
-```
-npm run lire-retour -- "chemin/vers/sauvegarde.hbt.json"
-```
-
-L'application ne mesure rien — pas de compte, pas de mouchard, et c'est un
-choix. Mais un `.hbt.json` porte déjà tout ce qu'il faut savoir : quand les
-séances ont été préparées, si elles ont été menées, si un retour a été écrit,
-d'où viennent les exercices, si les schémas ont servi. L'outil en tire un
-tableau et pointe les endroits où regarder.
-
-Il ne conclut pas. « Aucun retour écrit en quatorze séances » peut vouloir dire
-que la fonction est inutile, introuvable, ou qu'elle arrive au mauvais moment :
-trois remèdes opposés, que seule une question à l'entraîneur départage. Il lit
-un fichier, n'écrit rien et n'envoie rien.
-
-## Ce qui structure le code
-
-- **Les coordonnees du terrain sont en mètres**, jamais en pixels : un schéma
-  change de vue et s'imprime a n'importe quelle taille sans se deformer.
-- **Les jetons sont persistants entre les étapes** : une étape ne stocke que
-  les nouvelles positions, ce qui rend le mouvement traçable et animable.
+- **Les coordonnées du terrain sont en mètres**, jamais en pixels : un schéma
+  change de vue et s'imprime à n'importe quelle taille sans se déformer.
+- **Les jetons sont persistants entre les étapes** : une étape ne stocke que les
+  nouvelles positions, ce qui rend le mouvement traçable et animable.
 - **Les fiches fournies portent une référence stable**, indépendante de leur
   titre, pour que rien de ce qui s'y accroche ne se perde à un renommage.
-- **Ce qui appartient à l'entraîneur est rangé à part des séances** : son
-  équipe, ses favoris, les fiches qu'il a retirées. Ce sont des préférences,
-  pas des données de séance.
+- **Ce qui appartient à l'entraîneur est rangé à part des séances** : son équipe,
+  ses favoris, les fiches qu'il a retirées. Ce sont des préférences, pas des
+  données de séance.
 - **Une alerte qui parle pour ne rien dire n'est plus lue.** Le rappel de
-  sauvegarde se tait tant que rien n'a changé, et laisse passer les premières
-  séances : il ne se dépense que là où il y a vraiment quelque chose à perdre.
+  sauvegarde se tait tant que rien n'a changé : il ne se dépense que là où il y
+  a vraiment quelque chose à perdre.
 - **Les automatismes pré-remplissent, ils ne décident pas.** Le planning, le
   titre par défaut, l'orientation d'un joueur : chacun se corrige à la main, et
   ce qui a été saisi n'est jamais écrasé.
+- **La documentation est engendrée, jamais recopiée.** Les nombres cités et les
+  captures viennent du code et du livrable ; des tests refusent la fabrication
+  quand ils divergent.
 
-Le détail de ces principes, et les raisons derrière, sont dans
-[LISEZMOI.md](LISEZMOI.md).
+Le détail de ces choix, et les raisons derrière, sont dans les commentaires du
+code : ce sont eux la référence du projet.
 
 ## Licence
 
-[MIT](LICENSE). Vous pouvez utiliser, modifier et redistribuer ce logiciel,
-y compris pour votre propre club, a condition de conserver la mention de
-copyright et la licence.
+Voir [LICENSE](LICENSE).

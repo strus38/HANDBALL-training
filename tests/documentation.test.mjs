@@ -1,27 +1,35 @@
 /**
  * La documentation suit-elle l'application ?
  *
- * Un entraineur a signale que PRESENTATION.html ne montrait aucune des
- * fonctions ajoutees depuis des mois. Trois causes, toutes silencieuses :
+ * Il y avait trois documents pour l'entraineur : un manuel de mille cinq cents
+ * lignes, une plaquette, et un guide de prise en main. Aucun n'etait relu, et
+ * c'est dans les deux premiers que les erreurs sont restees des mois. Il n'en
+ * reste qu'un — mais reduire le nombre de documents ne suffit pas a les tenir
+ * a jour, et l'histoire de ce projet le prouve trois fois.
  *
- * 1. Le cache des captures etait indexe sur la seule empreinte du livrable.
- *    Enrichir la seance de demonstration dans outils/captures.mjs ne
- *    rafraichissait donc rien, et les images restaient celles d'avant.
+ * TROIS DERIVES, TOUTES DE LA MEME FORME : un calcul qui se croyait deduit, et
+ * qui l'etait, mais du mauvais endroit.
  *
- * 2. La liste des captures demandees par la notice etait ecrite a la main.
- *    Poser une marque « notice:capture » dans LISEZMOI.md sans completer cette
- *    liste ne produisait aucune image — et l'emplacement sortait vide, sans le
+ * 1. Le cache des captures s'indexait sur la seule empreinte du livrable.
+ *    Enrichir la seance de demonstration ne rafraichissait donc aucune image.
+ *
+ * 2. La liste des captures a produire etait ecrite a la main. En reclamer une
+ *    de plus sans completer la liste laissait un emplacement vide, sans le
  *    moindre avertissement.
  *
- * 3. Une capture sans legende passait aussi, muette.
+ * 3. Le nombre de fiches livrees se comptait dans trois fichiers nommes a la
+ *    main. Deux bibliotheques ajoutees depuis n'y figuraient pas : la plaquette
+ *    promettait 53 exercices quand l'application en affichait 62, et personne
+ *    ne recompte une bibliotheque pour verifier une plaquette.
  *
- * Ces tests ne verifient pas que la documentation est BONNE — cela ne se
- * mesure pas. Ils verifient qu'elle ne peut plus se desynchroniser en silence.
+ * Ces tests ne verifient pas que la documentation est BONNE — cela ne se mesure
+ * pas, et c'est un lecteur, pas un test, qui a trouve le 53. Ils verifient
+ * qu'elle ne peut plus se desynchroniser EN SILENCE.
  *
  * Lancement : npm test
  */
 
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { CATALOGUE } from '../.build-tests/domaine.mjs'
 
 let ok = 0,
@@ -37,71 +45,42 @@ const verifier = (nom, condition, detail = '') => {
 }
 
 const lire = (chemin) => readFileSync(chemin, 'utf8')
-const lisezmoi = lire('LISEZMOI.md')
+const guide = lire('outils/priseEnMain.mjs')
 const captures = lire('outils/captures.mjs')
-const notice = lire('outils/notice.mjs')
-const presentation = lire('outils/presentation.mjs')
+const readme = lire('README.md')
 
 /** Les noms de scenario declares dans outils/captures.mjs. */
 const scenarios = [...captures.matchAll(/^\s{4}nom: '([a-z-]+)',$/gm)].map((m) => m[1])
 
 console.log('')
-console.log('1. Toute capture demandee existe')
-// Ancre en debut de ligne : LISEZMOI.md cite la syntaxe du marqueur dans sa
-// section technique, et une reconnaissance laxiste y verrait une capture
-// nommee « nom ».
-const parLaNotice = [...lisezmoi.matchAll(/^<!-- notice:capture ([a-z-]+) -->$/gm)].map((m) => m[1])
-const parLaPresentation = [...presentation.matchAll(/capture: '([a-z-]+)'/g)].map((m) => m[1])
+console.log('1. Toute capture reclamee existe')
+const reclamees = [
+  ...(guide.match(/const CAPTURES = \[([^\]]*)\]/)?.[1] ?? '').matchAll(/'([a-z-]+)'/g),
+].map((m) => m[1])
+const pourReadme = [
+  ...(guide.match(/const POUR_LE_README = \[([^\]]*)\]/)?.[1] ?? '').matchAll(/'([a-z-]+)'/g),
+].map((m) => m[1])
 
 verifier('des scenarios sont declares', scenarios.length >= 8, `(${scenarios.length})`)
-const inconnuesNotice = parLaNotice.filter((n) => !scenarios.includes(n))
+verifier('le guide en reclame', reclamees.length >= 4, `(${reclamees.length})`)
+const inconnues = reclamees.filter((n) => !scenarios.includes(n))
+verifier('le guide ne reclame que des captures qui existent', inconnues.length === 0, inconnues.join(', '))
+const inconnuesReadme = pourReadme.filter((n) => !reclamees.includes(n))
 verifier(
-  'la notice ne reclame que des captures qui existent',
-  inconnuesNotice.length === 0,
-  inconnuesNotice.join(', '),
-)
-const inconnuesPresentation = parLaPresentation.filter((n) => !scenarios.includes(n))
-verifier(
-  'la presentation ne reclame que des captures qui existent',
-  inconnuesPresentation.length === 0,
-  inconnuesPresentation.join(', '),
+  'le README ne reprend que des captures du guide',
+  inconnuesReadme.length === 0,
+  `${inconnuesReadme.join(', ')} (deux jeux de captures = deux occasions de diverger)`,
 )
 
 console.log('')
-console.log('2. Toute capture demandee par la notice a une legende')
-const legendes = notice.slice(notice.indexOf('const LEGENDES'), notice.indexOf('/** Remplit'))
-const sansLegende = parLaNotice.filter(
-  (n) => !legendes.includes(`${n}:`) && !legendes.includes(`'${n}':`),
-)
-verifier(
-  'aucune capture muette dans la notice',
-  sansLegende.length === 0,
-  sansLegende.join(', '),
-)
-
-console.log('')
-console.log('3. La notice deduit sa liste du document')
-// Une liste ecrite a la main se desynchronise : c'est ce qui est arrive.
-verifier(
-  'la notice lit les marques de LISEZMOI.md plutot qu une liste figee',
-  /matchAll\(\/\^<!-- notice:capture/.test(notice),
-  '(la liste des captures semble a nouveau ecrite en dur)',
-)
-
-console.log('')
-console.log('4. Le cache des captures suit le fichier des scenarios')
+console.log('2. Le cache des captures suit le fichier des scenarios')
 verifier(
   'l empreinte couvre outils/captures.mjs lui-meme',
-  /import\.meta\.url/.test(captures.slice(captures.indexOf('const empreinteActuelle'), captures.indexOf('const empreinteActuelle') + 200)),
+  /import\.meta\.url/.test(
+    captures.slice(captures.indexOf('const empreinteActuelle'), captures.indexOf('const empreinteActuelle') + 200),
+  ),
   '(modifier un scenario ne rafraichirait pas les captures)',
 )
-
-console.log('')
-console.log('5. L etat de demonstration ne declenche aucune alerte')
-// Une alerte legitime dans l'application devient un defaut dans la
-// documentation : elle barre le haut de chaque capture, et le produit y a
-// l'air en panne. Le rappel de sauvegarde s'est invite ainsi dans les huit
-// images sans qu'aucun test ne bronche.
 verifier(
   'la seance de demonstration est marquee comme sauvegardee',
   captures.includes('derniere-sauvegarde'),
@@ -114,87 +93,88 @@ verifier(
 )
 
 console.log('')
-console.log('6. Le nom du livrable a une source unique')
-// Le livrable a change de nom : « index.html » ne designe rien pour un
-// entraineur qui range l'application sur une cle. Le nom vit desormais dans
-// outils/livrable.mjs, et un outil qui le reecrirait en dur se remettrait a
-// chercher un fichier qui n'existe plus — sans que rien ne le signale avant
-// l'echec, loin de la cause.
-const OUTILS_ET_TESTS = [
-  'outils/captures.mjs',
-  'tests/fumee.test.mjs',
-  'tests/interface.test.mjs',
-  'tests/materielInterface.test.mjs',
-  'tests/masqueesInterface.test.mjs',
-  'tests/seanceInterface.test.mjs',
-  'tests/sauvegardeInterface.test.mjs',
-]
-for (const chemin of OUTILS_ET_TESTS) {
-  const source = lire(chemin)
-  verifier(
-    `${chemin} passe par la source unique`,
-    !/['\`]dist\/index\.html['\`]|'dist', 'index\.html'/.test(source),
-    '(le nom du livrable y est ecrit en dur)',
-  )
-}
+console.log('3. Aucun nombre de fiches ecrit a la main')
+// Le compte doit venir du CATALOGUE, celui que l'application affiche.
 verifier(
-  'la fabrication renomme le livrable',
-  JSON.parse(lire('package.json')).scripts.build.includes('renommerLivrable'),
-  '(vite ecrirait index.html et plus rien ne le trouverait)',
+  'le guide compte sur le catalogue',
+  guide.includes('${NOMBRE_DE_FICHES}') || guide.includes('NOMBRE_DE_FICHES'),
+  '(un nombre tape a la main ment des qu une bibliotheque est ajoutee)',
+)
+const annoncesReadme = [...readme.matchAll(/(\d+)\s+exercices/g)].map((m) => Number(m[1]))
+const fauxReadme = annoncesReadme.filter((n) => n !== CATALOGUE.length)
+verifier(
+  `le README annonce ${CATALOGUE.length} exercices`,
+  fauxReadme.length === 0,
+  `(${[...new Set(fauxReadme)].join(', ')} au lieu de ${CATALOGUE.length})`,
 )
 
 console.log('')
-console.log('7. Le nombre de fiches annonce est le vrai')
-// La presentation promettait 53 exercices quand l'application en affichait 62.
-// Elle comptait les titres de trois fichiers de bibliotheque nommes a la main,
-// et deux bibliotheques ajoutees depuis n'y figuraient pas : un calcul qui se
-// croyait deduit, mais deduit du mauvais endroit.
-//
-// Personne ne recompte une bibliotheque a la main pour verifier une plaquette.
-// Le chiffre etait donc faux depuis des mois, sur le document meme qu'on envoie
-// aux entraineurs pour leur donner envie.
-verifier(
-  'la presentation compte sur le CATALOGUE',
-  /CATALOGUE\.length/.test(presentation),
-  '(un comptage par nom de fichier oublie la prochaine bibliotheque ajoutee)',
-)
-for (const [nom, source] of [
-  ['LISEZMOI.md', lisezmoi],
-  ['README.md', lire('README.md')],
-]) {
-  // Tout nombre suivi de « fiches livrees » ou « exercices » se lit comme une
-  // promesse faite a l'entraineur : elle doit valoir le catalogue.
-  const annonces = [...source.matchAll(/(\d+)\s+(?:fiches livrées|exercices sont livrés)/g)].map(
-    (m) => Number(m[1]),
-  )
-  const faux = annonces.filter((n) => n !== CATALOGUE.length)
-  verifier(
-    `${nom} annonce ${CATALOGUE.length} fiches partout`,
-    faux.length === 0,
-    `(${[...new Set(faux)].join(', ')} au lieu de ${CATALOGUE.length})`,
-  )
+console.log('4. Les images du README existent sur le disque')
+// GitHub ne sait pas afficher une image en base64 : le README pointe des
+// fichiers, et un lien casse ne se voit que sur la page du depot.
+const imagesReadme = [...readme.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map((m) => m[1])
+verifier('le README montre au moins une capture', imagesReadme.length >= 1)
+for (const chemin of imagesReadme) {
+  verifier(`l image ${chemin} est versionnee`, existsSync(chemin))
 }
+verifier(
+  'aucune image en base64 dans le README',
+  !readme.includes('data:image'),
+  '(GitHub ne les affiche pas)',
+)
 
 console.log('')
-console.log('8. Les fonctions livrees sont documentees')
-// Chaque version a ajoute quelque chose : la reference du projet doit en
-// parler, sans quoi personne ne saura que cela existe.
-const SECTIONS_ATTENDUES = [
-  'Mon équipe',
-  'Le planning du club',
-  'Le retour à chaud',
-  'Le matériel à emporter',
-  'Espace de la séance',
-  'Importer sans faire de doublons',
-  'Chaque bouton s’explique',
-  'Dicter plutôt qu’écrire',
-  'Mettre son travail à l’abri',
-]
-for (const titre of SECTIONS_ATTENDUES) {
-  const cherche = titre.replace('’', "'")
-  const present = lisezmoi.includes(`## ${titre}`) || lisezmoi.includes(`## ${cherche}`)
-  verifier(`LISEZMOI.md documente « ${titre} »`, present)
+console.log('5. Tout bouton cite par le guide existe dans l application')
+// C'est le controle le plus rentable de tous : un bouton renomme fait mentir
+// le guide immediatement, et l'entraineur cherche une commande introuvable.
+// Deux libelles etaient deja faux — « Lire » pour « ▶ Lire », « Bilan » pour
+// « Bilan de la saison ».
+const sources = ['src/App.tsx', 'src/domain/types.ts', 'src/ui', 'src/bibliotheque']
+  .flatMap((c) => {
+    if (c.endsWith('.tsx') || c.endsWith('.ts')) return [lire(c)]
+    return readdirSync(c)
+      .filter((f) => f.endsWith('.tsx') || f.endsWith('.ts'))
+      .map((f) => lire(`${c}/${f}`))
+  })
+  .join('\n')
+
+/** Ce que le guide presente comme un libelle d'interface : <b>...</b>. */
+const cites = [...new Set([...guide.matchAll(/<b>([^<]{2,40})<\/b>/g)].map((m) => m[1].trim()))]
+// Quelques-uns ne sont pas des boutons mais des mots mis en avant : on ne
+// verifie que ce qui ressemble a une commande, et la liste des exceptions est
+// courte et explicite.
+// Ce ne sont pas des commandes mais des reperes visuels ou des mots mis en
+// avant. La liste reste courte et explicite : y ajouter une ligne doit etre un
+// geste delibere, jamais une echappatoire pour faire taire le test.
+const PAS_DES_BOUTONS = ['en parallèle', '↑', '↓', '✕']
+const introuvables = cites
+  .filter((t) => !PAS_DES_BOUTONS.includes(t))
+  .filter((t) => !sources.includes(t))
+
+verifier('le guide cite des libelles', cites.length >= 15, `(${cites.length})`)
+verifier(
+  'tous existent dans le code de l application',
+  introuvables.length === 0,
+  `introuvables : ${introuvables.join(' | ')}`,
+)
+
+console.log('')
+console.log('6. L ancienne chaine ne laisse pas de restes')
+// Un document que plus rien ne fabrique et que personne ne lit pourrit
+// immanquablement. Ces fichiers ont ete supprimes : rien ne doit les rappeler.
+for (const disparu of ['LISEZMOI.md', 'outils/notice.mjs', 'outils/presentation.mjs', 'src/notice']) {
+  verifier(`${disparu} a bien disparu`, !existsSync(disparu))
 }
+const paquet = JSON.parse(lire('package.json'))
+verifier(
+  'la fabrication produit la prise en main',
+  paquet.scripts.build.includes('prise-en-main'),
+  '(sans quoi dist/ sortirait sans documentation)',
+)
+verifier(
+  'aucun script ne survit a la notice supprimee',
+  !('notice' in paquet.scripts) && !('presentation' in paquet.scripts),
+)
 
 console.log('')
 console.log(`=== ${ok} reussis, ${ko} echoues ===`)

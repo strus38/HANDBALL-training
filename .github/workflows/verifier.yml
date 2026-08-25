@@ -24,7 +24,7 @@ jobs:
           cache: npm
 
       # Le build pilote un vrai navigateur pour les captures d'ecran de la
-      # notice et de la presentation, et les tests de fumee en ouvrent un aussi.
+      # prise en main, et les tests de fumee en ouvrent un aussi.
       # On le localise ici plutot que de le deviner : l'image du runner peut
       # changer, la variable, elle, sera toujours lue.
       - name: Localiser le navigateur
@@ -44,7 +44,7 @@ jobs:
             fi
           done
           echo "::error::Aucun navigateur trouve sur le runner."
-          echo "Les captures de la notice et de la presentation en ont besoin."
+          echo "Les captures de la prise en main en ont besoin."
           exit 1
 
       - run: npm ci
@@ -55,7 +55,7 @@ jobs:
       - name: Controler que les trois livrables sont la
         run: |
           manquant=0
-          for f in dist/HBPSM-entrainements.html dist/LISEZMOI.html dist/PRESENTATION.html; do
+          for f in dist/HBPSM-entrainements.html dist/PRISE-EN-MAIN.html; do
             if [ -s "$f" ]; then
               echo "$f  $(du -h "$f" | cut -f1)"
             else
@@ -70,7 +70,6 @@ jobs:
           name: livrables
           path: |
             dist/HBPSM-entrainements.html
-            dist/LISEZMOI.html
-            dist/PRESENTATION.html
+            dist/PRISE-EN-MAIN.html
           if-no-files-found: error
           retention-days: 30
