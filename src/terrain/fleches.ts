@@ -6,6 +6,11 @@
  *   dribble  trait ondule         le porteur avance en dribblant
  *   tir      trait double epais   tir au but
  *   ecran    barre en T           ecran ou blocage, sans pointe de fleche
+ *   rotation trait fin en tirets  « puis va au fond de la colonne »
+ *
+ * La rotation porte une pointe OUVERTE — deux traits, pas un triangle plein.
+ * Elle ne raconte pas une action de l'exercice mais sa regle de fonctionnement,
+ * et cette difference doit se voir d'un coup d'oeil sur un schema charge.
  *
  * Tout est calcule en coordonnees ECRAN : les fonctions recoivent des points
  * deja convertis par versEcran().
@@ -73,7 +78,12 @@ export function tracerFleche(fleche: FlecheResolue, epaisseur = 0.16): TraceFlec
 
   return {
     corps,
-    fin: fleche.type === 'ecran' ? barreEcran(b, dir, tailleFin) : pointe(b, dir, tailleFin),
+    fin:
+      fleche.type === 'ecran'
+        ? barreEcran(b, dir, tailleFin)
+        : fleche.type === 'rotation'
+          ? pointeOuverte(b, dir, tailleFin)
+          : pointe(b, dir, tailleFin),
     doublure: fleche.type === 'tir' ? decaler(a, c, arret, epaisseur * 1.5) : undefined,
     milieu: pointCourbe(a, c, b, 0.5),
   }
@@ -86,6 +96,21 @@ function pointe(bout: Position, dir: Position, taille: number): string {
   const g = { x: base.x + normal.x * taille * 0.42, y: base.y + normal.y * taille * 0.42 }
   const d = { x: base.x - normal.x * taille * 0.42, y: base.y - normal.y * taille * 0.42 }
   return `M ${arrondi(bout.x)} ${arrondi(bout.y)} L ${arrondi(g.x)} ${arrondi(g.y)} L ${arrondi(d.x)} ${arrondi(d.y)} Z`
+}
+
+/**
+ * Pointe ouverte : deux traits en V, sans remplissage.
+ *
+ * C'est la notation habituelle pour ce qui n'est pas une action du jeu — ici la
+ * consigne de rotation. Le contraste avec la pointe pleine des courses et des
+ * passes se lit sans legende.
+ */
+function pointeOuverte(bout: Position, dir: Position, taille: number): string {
+  const normal = { x: -dir.y, y: dir.x }
+  const base = { x: bout.x - dir.x * taille, y: bout.y - dir.y * taille }
+  const g = { x: base.x + normal.x * taille * 0.5, y: base.y + normal.y * taille * 0.5 }
+  const d = { x: base.x - normal.x * taille * 0.5, y: base.y - normal.y * taille * 0.5 }
+  return `M ${arrondi(g.x)} ${arrondi(g.y)} L ${arrondi(bout.x)} ${arrondi(bout.y)} L ${arrondi(d.x)} ${arrondi(d.y)}`
 }
 
 /** Barre perpendiculaire : l'ecran arrete la course, il ne la prolonge pas. */

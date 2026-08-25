@@ -326,6 +326,7 @@ export function decrireProposition(schema: Schema, action: ActionDetectee): stri
     passe: cible ? `passe à ${cible}` : 'transmet le ballon',
     tir: 'tire',
     ecran: 'pose un écran',
+    rotation: 'retourne au fond de la colonne',
   }
   return `${nom} ${verbes[action.type]}`
 }

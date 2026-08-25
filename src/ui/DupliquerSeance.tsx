@@ -2,8 +2,8 @@
  * Formulaire de duplication d'une seance.
  *
  * Dupliquer sert surtout a rejouer une seance qui a bien marche, a une autre
- * date et souvent avec un autre effectif : ces deux champs sont donc au premier
- * plan, deja pre-remplis avec des valeurs plausibles.
+ * date, souvent avec un autre effectif et dans un autre gymnase : ces champs
+ * sont donc au premier plan, deja pre-remplis avec des valeurs plausibles.
  *
  * L'equipe et la categorie ne sont pas redemandees : la copie reprend celles de
  * l'originale, qui sont presque toujours celles de l'entraineur. Le cas rare —
@@ -14,7 +14,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { dateDuJour } from '../domain/fabrique'
 import { resumerSeance, type OptionsDuplication } from '../domain/resume'
-import type { Seance } from '../domain/types'
+import { LIBELLES_ESPACE, type Espace, type Seance } from '../domain/types'
 
 interface Props {
   seance: Seance
@@ -38,6 +38,7 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
   const [date, setDate] = useState(() => dateProposee(seance.date))
   const [effectifJoueurs, setEffectifJoueurs] = useState(seance.effectifJoueurs)
   const [effectifGardiens, setEffectifGardiens] = useState(seance.effectifGardiens)
+  const [espaceDisponible, setEspace] = useState<Espace | ''>(seance.espaceDisponible)
   const [reinitialiserEvaluations, setReinitialiser] = useState(false)
 
   const boite = useRef<HTMLFormElement>(null)
@@ -93,6 +94,7 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
             date,
             effectifJoueurs,
             effectifGardiens,
+            espaceDisponible,
             reinitialiserEvaluations,
           })
         }}
@@ -139,6 +141,20 @@ export function DupliquerSeance({ seance, onValider, onAnnuler }: Props) {
               placeholder="non renseigné"
               onChange={(e) => setEffectifGardiens(Number(e.target.value) || 0)}
             />
+          </label>
+          <label className="champ">
+            <span>Espace disponible</span>
+            <select
+              value={espaceDisponible}
+              onChange={(e) => setEspace(e.target.value as Espace | '')}
+            >
+              <option value="">non renseigné</option>
+              {Object.entries(LIBELLES_ESPACE).map(([valeur, libelle]) => (
+                <option key={valeur} value={valeur}>
+                  {libelle}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
 

@@ -128,8 +128,8 @@ retrouver « la séance où on avait travaillé le croisé » fonctionne.
 ### Dupliquer une séance
 
 Le bouton **Dupliquer** de chaque carte ouvre un formulaire pré-rempli : le
-titre, la date proposée une semaine plus tard et l'effectif. C'est la manière
-normale de rejouer une séance qui a bien marché. L'équipe n'y est pas
+titre, la date proposée une semaine plus tard, l'effectif et l'espace
+disponible. C'est la manière normale de rejouer une séance qui a bien marché. L'équipe n'y est pas
 redemandée : la copie reprend celle de l'originale.
 
 La copie est **totalement indépendante** : la modifier ne touche jamais
@@ -181,6 +181,7 @@ se contredire. Effacer la flèche remet le joueur immobile.
 | Passe | Le ballon seul | Chez le joueur vise, qui devient porteur |
 | Tir | Le ballon seul | La ou vous l'avez lâche ; personne ne bouge |
 | Écran | Le joueur qui bloque | Au bout de la flèche, et il y reste |
+| Rotation | **Personne** | Rien ne bouge : c'est une règle, pas une action |
 
 Une flèche tracee dans le vide, sans joueur au départ, reste une simple
 illustration : elle garde ses extrémités et ne déplace personne.
@@ -198,6 +199,56 @@ pendant le glisser :
 
 Le bouton 🧲 la désactive, et la touche **Alt** la neutralise le temps d'un
 geste quand vous voulez viser librement.
+
+### Les colonnes, et ce qui se passe après le tir
+
+L'organisation la plus fréquente du handball est la **file d'attente** : le
+groupe attend, passe un par un, et le joueur qui vient de tirer repart au fond
+de la colonne. Deux outils la dessinent.
+
+**Le jeton « Colonne »** figure le groupe entier : le premier de la file est
+plein, les suivants s'estompent derrière lui. Son étiquette dit combien ils
+sont — « ×4 » par défaut, à corriger. C'est un jeton comme les autres : il se
+déplace, il s'oriente, et il occupe au schéma la place qu'une colonne occupe au
+sol. Douze jetons alignés faisaient croire à douze joueurs actifs en même temps.
+
+**La flèche « Rotation »** dit ce qui se passe après : trait fin en tirets,
+pointe ouverte, dans un gris qui la met au second plan. Elle ne décrit pas une
+action de l'exercice mais sa **règle de fonctionnement**, et c'est pour cela
+qu'elle est la seule flèche qui **ne déplace personne** et ne crée aucune
+étape. Le déroulement rédigé la reprend en toutes lettres : « Chacun retourne
+ensuite au fond de la colonne. »
+
+### Zones coloriées
+
+L'outil **Zone** délimite un rectangle : zone de marque, secteur interdit,
+espace de jeu réduit. Tirez d'un coin à l'autre — dans le sens que vous voulez.
+
+Une zone se pose **en transparence** : les lignes officielles du terrain restent
+visibles au travers, et la surface des 6 m ne disparaît pas sous un aplat. Cinq
+teintes sont proposées, pas un nuancier libre : le choix libre produit des
+schémas qui jurent d'une fiche à l'autre, et des zones illisibles une fois
+imprimées. Un libellé posé au centre nomme la zone quand la couleur ne suffit
+pas.
+
+Une fois sélectionnée, faites glisser la zone pour la déplacer, et le carré
+jaune de son coin pour la redimensionner. Elle s'accroche aux mêmes repères que
+les joueurs — une zone de marque commence presque toujours sur la ligne des 9 m.
+
+### Textes posés sur le terrain
+
+L'outil **Texte** écrit un mot là où il se lit : « Défense 6-0 », « départ au
+signal », « 3 ballons ici ». Cliquez à l'endroit voulu, puis écrivez dans le
+panneau de gauche. Le texte se déplace ensuite d'un glisser.
+
+Ce sont des précisions qui **appartiennent à un endroit du terrain**, et que la
+consigne écrite sous le schéma ne peut pas viser. Chaque texte est cerné d'un
+halo à la couleur du terrain : il reste lisible par-dessus une zone coloriée
+comme par-dessus une ligne.
+
+**Zones et textes appartiennent au schéma, pas à l'étape.** C'est de la mise en
+place : tracés à l'étape 1, ils sont encore là à l'étape 4, où l'on en a encore
+besoin. La symétrie les emmène avec le reste, et l'export en image aussi.
 
 **Symétrie.** Le bouton ⇅ rejoue tout l'exercice de l'autre côté : positions,
 orientations et traces sont reflechis, et les étiquettes de poste echangees
@@ -422,6 +473,28 @@ liste comme dans la fiche.
 L'alerte informe, elle ne bloque pas : un entraîneur sait adapter un exercice a
 deux joueurs près. Un effectif laisse vide ne déclenche aucune alerte, et un
 exercice qui mobilise moins de monde que le groupe present n'est jamais signale.
+
+## Espace de la séance
+
+Jumeau de l'effectif, et bâti sur le même principe. Un mardi sur deux le gymnase
+est partagé — avec le basket, avec une autre catégorie — et la moitié d'une
+séance préparée sur terrain complet tombe à l'eau une fois sur place.
+
+Chaque fiche déclare l'**espace nécessaire** : un quart de salle, un demi-terrain
+ou le terrain complet. Chaque séance déclare l'**espace disponible** ce soir-là.
+Les exercices qui demandent plus de place sont alors signalés, dans la liste de
+la séance comme dans la fiche, exactement comme un manque d'effectif — et dans
+le même bandeau quand les deux manquent à la fois.
+
+Trois paliers plutôt qu'une surface en mètres carrés : c'est ainsi qu'un gymnase
+se partage, et c'est la seule question à laquelle un entraîneur peut répondre
+sans sortir un mètre.
+
+Les 62 fiches livrées savent déjà la place qu'elles demandent, et **vos fiches
+existantes aussi** : quand le champ manque, l'espace se déduit de la vue sur
+laquelle le schéma est dessiné. Un exercice tracé sur terrain complet en demande
+un ; un exercice tracé sur la zone 6 m / 9 m tient sur un quart de salle. Tout
+déclarer « terrain complet » aurait noyé l'alerte sous les faux positifs.
 
 ## Imprimer
 
@@ -834,10 +907,18 @@ Les fichiers écrits avant cette trame restent lisibles : « Déroulement » dev
 « Fonctionnement », « Variantes » devient « Évolution », et les trois nouvelles
 rubriques naissent vides. Le format d'echange passe en **version 2**.
 
+Le format est ensuite passe en **version 3** : le schéma y gagne des zones
+coloriées et des textes libres, la palette un jeton « colonne », la notation une
+flèche de rotation, et la fiche l'espace de jeu qu'elle demande. Un fichier de
+version 1 ou 2 se lit sans rien perdre — tout ce qui est nouveau est facultatif,
+et l'espace se déduit de la vue. En sens inverse, un fichier de version 3 ouvert
+dans un exemplaire plus ancien de l'application est refusé, avec un message qui
+dit lequel des deux mettre à jour.
+
 ## La fiche signaletique
 
-Catégorie, durée, effectif, difficulte et rôle des gardiens forment un petit
-bloc en haut du détail. Ces valeurs se reglent à la création de l'exercice et se
+Catégorie, durée, effectif, difficulte, espace nécessaire et rôle des gardiens
+forment un petit bloc en haut du détail. Ces valeurs se reglent à la création de l'exercice et se
 consultent ensuite : le titre **Détail de l'exercice** est un bouton qui les
 replie.
 
@@ -1104,3 +1185,6 @@ fournir de nouvelles implementations, sans toucher aux composants.
       exercice, déroulement rédige automatiquement à partir du schéma.
 - [x] **Étape 8** — bilan de la saison, export PNG d'un schéma, usage tablette
       au doigt.
+- [x] **Étape 9** — les trois manques du dessin comblés (colonnes et rotation,
+      zones coloriées, textes posés sur le terrain) et le contrôle de l'espace
+      disponible, jumeau de celui de l'effectif.

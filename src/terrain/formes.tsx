@@ -76,6 +76,50 @@ export function DessinJeton({ forme, r, apparence }: Props) {
         </g>
       )
 
+    /**
+     * Colonne : le joueur de tete, et derriere lui la file qui attend.
+     *
+     * Trois disques degressifs plutot qu'un empilement realiste : la tete est
+     * pleine et porte l'etiquette, les deux suivants s'estompent en profondeur.
+     * L'oeil lit « il y en a d'autres derriere » sans compter les disques, et
+     * le dessin garde le meme encombrement qu'un joueur seul — c'est justement
+     * ce qu'une colonne occupe au sol.
+     *
+     * La file s'etire vers l'ARRIERE du jeton : elle tourne donc avec lui, et
+     * l'orientation dit ou regarde le premier de la colonne.
+     */
+    case 'colonne':
+      return (
+        <g>
+          <circle
+            cx={0}
+            cy={1.55 * r}
+            r={0.62 * r}
+            fill={remplissage}
+            stroke={contour}
+            strokeWidth={r * 0.11}
+            opacity={0.42}
+          />
+          <circle
+            cx={0}
+            cy={0.85 * r}
+            r={0.72 * r}
+            fill={remplissage}
+            stroke={contour}
+            strokeWidth={r * 0.12}
+            opacity={0.7}
+          />
+          <circle
+            cx={0}
+            cy={0}
+            r={RAYON_CORPS * r}
+            fill={remplissage}
+            stroke={contour}
+            strokeWidth={r * 0.13}
+          />
+        </g>
+      )
+
     case 'triangle':
       return (
         <polygon

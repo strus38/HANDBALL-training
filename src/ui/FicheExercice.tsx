@@ -8,18 +8,32 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Terrain, type Outil, type Selection, type TraceFleche } from '../terrain/Terrain'
+import {
+  Terrain,
+  type Outil,
+  type Selection,
+  type TraceFleche,
+  type TraceZone,
+} from '../terrain/Terrain'
 import { APPARENCES, positionInitiale } from '../terrain/jetons'
 import { avancement, etapeMiseEnAvant, interpolerEtape } from '../terrain/animation'
 import { nouvelId, nouvelleEtape } from '../domain/fabrique'
 import {
+  AIDES_FLECHE,
   LIBELLES_CATEGORIE,
+  LIBELLES_ESPACE,
+  LIBELLES_ESPACE_COURTS,
   LIBELLES_FLECHE,
   LIBELLES_FORMAT_GARDIENS_COURTS,
+  LIBELLES_TEINTE,
   LIBELLES_VUE,
   manqueEffectif,
+  manqueEspace,
+  MAX_LONGUEUR_ANNOTATION,
   ORIENTATION_PAR_DEFAUT,
+  type Annotation,
   type Categorie,
+  type Espace,
   type Etape,
   type Exercice,
   type FormatGardiens,
@@ -27,9 +41,11 @@ import {
   type Position,
   type Schema,
   type Seance,
+  type TeinteZone,
   type TypeFleche,
   type TypeJeton,
   type VueTerrain,
+  type Zone,
 } from '../domain/types'
 import {
   appliquerMouvement,
@@ -55,7 +71,7 @@ import { useConfirmation } from './Dialogue'
 import { useHistorique } from './useHistorique'
 import { NoteEtoiles } from './NoteEtoiles'
 import { MenuActions, SelecteurJeton } from './MenusFiche'
-import { AlerteEffectif } from './AlerteEffectif'
+import { AlerteMoyens } from './AlerteMoyens'
 import { Separateur, useSeparation } from './Separateur'
 
 interface Props {
@@ -67,7 +83,7 @@ interface Props {
   onImprimer: () => void
 }
 
-const OUTILS_FLECHE: TypeFleche[] = ['course', 'passe', 'dribble', 'tir', 'ecran']
+const OUTILS_FLECHE: TypeFleche[] = ['course', 'passe', 'dribble', 'tir', 'ecran', 'rotation']
 
 /** Libelles abreges des vues : le libelle complet reste en infobulle. */
 const LIBELLES_VUE_COURTS: Record<VueTerrain, string> = {
@@ -321,6 +337,60 @@ export function FicheExercice({
       fleches: e.fleches.map((f) => (f.id === id ? { ...f, courbure } : f)),
     }))
 
+  // ------------------------------------------------- Zones et annotations
+  //
+  // Zones et annotations appartiennent au SCHEMA, pas a l'etape : ce sont des
+  // elements de mise en place. Une zone de marque tracee a l'etape 1 sert
+  // encore a l'etape 4, et personne n'a envie de la redessiner quatre fois.
+
+  const creerZone = (trace: TraceZone) => {
+    const id = nouvelId()
+    modifierSchema((sc) => ({
+      ...sc,
+      zones: [...(sc.zones ?? []), { id, ...trace, teinte: 'jaune' as TeinteZone, libelle: '' }],
+    }))
+    setSelection({ type: 'zone', id })
+    setOutil('selection')
+  }
+
+  const modifierZone = (id: string, modifications: Partial<Zone>) =>
+    modifierSchema((sc) => ({
+      ...sc,
+      zones: (sc.zones ?? []).map((z) => (z.id === id ? { ...z, ...modifications } : z)),
+    }))
+
+  const supprimerZone = (id: string) => {
+    modifierSchema((sc) => ({ ...sc, zones: (sc.zones ?? []).filter((z) => z.id !== id) }))
+    setSelection(undefined)
+  }
+
+  const creerAnnotation = (point: Position) => {
+    const id = nouvelId()
+    modifierSchema((sc) => ({
+      ...sc,
+      // Un texte de depart plutot qu'une annotation vide : vide, elle serait
+      // invisible sur le terrain et l'entraineur ne saurait pas qu'il vient
+      // d'en poser une.
+      annotations: [...(sc.annotations ?? []), { id, x: point.x, y: point.y, texte: 'Texte' }],
+    }))
+    setSelection({ type: 'annotation', id })
+    setOutil('selection')
+  }
+
+  const modifierAnnotation = (id: string, modifications: Partial<Annotation>) =>
+    modifierSchema((sc) => ({
+      ...sc,
+      annotations: (sc.annotations ?? []).map((a) => (a.id === id ? { ...a, ...modifications } : a)),
+    }))
+
+  const supprimerAnnotation = (id: string) => {
+    modifierSchema((sc) => ({
+      ...sc,
+      annotations: (sc.annotations ?? []).filter((a) => a.id !== id),
+    }))
+    setSelection(undefined)
+  }
+
   // -------------------------------------------------------------- Etapes
 
   const ajouterEtape = () => {
@@ -463,6 +533,8 @@ export function FicheExercice({
       if ((evenement.key === 'Delete' || evenement.key === 'Backspace') && selection) {
         evenement.preventDefault()
         if (selection.type === 'jeton') supprimerJeton(selection.id)
+        else if (selection.type === 'zone') supprimerZone(selection.id)
+        else if (selection.type === 'annotation') supprimerAnnotation(selection.id)
         else supprimerFleche(selection.id)
         return
       }
@@ -525,7 +597,14 @@ export function FicheExercice({
     selection?.type === 'fleche'
       ? resoudreFleches(schema, index).find((f) => f.id === selection.id)
       : undefined
+  const zoneSelectionnee =
+    selection?.type === 'zone' ? schema.zones?.find((z) => z.id === selection.id) : undefined
+  const annotationSelectionnee =
+    selection?.type === 'annotation'
+      ? schema.annotations?.find((a) => a.id === selection.id)
+      : undefined
   const manque = manqueEffectif(exercice, seance)
+  const espaceManquant = manqueEspace(exercice, seance)
 
   return (
     <div className="fiche">
@@ -612,12 +691,36 @@ export function FicheExercice({
                     setOutil(type)
                     setSelection(undefined)
                   }}
-                  title={`Tracer un mouvement : ${LIBELLES_FLECHE[type].toLowerCase()}`}
+                  title={`${LIBELLES_FLECHE[type]} — ${AIDES_FLECHE[type].toLowerCase()}`}
                   aria-label={LIBELLES_FLECHE[type]}
                 >
                   <ApercuFleche type={type} />
                 </button>
               ))}
+              {/* Zone et texte ferment la bande : ce ne sont pas des mouvements,
+                  mais ils s'arment et se relachent de la meme facon. */}
+              <button
+                className={`bouton segment outil-zone${outil === 'zone' ? ' actif' : ''}`}
+                onClick={() => {
+                  setOutil('zone')
+                  setSelection(undefined)
+                }}
+                title="Délimiter une zone : zone de marque, secteur interdit, espace de jeu"
+                aria-label="Zone"
+              >
+                <ApercuZone />
+              </button>
+              <button
+                className={`bouton segment outil-texte${outil === 'texte' ? ' actif' : ''}`}
+                onClick={() => {
+                  setOutil('texte')
+                  setSelection(undefined)
+                }}
+                title="Poser un texte sur le terrain, là où il se lit"
+                aria-label="Texte"
+              >
+                <span className="apercu-texte">A</span>
+              </button>
             </div>
 
             <div className="pousse">
@@ -670,6 +773,10 @@ export function FicheExercice({
               onDeplacer={deplacerJeton}
               onCreerFleche={creerFleche}
               onCourber={courberFleche}
+              onCreerZone={creerZone}
+              onModifierZone={modifierZone}
+              onCreerAnnotation={creerAnnotation}
+              onDeplacerAnnotation={(id, point) => modifierAnnotation(id, point)}
               aimantation={aimantation}
               etapePrecedente={lecture ? undefined : etapePrecedente}
               interactif={!lecture}
@@ -772,6 +879,7 @@ export function FicheExercice({
             <div className="editeur-jeton">
               <span className="etiquette-groupe">
                 {APPARENCES[jetonSelectionne.type].libelle} sélectionné
+                {APPARENCES[jetonSelectionne.type].feminin ? 'e' : ''}
               </span>
               <label className="champ-en-ligne">
                 <span>Étiquette</span>
@@ -831,11 +939,67 @@ export function FicheExercice({
                 Effacer le tracé
               </button>
             </div>
+          ) : zoneSelectionnee ? (
+            <div className="editeur-jeton">
+              <span className="etiquette-groupe">Zone sélectionnée</span>
+              <label className="champ-en-ligne">
+                <span>Libellé</span>
+                <input
+                  type="text"
+                  maxLength={MAX_LONGUEUR_ANNOTATION}
+                  value={zoneSelectionnee.libelle}
+                  placeholder="Zone de marque..."
+                  onChange={(e) => modifierZone(zoneSelectionnee.id, { libelle: e.target.value })}
+                />
+              </label>
+              <div className="nuancier" role="group" aria-label="Couleur de la zone">
+                {(Object.keys(LIBELLES_TEINTE) as TeinteZone[]).map((teinte) => (
+                  <button
+                    key={teinte}
+                    className={`pastille-teinte teinte-${teinte}${
+                      zoneSelectionnee.teinte === teinte ? ' actif' : ''
+                    }`}
+                    onClick={() => modifierZone(zoneSelectionnee.id, { teinte })}
+                    title={LIBELLES_TEINTE[teinte]}
+                    aria-label={LIBELLES_TEINTE[teinte]}
+                    aria-pressed={zoneSelectionnee.teinte === teinte}
+                  />
+                ))}
+              </div>
+              <span className="aide-terrain sans-marge">
+                Faites glisser la zone pour la déplacer, le carré du coin pour la redimensionner.
+              </span>
+              <button className="bouton danger" onClick={() => supprimerZone(zoneSelectionnee.id)}>
+                Effacer la zone
+              </button>
+            </div>
+          ) : annotationSelectionnee ? (
+            <div className="editeur-jeton">
+              <span className="etiquette-groupe">Texte sélectionné</span>
+              <label className="champ-en-ligne large">
+                <span>Texte</span>
+                <input
+                  type="text"
+                  maxLength={MAX_LONGUEUR_ANNOTATION}
+                  value={annotationSelectionnee.texte}
+                  placeholder="Défense 6-0, départ au signal..."
+                  onChange={(e) =>
+                    modifierAnnotation(annotationSelectionnee.id, { texte: e.target.value })
+                  }
+                />
+              </label>
+              <button
+                className="bouton danger"
+                onClick={() => supprimerAnnotation(annotationSelectionnee.id)}
+              >
+                Effacer le texte
+              </button>
+            </div>
           ) : (
             <p className="aide-terrain">
               Ajoutez un élément de la palette, puis faites-le glisser sur le terrain. La poignée
               jaune fait pivoter le joueur sur 360°. Choisissez un type de mouvement ci-dessus pour
-              tracer une flèche.
+              tracer une flèche, délimiter une zone ou poser un texte.
             </p>
           )}
         </section>
@@ -863,6 +1027,7 @@ export function FicheExercice({
                 {LIBELLES_CATEGORIE[exercice.categorie]} · {exercice.duree} min ·{' '}
                 {exercice.nombreJoueurs} joueurs
                 {exercice.nombreGardiens > 0 && ` + ${exercice.nombreGardiens} GB`}
+                {` · ${LIBELLES_ESPACE_COURTS[exercice.espace]}`}
                 {exercice.enParallele && ' · en parallèle'}
               </span>
             )}
@@ -888,7 +1053,9 @@ export function FicheExercice({
             </div>
           </div>
 
-          {manque && <AlerteEffectif manque={manque} seance={seance} />}
+          {(manque || espaceManquant) && (
+            <AlerteMoyens manque={manque} espaceManquant={espaceManquant} seance={seance} />
+          )}
 
           {/*
             Fiche signaletique : six valeurs courtes, consultees souvent et
@@ -960,6 +1127,25 @@ export function FicheExercice({
                 <span>gardiens</span>
               </label>
             </div>
+
+            {/*
+              L'espace de jeu, jumeau de l'effectif : declare ici, il permet a
+              la seance de signaler les exercices qui ne tiendront pas dans le
+              gymnase disponible ce soir-la.
+            */}
+            <label className="champ etendu">
+              <span>Espace nécessaire</span>
+              <select
+                value={exercice.espace}
+                onChange={(e) => onModifier({ espace: e.target.value as Espace })}
+              >
+                {Object.entries(LIBELLES_ESPACE).map(([valeur, libelle]) => (
+                  <option key={valeur} value={valeur}>
+                    {libelle}
+                  </option>
+                ))}
+              </select>
+            </label>
 
             {/* Pleine largeur : les intitules debordaient de la liste. */}
             <label className="champ etendu">
@@ -1191,6 +1377,25 @@ function BoutonPleinEcran({
   )
 }
 
+/** Petit apercu de l'outil zone : un rectangle plein en tirets. */
+function ApercuZone() {
+  return (
+    <svg viewBox="0 0 16 16" className="apercu-fleche" aria-hidden="true">
+      <rect
+        x={2}
+        y={3.5}
+        width={12}
+        height={9}
+        fill="currentColor"
+        fillOpacity={0.28}
+        stroke="currentColor"
+        strokeWidth={1.3}
+        strokeDasharray="2.6 2"
+      />
+    </svg>
+  )
+}
+
 /** Petit apercu du style de trait, dans la barre d'outils. */
 function ApercuFleche({ type }: { type: TypeFleche }) {
   const traits: Record<TypeFleche, string> = {
@@ -1199,18 +1404,35 @@ function ApercuFleche({ type }: { type: TypeFleche }) {
     dribble: 'M 1 8 Q 3.5 3, 6 8 T 11 8 T 15 8',
     tir: 'M 1 6 L 15 6 M 1 10 L 15 10',
     ecran: 'M 1 8 L 13 8 M 13 3 L 13 13',
+    // La rotation revient en arriere : l'apercu la montre courbe, comme sur le
+    // terrain, ou elle ramene le joueur au fond de sa colonne.
+    rotation: 'M 1 11 Q 8 2, 14 10',
   }
+  const tirets: Partial<Record<TypeFleche, string>> = { passe: '3 2.2', rotation: '2.4 2' }
   return (
     <svg viewBox="0 0 16 16" className="apercu-fleche" aria-hidden="true">
       <path
         d={traits[type]}
         fill="none"
         stroke="currentColor"
-        strokeWidth={type === 'tir' ? 1.4 : 1.6}
-        strokeDasharray={type === 'passe' ? '3 2.2' : undefined}
+        strokeWidth={type === 'tir' ? 1.4 : type === 'rotation' ? 1.2 : 1.6}
+        strokeDasharray={tirets[type]}
         strokeLinecap="round"
       />
-      {type !== 'ecran' && <polygon points="16,8 12,10 12,6" fill="currentColor" />}
+      {/* Pointe pleine pour les actions du jeu, ouverte pour la rotation :
+          la meme distinction que sur le terrain. */}
+      {type === 'rotation' ? (
+        <path
+          d="M 10.5 6.5 L 14.6 9.8 L 10 11"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ) : (
+        type !== 'ecran' && <polygon points="16,8 12,10 12,6" fill="currentColor" />
+      )}
     </svg>
   )
 }

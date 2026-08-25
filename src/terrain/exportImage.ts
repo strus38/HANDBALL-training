@@ -62,7 +62,7 @@ function figerLesStyles(source: SVGSVGElement): SVGSVGElement {
 
   // Elements d'edition : ils n'appartiennent pas au schema lui-meme.
   for (const inutile of copie.querySelectorAll(
-    '.zone-clic, .poignee-rotation, .poignee-courbure, .jeton-halo, .repere-aimant',
+    '.zone-clic, .poignee-rotation, .poignee-courbure, .poignee-zone, .jeton-halo, .repere-aimant',
   )) {
     inutile.remove()
   }

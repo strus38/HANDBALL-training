@@ -14,8 +14,17 @@ import { lireMasquees } from './masquees'
 import { AUCUNE_EQUIPE, lireMonEquipe, type MonEquipe } from './equipe'
 import { versionComplete } from './version'
 import {
+  espaceParDefaut,
+  MAX_LONGUEUR_ANNOTATION,
   nouvelleEvaluation,
+  RANG_ESPACE,
   SCHEMA_VERSION,
+  TERRAIN,
+  ZONE_MINIMALE,
+  type Annotation,
+  type Espace,
+  type TeinteZone,
+  type Zone,
   type Position,
   type Deroule,
   type Evaluation,
@@ -216,6 +225,11 @@ function lireSeance(brut: Objet): Seance {
     objectifSeance: texte(brut.objectifSeance),
     effectifJoueurs: Math.max(0, nombre(brut.effectifJoueurs, 0)),
     effectifGardiens: Math.max(0, nombre(brut.effectifGardiens, 0)),
+    // Une valeur inconnue vaut « non renseigne » : mieux vaut aucune alerte
+    // qu'une alerte fondee sur une chaine que personne ne sait interpreter.
+    espaceDisponible: (texte(brut.espaceDisponible) in RANG_ESPACE
+      ? texte(brut.espaceDisponible)
+      : '') as Seance['espaceDisponible'],
     demarreLe: brut.demarreLe ? texte(brut.demarreLe) : undefined,
     exercices,
   }
@@ -277,6 +291,10 @@ function lireExercice(brut: Objet): Exercice {
       }
     })
 
+  const vue = (['demi', 'complet', 'zone'].includes(texte(schemaBrut.vue))
+    ? texte(schemaBrut.vue)
+    : 'demi') as Exercice['schema']['vue']
+
   const exercice: Exercice = {
     ...modele,
     id: texte(brut.id) || modele.id,
@@ -306,6 +324,11 @@ function lireExercice(brut: Objet): Exercice {
       ? texte(brut.formatGardiens)
       : 'avec-joueurs') as Exercice['formatGardiens'],
     enParallele: brut.enParallele === true,
+    // Champ apparu en version 3 : un fichier plus ancien n'en a pas, et
+    // l'espace se deduit alors de la vue sur laquelle le schema est dessine.
+    espace: (texte(brut.espace) in RANG_ESPACE
+      ? texte(brut.espace)
+      : espaceParDefaut(vue)) as Espace,
     // Lien vers la fiche fournie d'origine, s'il en vient. Cette lecture est
     // une LISTE BLANCHE : un champ absent d'ici est efface a chaque relecture,
     // meme s'il est present dans le fichier. Tout nouveau champ d'Exercice doit
@@ -314,14 +337,53 @@ function lireExercice(brut: Objet): Exercice {
     evaluation: lireEvaluation(brut.evaluation),
     deroule: lireDeroule(brut.deroule),
     schema: migrerSchema({
-      vue: (['demi', 'complet', 'zone'].includes(texte(schemaBrut.vue))
-        ? texte(schemaBrut.vue)
-        : 'demi') as Exercice['schema']['vue'],
+      vue,
       jetons,
       etapes: etapes.length > 0 ? etapes : modele.schema.etapes,
+      zones: liste(schemaBrut.zones).filter(estObjet).map(lireZone),
+      annotations: liste(schemaBrut.annotations)
+        .filter(estObjet)
+        .map(lireAnnotation)
+        // Une annotation sans texte serait invisible et inattrapable : elle
+        // encombrerait le fichier sans que personne puisse l'en retirer.
+        .filter((a) => a.texte !== ''),
     }),
   }
   return exercice
+}
+
+/**
+ * Une zone coloriee venue d'un fichier.
+ *
+ * Les cotes sont bornes des deux cotes : une zone plus petite que le minimum
+ * serait inattrapable a la souris, une zone plus grande que le terrain
+ * masquerait tout le schema. Une teinte inconnue devient grise plutot que de
+ * produire une classe CSS qui n'existe pas.
+ */
+function lireZone(brut: Objet): Zone {
+  const teintes: TeinteZone[] = ['jaune', 'bleu', 'vert', 'rouge', 'gris']
+  const cote = (valeur: unknown, maximum: number) =>
+    Math.min(maximum, Math.max(ZONE_MINIMALE, nombre(valeur, ZONE_MINIMALE)))
+  return {
+    id: texte(brut.id) || nouvelId(),
+    x: nombre(brut.x, 0),
+    y: nombre(brut.y, 0),
+    largeur: cote(brut.largeur, TERRAIN.longueur),
+    hauteur: cote(brut.hauteur, TERRAIN.largeur),
+    teinte: (teintes.includes(texte(brut.teinte) as TeinteZone)
+      ? texte(brut.teinte)
+      : 'gris') as TeinteZone,
+    libelle: texte(brut.libelle).slice(0, MAX_LONGUEUR_ANNOTATION),
+  }
+}
+
+function lireAnnotation(brut: Objet): Annotation {
+  return {
+    id: texte(brut.id) || nouvelId(),
+    x: nombre(brut.x, 0),
+    y: nombre(brut.y, 0),
+    texte: texte(brut.texte).trim().slice(0, MAX_LONGUEUR_ANNOTATION),
+  }
 }
 
 /**

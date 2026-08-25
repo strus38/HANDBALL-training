@@ -1918,9 +1918,21 @@ textarea:focus {
 .bouton.segment.outil-ecran,
 .bouton.segment.outil-course,
 .bouton.segment.outil-passe,
-.bouton.segment.outil-dribble {
+.bouton.segment.outil-dribble,
+.bouton.segment.outil-rotation,
+.bouton.segment.outil-zone,
+.bouton.segment.outil-texte {
   gap: 5px;
   padding: 7px 10px;
+}
+
+/* L'outil texte n'a pas de trace a montrer : la lettre EST son icone. */
+.apercu-texte {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 17px;
+  width: 17px;
+  text-align: center;
 }
 
 .terrain.mode-trace {
@@ -2051,6 +2063,187 @@ textarea:focus {
   stroke: var(--bleu-700);
 }
 
+/*
+  La rotation n'est pas une action du jeu mais la regle d'organisation : trait
+  plus fin, en tirets courts, dans un gris qui la fait passer au second plan.
+  Elle doit se lire sans jamais disputer la lecture au mouvement lui-meme.
+*/
+.fleche-rotation .trait {
+  stroke: var(--texte-doux);
+  stroke-dasharray: 0.42 0.34;
+  stroke-width: 0.11;
+}
+
+/* Sa pointe est ouverte : c'est un trait, pas une surface remplie. */
+.fleche-rotation .pointe {
+  fill: none;
+  stroke: var(--texte-doux);
+  stroke-width: 0.11;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fleche-rotation.selectionnee .trait,
+.fleche-rotation.selectionnee .pointe {
+  stroke: var(--jaune-fonce);
+}
+
+/* ------------------------------------------- Zones coloriees et annotations */
+
+/*
+  Une zone est un calque de fond : posee en transparence, elle laisse voir les
+  lignes officielles du terrain au travers. Un aplat opaque effacerait la
+  surface des 6 m sous une zone de marque, et le schema perdrait ses reperes.
+*/
+.zone-fond {
+  fill-opacity: 0.22;
+  stroke-width: 0.12;
+  stroke-dasharray: 0.5 0.36;
+}
+
+.zone-fond.deplacable {
+  cursor: move;
+}
+
+.zone-jaune .zone-fond {
+  fill: #ffc72c;
+  stroke: #8a6400;
+}
+.zone-jaune .zone-libelle {
+  fill: #6b4b00;
+}
+
+.zone-bleu .zone-fond {
+  fill: #1f6fbd;
+  stroke: #103866;
+}
+.zone-bleu .zone-libelle {
+  fill: #103866;
+}
+
+.zone-vert .zone-fond {
+  fill: #1c7a45;
+  stroke: #0d3d2d;
+}
+.zone-vert .zone-libelle {
+  fill: #0d3d2d;
+}
+
+.zone-rouge .zone-fond {
+  fill: #b3261e;
+  stroke: #7a1b15;
+}
+.zone-rouge .zone-libelle {
+  fill: #7a1b15;
+}
+
+.zone-gris .zone-fond {
+  fill: #6c7a89;
+  stroke: #3b4652;
+}
+.zone-gris .zone-libelle {
+  fill: #3b4652;
+}
+
+.zone-terrain.selectionnee .zone-fond {
+  fill-opacity: 0.34;
+  stroke-width: 0.2;
+  stroke-dasharray: none;
+}
+
+.zone-libelle {
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-weight: 600;
+  pointer-events: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.poignee-zone rect {
+  fill: var(--jaune);
+  stroke: var(--bleu-900);
+  stroke-width: 0.09;
+  cursor: nwse-resize;
+}
+
+/*
+  L'annotation est ecrite DEUX FOIS, l'une sous l'autre : d'abord un trace
+  epais a la couleur du terrain, ensuite le texte. Ce halo la rend lisible
+  par-dessus une zone coloriee, une ligne ou un fantome, sans avoir a lui poser
+  un cartouche opaque qui masquerait le schema.
+*/
+.annotation-halo {
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-weight: 700;
+  fill: none;
+  stroke: #f7f4ec;
+  stroke-width: 0.55;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  pointer-events: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.annotation-texte {
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-weight: 700;
+  fill: var(--bleu-900);
+  pointer-events: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.annotation.deplacable {
+  cursor: move;
+}
+
+/* La zone de prise suit le texte : sans elle, l'annotation ne s'attrape pas. */
+.annotation.deplacable .annotation-halo {
+  pointer-events: stroke;
+}
+
+.annotation.selectionnee .annotation-texte {
+  fill: var(--jaune-fonce);
+}
+
+/* Nuancier des zones, dans le panneau de selection. */
+.nuancier {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.pastille-teinte {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--bordure-forte);
+  cursor: pointer;
+  padding: 0;
+}
+
+.pastille-teinte.actif {
+  border-color: var(--bleu-900);
+  box-shadow: 0 0 0 2px var(--jaune);
+}
+
+.pastille-teinte.teinte-jaune {
+  background: #ffc72c;
+}
+.pastille-teinte.teinte-bleu {
+  background: #1f6fbd;
+}
+.pastille-teinte.teinte-vert {
+  background: #1c7a45;
+}
+.pastille-teinte.teinte-rouge {
+  background: #b3261e;
+}
+.pastille-teinte.teinte-gris {
+  background: #6c7a89;
+}
+
 .fleche .zone-clic {
   stroke: transparent;
   stroke-width: 1.1;
@@ -2137,15 +2330,24 @@ textarea:focus {
 
 /* ============================================================= Effectif */
 
+/* Trois moyens du jour — joueurs, gardiens, espace — puis l'aide qui les
+   explique, sur la ligne suivante en petite largeur. */
 .grille-effectif {
   display: grid;
-  grid-template-columns: 200px 200px 1fr;
+  grid-template-columns: 180px 180px 200px 1fr;
   gap: 12px;
   align-items: end;
   margin-top: 12px;
 }
 
+@media (max-width: 1100px) {
+  .grille-effectif {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .aide-effectif {
+  grid-column: 1 / -1;
   font-size: 12.5px;
   color: var(--texte-doux);
   margin: 0 0 8px;

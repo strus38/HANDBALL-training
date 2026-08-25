@@ -26,6 +26,7 @@ export function nommer(schema: Schema, jetonId: string | undefined): string {
     plot: 'un plot',
     but: 'le but',
     haie: 'une haie',
+    colonne: 'la colonne',
   }
   return roles[jeton.type] ?? 'un joueur'
 }
@@ -97,6 +98,13 @@ export function decrireEtape(schema: Schema, index: number): Action[] {
         break
       case 'ecran':
         phrase = `${nom} pose un écran ${ou}.`
+        break
+      // La rotation ne decrit pas une action du jeu mais l'organisation :
+      // aucun acteur ne la fait, c'est la regle qui vaut pour tout le monde.
+      case 'rotation':
+        phrase = `Chacun retourne ensuite au fond de la colonne${
+          ou === 'au milieu de terrain' ? '' : `, ${ou}`
+        }.`
         break
       default:
         phrase = `${nom} se déplace ${ou}.`

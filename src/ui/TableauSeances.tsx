@@ -281,7 +281,7 @@ function CarteSeance({
           )}
           {resume.nombreIncompatibles > 0 && (
             <em className="signal alerte" title="Exercices demandant plus de monde que l'effectif">
-              {resume.nombreIncompatibles} au-dessus de l'effectif
+              {resume.nombreIncompatibles} au-dessus des moyens du jour
             </em>
           )}
           {resume.nombreExercices === 0 && <em className="signal">Séance vide</em>}

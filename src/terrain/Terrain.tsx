@@ -24,17 +24,27 @@ import { distanceAFleche, tracerFleche } from './fleches'
 import { aimanter, type Repere } from './aimantation'
 import {
   TERRAIN,
+  ZONE_MINIMALE,
+  type Annotation,
   type Etape,
   type FlecheResolue,
   type Jeton,
   type Position,
   type Schema,
   type TypeFleche,
+  type Zone,
 } from '../domain/types'
 import { angleVers, orientationEffective, resoudreFleches } from '../domain/mouvement'
 
-/** Outil actif : deplacement des jetons, ou trace d'un type de fleche. */
-export type Outil = 'selection' | TypeFleche
+/**
+ * Outil actif : deplacer, tracer un type de fleche, delimiter une zone, ou
+ * poser un texte.
+ *
+ * « zone » et « texte » se comportent comme les outils de trace : ils arment le
+ * geste suivant, puis la barre d'outils revient a la selection. Un outil qui
+ * reste arme fait poser trois zones a qui n'en voulait qu'une.
+ */
+export type Outil = 'selection' | TypeFleche | 'zone' | 'texte'
 
 /**
  * Trace acheve par l'entraineur.
@@ -52,8 +62,26 @@ export interface TraceFleche {
 }
 
 export interface Selection {
-  type: 'jeton' | 'fleche'
+  type: 'jeton' | 'fleche' | 'zone' | 'annotation'
   id: string
+}
+
+/**
+ * Vrai quand l'outil arme le trace d'une fleche.
+ *
+ * « zone » et « texte » partagent la barre d'outils avec les fleches sans etre
+ * des fleches : sans ce garde, un rectangle finirait enregistre comme une passe.
+ */
+export function estOutilFleche(outil: Outil): outil is TypeFleche {
+  return outil !== 'selection' && outil !== 'zone' && outil !== 'texte'
+}
+
+/** Rectangle demande par l'entraineur, en metres, repere metier. */
+export interface TraceZone {
+  x: number
+  y: number
+  largeur: number
+  hauteur: number
 }
 
 interface Props {
@@ -68,6 +96,13 @@ interface Props {
   /** Trace termine : l'application en deduit qui se deplace et jusqu'ou. */
   onCreerFleche?: (trace: TraceFleche) => void
   onCourber?: (id: string, courbure: Position) => void
+  /** Rectangle acheve : l'application en fait une zone. */
+  onCreerZone?: (trace: TraceZone) => void
+  /** Deplacement ou redimensionnement d'une zone existante. */
+  onModifierZone?: (id: string, modifications: Partial<TraceZone>) => void
+  /** Clic avec l'outil texte : un mot a poser a cet endroit. */
+  onCreerAnnotation?: (point: Position) => void
+  onDeplacerAnnotation?: (id: string, point: Position) => void
   /** Positions de l'etape precedente, rappelees en transparence. */
   etapePrecedente?: Etape
   interactif?: boolean
@@ -80,6 +115,13 @@ type Glisse =
   | { genre: 'rotation'; id: string; angle: number }
   | { genre: 'fleche'; depart: Position; arrivee: Position; jetonId?: string }
   | { genre: 'courbure'; id: string; point: Position }
+  /** Trace d'une zone neuve : deux coins opposes, dans l'ordre du geste. */
+  | { genre: 'zone-nouvelle'; depart: Position; point: Position }
+  /** Deplacement d'une zone : l'ecart au coin est fige a la prise, sinon la
+      zone sauterait sous le curseur au premier pixel parcouru. */
+  | { genre: 'zone'; id: string; ecart: { dx: number; dy: number }; point: Position }
+  | { genre: 'zone-taille'; id: string; point: Position }
+  | { genre: 'annotation'; id: string; position: Position }
 
 export function Terrain({
   schema,
@@ -91,6 +133,10 @@ export function Terrain({
   onDeplacer,
   onCreerFleche,
   onCourber,
+  onCreerZone,
+  onModifierZone,
+  onCreerAnnotation,
+  onDeplacerAnnotation,
   etapePrecedente,
   interactif = true,
   aimantation = true,
@@ -101,6 +147,10 @@ export function Terrain({
   const { viewBox } = cadrage(schema.vue)
   const taille = facteurTaille(schema.vue)
   const epaisseur = 0.16 * taille
+  // Absentes des schemas ecrits avant la version 3 du format : partout ailleurs
+  // le code peut alors les traiter comme de simples listes.
+  const zones = schema.zones ?? []
+  const annotations = schema.annotations ?? []
 
   const pointeurEnMetres = (evenement: EvenementPointeur): Position | undefined => {
     const element = svg.current
@@ -144,6 +194,19 @@ export function Terrain({
     if (!interactif) return
     const position = pointeurEnMetres(evenement)
     if (!position) return
+
+    // L'outil texte pose son annotation au clic : il n'y a rien a faire glisser,
+    // le mot est ecrit ensuite dans le panneau lateral.
+    if (outil === 'texte') {
+      onCreerAnnotation?.({ x: arrondi(position.x), y: arrondi(position.y) })
+      return
+    }
+
+    if (outil === 'zone') {
+      evenement.currentTarget.setPointerCapture(evenement.pointerId)
+      setGlisse({ genre: 'zone-nouvelle', depart: limiter(position), point: limiter(position) })
+      return
+    }
 
     if (outil !== 'selection') {
       // Un trace demarre sur le jeton le plus proche s'il y en a un : une passe
@@ -213,6 +276,40 @@ export function Terrain({
     setGlisse({ genre: 'rotation', id: jeton.id, angle: placementDe(jeton).orientation ?? 0 })
   }
 
+  const commencerZone = (evenement: EvenementPointeur, zone: Zone) => {
+    if (!interactif || outil !== 'selection') return
+    evenement.stopPropagation()
+    onSelection?.({ type: 'zone', id: zone.id })
+    const position = pointeurEnMetres(evenement)
+    if (!position) return
+    evenement.currentTarget.setPointerCapture(evenement.pointerId)
+    setGlisse({
+      genre: 'zone',
+      id: zone.id,
+      ecart: { dx: position.x - zone.x, dy: position.y - zone.y },
+      point: position,
+    })
+  }
+
+  const commencerTailleZone = (evenement: EvenementPointeur, zone: Zone) => {
+    if (!interactif) return
+    evenement.stopPropagation()
+    const position = pointeurEnMetres(evenement)
+    if (!position) return
+    evenement.currentTarget.setPointerCapture(evenement.pointerId)
+    setGlisse({ genre: 'zone-taille', id: zone.id, point: position })
+  }
+
+  const commencerAnnotation = (evenement: EvenementPointeur, annotation: Annotation) => {
+    if (!interactif || outil !== 'selection') return
+    evenement.stopPropagation()
+    onSelection?.({ type: 'annotation', id: annotation.id })
+    const position = pointeurEnMetres(evenement)
+    if (!position) return
+    evenement.currentTarget.setPointerCapture(evenement.pointerId)
+    setGlisse({ genre: 'annotation', id: annotation.id, position: limiter(position) })
+  }
+
   const commencerCourbure = (evenement: EvenementPointeur, fleche: FlecheResolue) => {
     if (!interactif) return
     evenement.stopPropagation()
@@ -254,6 +351,18 @@ export function Terrain({
         // La courbure est un reglage visuel : rien ne justifie de l'aimanter.
         setGlisse({ ...glisse, point: limiter(position) })
         break
+      // Les zones se calent sur les lignes du terrain comme les jetons : une
+      // zone de marque commence presque toujours sur la ligne des 9 m.
+      case 'zone-nouvelle':
+      case 'zone-taille':
+        setGlisse({ ...glisse, point: limiter(accrocher(position, evenement)) })
+        break
+      case 'zone':
+        setGlisse({ ...glisse, point: limiter(position) })
+        break
+      case 'annotation':
+        setGlisse({ ...glisse, position: limiter(position) })
+        break
     }
   }
 
@@ -292,7 +401,7 @@ export function Terrain({
           glisse.arrivee.y - glisse.depart.y,
         )
         // Un simple clic ne doit pas creer une fleche de longueur nulle.
-        if (longueur >= 0.8 && outil !== 'selection') {
+        if (longueur >= 0.8 && estOutilFleche(outil)) {
           const cible = jetonLePlusProche(glisse.arrivee)
           onCreerFleche?.({
             type: outil,
@@ -307,6 +416,38 @@ export function Terrain({
       case 'courbure':
         onCourber?.(glisse.id, { x: arrondi(glisse.point.x), y: arrondi(glisse.point.y) })
         break
+      case 'zone-nouvelle': {
+        // Le geste va dans n'importe quel sens : on garde les deux coins, pas
+        // l'ordre dans lequel ils ont ete designes.
+        const trace = rectangleEntre(glisse.depart, glisse.point)
+        // Un clic sec ne doit pas poser une zone invisible qu'on ne pourra
+        // plus attraper pour la supprimer.
+        if (trace.largeur >= ZONE_MINIMALE && trace.hauteur >= ZONE_MINIMALE) onCreerZone?.(trace)
+        break
+      }
+      case 'zone': {
+        onModifierZone?.(glisse.id, {
+          x: arrondi(glisse.point.x - glisse.ecart.dx),
+          y: arrondi(glisse.point.y - glisse.ecart.dy),
+        })
+        break
+      }
+      case 'zone-taille': {
+        const zone = zones.find((z) => z.id === glisse.id)
+        if (zone) {
+          onModifierZone?.(glisse.id, {
+            largeur: arrondi(Math.max(ZONE_MINIMALE, glisse.point.x - zone.x)),
+            hauteur: arrondi(Math.max(ZONE_MINIMALE, glisse.point.y - zone.y)),
+          })
+        }
+        break
+      }
+      case 'annotation':
+        onDeplacerAnnotation?.(glisse.id, {
+          x: arrondi(glisse.position.x),
+          y: arrondi(glisse.position.y),
+        })
+        break
     }
     setGlisse(undefined)
   }
@@ -314,7 +455,7 @@ export function Terrain({
   // ----------------------------------------------------------------- Rendu
 
   const flechesAffichees: FlecheResolue[] =
-    glisse?.genre === 'fleche' && outil !== 'selection'
+    glisse?.genre === 'fleche' && estOutilFleche(outil)
       ? [
           ...resoudreFleches(schema, etapeIndex),
           { id: '__apercu', type: outil, depart: glisse.depart, arrivee: glisse.arrivee },
@@ -368,6 +509,53 @@ export function Terrain({
       />
       <path d={ligneMediane()} className="terrain-ligne" />
 
+      {/*
+        Zones coloriees : posees SUR l'aire et SOUS tout le reste.
+        Elles sont du decor de mise en place, pas des acteurs — les faire passer
+        devant les joueurs cacherait ce qui compte, et les mettre sous les
+        lignes du terrain effacerait les reperes officiels.
+      */}
+      {zones.map((zone) => {
+        const enCours =
+          glisse?.genre === 'zone' && glisse.id === zone.id
+            ? { ...zone, x: glisse.point.x - glisse.ecart.dx, y: glisse.point.y - glisse.ecart.dy }
+            : glisse?.genre === 'zone-taille' && glisse.id === zone.id
+              ? {
+                  ...zone,
+                  largeur: Math.max(ZONE_MINIMALE, glisse.point.x - zone.x),
+                  hauteur: Math.max(ZONE_MINIMALE, glisse.point.y - zone.y),
+                }
+              : zone
+        return (
+          <ZoneSvg
+            key={zone.id}
+            zone={enCours}
+            taille={taille}
+            selectionnee={selection?.type === 'zone' && selection.id === zone.id}
+            interactif={interactif && outil === 'selection'}
+            onPrise={(evenement) => commencerZone(evenement, zone)}
+            onTaille={(evenement) => commencerTailleZone(evenement, enCours)}
+          />
+        )
+      })}
+
+      {/* Apercu de la zone en cours de trace */}
+      {glisse?.genre === 'zone-nouvelle' && (
+        <ZoneSvg
+          zone={{
+            id: '__apercu',
+            teinte: 'jaune',
+            libelle: '',
+            ...rectangleEntre(glisse.depart, glisse.point),
+          }}
+          taille={taille}
+          selectionnee
+          interactif={false}
+          onPrise={() => {}}
+          onTaille={() => {}}
+        />
+      )}
+
       {/* Rappel de l'etape precedente */}
       {etapePrecedente &&
         schema.jetons.map((jeton) => {
@@ -402,6 +590,41 @@ export function Terrain({
           onCourbure={(evenement) => commencerCourbure(evenement, fleche)}
         />
       ))}
+
+      {/*
+        Annotations : au-dessus des fleches, sous les jetons.
+        Un mot cache par un trait ne se lit pas ; un joueur cache par un mot ne
+        se deplace plus. C'est le mot qui cede, il se deplace d'un glisser.
+      */}
+      {annotations.map((annotation) => {
+        const enCours =
+          glisse?.genre === 'annotation' && glisse.id === annotation.id
+            ? { ...annotation, ...glisse.position }
+            : annotation
+        const p = versEcran(enCours)
+        const estSelectionnee =
+          selection?.type === 'annotation' && selection.id === annotation.id
+        return (
+          <g
+            key={annotation.id}
+            className={`annotation${interactif && outil === 'selection' ? ' deplacable' : ''}${
+              estSelectionnee ? ' selectionnee' : ''
+            }`}
+            transform={`translate(${p.x} ${p.y})`}
+            onPointerDown={(evenement) => commencerAnnotation(evenement, annotation)}
+          >
+            {/* Le texte est ecrit deux fois : une passe epaisse a la couleur du
+                terrain sert de halo, et le rend lisible par-dessus une zone
+                coloriee comme par-dessus une ligne. */}
+            <text className="annotation-halo" x={0} y={0} fontSize={0.95 * taille}>
+              {enCours.texte}
+            </text>
+            <text className="annotation-texte" x={0} y={0} fontSize={0.95 * taille}>
+              {enCours.texte}
+            </text>
+          </g>
+        )
+      })}
 
       {/* Jetons */}
       {schema.jetons.map((jeton) => {
@@ -480,6 +703,71 @@ export function Terrain({
 }
 
 const arrondi = (v: number) => Math.round(v * 100) / 100
+
+/**
+ * Rectangle defini par deux coins opposes, quel que soit l'ordre du geste.
+ *
+ * On dessine une zone du coin qu'on veut vers le coin qu'on veut : le modele,
+ * lui, n'accepte qu'un coin bas-gauche et des cotes positifs.
+ */
+function rectangleEntre(a: Position, b: Position): TraceZone {
+  return {
+    x: arrondi(Math.min(a.x, b.x)),
+    y: arrondi(Math.min(a.y, b.y)),
+    largeur: arrondi(Math.abs(b.x - a.x)),
+    hauteur: arrondi(Math.abs(b.y - a.y)),
+  }
+}
+
+/**
+ * Une zone coloriee.
+ *
+ * Le rectangle est decrit en repere METIER — coin bas-gauche, y vers le haut —
+ * et converti ici seulement : c'est le coin HAUT-gauche que SVG attend.
+ */
+function ZoneSvg({
+  zone,
+  taille,
+  selectionnee,
+  interactif,
+  onPrise,
+  onTaille,
+}: {
+  zone: Zone
+  taille: number
+  selectionnee: boolean
+  interactif: boolean
+  onPrise: (evenement: EvenementPointeur) => void
+  onTaille: (evenement: EvenementPointeur) => void
+}) {
+  const coin = versEcran({ x: zone.x, y: zone.y + zone.hauteur })
+  const centre = versEcran({ x: zone.x + zone.largeur / 2, y: zone.y + zone.hauteur / 2 })
+  const poignee = versEcran({ x: zone.x + zone.largeur, y: zone.y + zone.hauteur })
+  return (
+    <g className={`zone-terrain zone-${zone.teinte}${selectionnee ? ' selectionnee' : ''}`}>
+      <rect
+        x={coin.x}
+        y={coin.y}
+        width={zone.largeur}
+        height={zone.hauteur}
+        className={`zone-fond${interactif ? ' deplacable' : ''}`}
+        onPointerDown={interactif ? onPrise : undefined}
+      />
+      {zone.libelle && (
+        <text className="zone-libelle" x={centre.x} y={centre.y} fontSize={0.9 * taille}>
+          {zone.libelle}
+        </text>
+      )}
+      {selectionnee && interactif && (
+        <g className="poignee-zone" onPointerDown={onTaille}>
+          <rect x={poignee.x - 0.3} y={poignee.y - 0.3} width={0.6} height={0.6} />
+          {/* Zone de saisie elargie : la poignee reste attrapable au doigt. */}
+          <circle cx={poignee.x} cy={poignee.y} r={0.85} fill="transparent" />
+        </g>
+      )}
+    </g>
+  )
+}
 
 function dimensionsBut(cote: 'gauche' | 'droite') {
   const b = but(cote)

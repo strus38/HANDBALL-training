@@ -8,9 +8,10 @@
 import { clonerExercice, dateDuJour, nouvelId } from './fabrique'
 import {
   dureeTotale,
-  manqueEffectif,
+  exerciceIncompatible,
   nouvelleEvaluation,
   type Categorie,
+  type Espace,
   type Seance,
 } from './types'
 
@@ -31,7 +32,7 @@ export interface ResumeSeance {
   /** Note moyenne des exercices evalues, ou undefined si aucun ne l'est. */
   noteMoyenne?: number
   nombreEvalues: number
-  /** Exercices demandant plus de monde que l'effectif annonce. */
+  /** Exercices demandant plus de monde, ou plus de place, que la seance n'offre. */
   nombreIncompatibles: number
   /** Materiel de toute la seance, sans doublon, en ordre alphabetique. */
   materiel: string[]
@@ -67,7 +68,7 @@ export function resumerSeance(seance: Seance): ResumeSeance {
       sommeNotes += exercice.evaluation.note
       nombreEvalues += 1
     }
-    if (manqueEffectif(exercice, seance)) nombreIncompatibles += 1
+    if (exerciceIncompatible(exercice, seance)) nombreIncompatibles += 1
   }
 
   return {
@@ -93,6 +94,7 @@ export interface OptionsDuplication {
   categorieAge?: string
   effectifJoueurs?: number
   effectifGardiens?: number
+  espaceDisponible?: Espace | ''
   objectifSeance?: string
   /**
    * Efface les notes et les compteurs d'utilisation de la copie.
@@ -122,6 +124,7 @@ export function dupliquerSeance(seance: Seance, options: OptionsDuplication = {}
     objectifSeance: options.objectifSeance ?? seance.objectifSeance,
     effectifJoueurs: options.effectifJoueurs ?? seance.effectifJoueurs,
     effectifGardiens: options.effectifGardiens ?? seance.effectifGardiens,
+    espaceDisponible: options.espaceDisponible ?? seance.espaceDisponible,
     exercices: seance.exercices.map((exercice) => {
       const copie = clonerExercice(exercice, '')
       return options.reinitialiserEvaluations

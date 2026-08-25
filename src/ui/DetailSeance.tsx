@@ -4,7 +4,10 @@ import { equipeInhabituelle, equipeRenseignee, libelleEquipe, type MonEquipe } f
 import {
   dureeTotale,
   LIBELLES_CATEGORIE,
+  LIBELLES_ESPACE,
   manqueEffectif,
+  manqueEspace,
+  type Espace,
   type Exercice,
   type Seance,
 } from '../domain/types'
@@ -177,9 +180,28 @@ export function DetailSeance({
               }
             />
           </label>
+          <label className="champ">
+            <span>Espace disponible</span>
+            <select
+              value={seance.espaceDisponible}
+              onChange={(e) =>
+                onModifier((s) => ({
+                  ...s,
+                  espaceDisponible: e.target.value as Espace | '',
+                }))
+              }
+            >
+              <option value="">non renseigné</option>
+              {Object.entries(LIBELLES_ESPACE).map(([valeur, libelle]) => (
+                <option key={valeur} value={valeur}>
+                  {libelle}
+                </option>
+              ))}
+            </select>
+          </label>
           <p className="aide-effectif">
-            Renseigne l'effectif du jour : les exercices qui demandent plus de monde sont alors
-            signalés.
+            Renseigne l'effectif et l'espace du jour : les exercices qui demandent plus de monde, ou
+            plus de place, sont alors signalés.
           </p>
         </div>
 
@@ -284,6 +306,14 @@ export function DetailSeance({
                   {manqueEffectif(exercice, seance) && (
                     <em className="jeton-manque" title="Cet exercice demande plus de monde que l'effectif annoncé">
                       effectif insuffisant
+                    </em>
+                  )}
+                  {manqueEspace(exercice, seance) && (
+                    <em
+                      className="jeton-manque"
+                      title="Cet exercice demande plus de place que l'espace annoncé"
+                    >
+                      espace insuffisant
                     </em>
                   )}
                 </span>

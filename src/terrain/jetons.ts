@@ -15,7 +15,7 @@
 
 import type { TypeJeton, VueTerrain } from '../domain/types'
 
-export type Forme = 'joueur' | 'cercle' | 'triangle' | 'carre' | 'losange' | 'rectangle'
+export type Forme = 'joueur' | 'cercle' | 'triangle' | 'carre' | 'losange' | 'rectangle' | 'colonne'
 
 export interface ApparenceJeton {
   libelle: string
@@ -35,6 +35,14 @@ export interface ApparenceJeton {
   rayon: number
   /** Etiquette proposee a la creation. */
   etiquetteParDefaut: string
+  /**
+   * Le nom du jeton est feminin.
+   *
+   * « Haie selectionne » et « Colonne selectionne » trainaient dans le panneau
+   * lateral : le libelle et son accord viennent d'ici, pas d'une regle devinee
+   * a la derniere lettre du mot.
+   */
+  feminin?: boolean
 }
 
 export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
@@ -120,6 +128,21 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     couleurTexte: '#212529',
     rayon: 0.5,
     etiquetteParDefaut: '',
+    feminin: true,
+  },
+  colonne: {
+    libelle: 'Colonne',
+    aide: "File d'attente : le groupe qui passe un par un",
+    forme: 'colonne',
+    // Le jaune de l'attaque, en plus sourd : une colonne est faite de joueurs,
+    // mais elle n'est pas un joueur — la nuance doit se voir sans se lire.
+    remplissage: '#f4b619',
+    contour: '#0b2a52',
+    couleurTexte: '#0b2a52',
+    pastel: '#fff0c2',
+    rayon: 0.85,
+    etiquetteParDefaut: '×4',
+    feminin: true,
   },
 }
 
@@ -127,6 +150,7 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
 export const PALETTE: TypeJeton[] = [
   'attaquant',
   'defenseur',
+  'colonne',
   'gardien',
   'ballon',
   'plot',

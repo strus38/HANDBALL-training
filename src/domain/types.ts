@@ -15,8 +15,13 @@
  * Version 2 : la fiche adopte la trame de l'entraineur — forme d'intervention,
  * mise en place, fonctionnement, regulation, evolution. Les fichiers de
  * version 1 restent lisibles, leurs champs sont repris a la lecture.
+ *
+ * Version 3 : le schema gagne des zones coloriees et des annotations libres,
+ * la palette un jeton « colonne », la notation une fleche de rotation, et la
+ * fiche l'espace de jeu qu'elle demande. Les fichiers de version 1 et 2 se
+ * lisent sans rien perdre — tout ce qui est nouveau est facultatif.
  */
-export const SCHEMA_VERSION = 2
+export const SCHEMA_VERSION = 3
 
 // ---------------------------------------------------------------- Terrain
 
@@ -51,6 +56,15 @@ export type TypeJeton =
   | 'but'
   | 'entraineur'
   | 'haie'
+  /**
+   * Une file d'attente : le groupe qui patiente et passe un par un.
+   *
+   * C'est l'organisation la plus frequente du handball — un exercice de tir se
+   * mene presque toujours en colonnes — et elle ne se dessinait pas. Poser
+   * douze jetons pour figurer une colonne encombrait le schema et faisait
+   * croire a douze joueurs actifs simultanement.
+   */
+  | 'colonne'
 
 /** Poste handball, optionnel, utilise pour l'etiquette automatique du jeton. */
 export type Poste = 'AlG' | 'ArG' | 'DC' | 'ArD' | 'AlD' | 'PIV' | 'GB'
@@ -92,6 +106,10 @@ export const ORIENTATION_PAR_DEFAUT: Partial<Record<TypeJeton, number>> = {
   defenseur: 270,
   gardien: 270,
   entraineur: 90,
+  // Une colonne attend face au but qu'elle attaque, comme les attaquants.
+  // Sans cette valeur elle naissait tournee vers le haut du terrain, et sa file
+  // s'etirait en travers au lieu de partir vers l'arriere.
+  colonne: 90,
 }
 
 // ---------------------------------------------------------------- Fleches
@@ -102,6 +120,14 @@ export type TypeFleche =
   | 'dribble' // trait ondule     : dribble
   | 'tir' // trait epais          : tir
   | 'ecran' // trait barre en T   : ecran / blocage
+  /**
+   * Trait fin en tirets, pointe ouverte : « puis va au fond de la colonne ».
+   *
+   * Ce n'est pas un mouvement de l'exercice mais sa REGLE DE ROTATION, ce qui
+   * se passe apres l'action. Elle ne deplace donc personne a l'etape suivante
+   * et reste une fleche libre, purement illustrative.
+   */
+  | 'rotation'
 
 export const LIBELLES_FLECHE: Record<TypeFleche, string> = {
   course: 'Course',
@@ -109,6 +135,17 @@ export const LIBELLES_FLECHE: Record<TypeFleche, string> = {
   dribble: 'Dribble',
   tir: 'Tir',
   ecran: 'Écran',
+  rotation: 'Rotation',
+}
+
+/** Ce que chaque trait raconte, en infobulle de la barre d'outils. */
+export const AIDES_FLECHE: Record<TypeFleche, string> = {
+  course: 'Déplacement du joueur',
+  passe: 'Trajectoire du ballon',
+  dribble: 'Le porteur avance en dribblant',
+  tir: 'Tir au but',
+  ecran: 'Écran ou blocage',
+  rotation: 'Puis va au fond de la colonne',
 }
 
 /**
@@ -162,10 +199,86 @@ export interface Etape {
   fleches: Fleche[]
 }
 
+// ------------------------------------------------------- Zones et textes
+
+/**
+ * Teintes disponibles pour une zone.
+ *
+ * Cinq couleurs nommees plutot qu'un choix libre : le nuancier libre produit
+ * des schemas qui jurent d'une fiche a l'autre, et surtout des zones illisibles
+ * une fois imprimees en noir et blanc. Chaque teinte est posee en transparence
+ * et garde donc les lignes du terrain visibles au travers.
+ */
+export type TeinteZone = 'jaune' | 'bleu' | 'vert' | 'rouge' | 'gris'
+
+export const LIBELLES_TEINTE: Record<TeinteZone, string> = {
+  jaune: 'Jaune',
+  bleu: 'Bleu',
+  vert: 'Vert',
+  rouge: 'Rouge',
+  gris: 'Gris',
+}
+
+/**
+ * Zone coloriee posee sur le terrain : zone de marque, secteur interdit,
+ * espace delimite.
+ *
+ * Elle appartient au SCHEMA et non a une etape, comme les jetons : c'est un
+ * element de mise en place, il ne se deplace pas d'une etape a l'autre. Ce
+ * choix la rend aussi impossible a oublier — une zone tracee a l'etape 1 reste
+ * visible a l'etape 4, ou l'entraineur en a encore besoin.
+ *
+ * Le rectangle est decrit par son coin BAS-GAUCHE en repere metier, comme tout
+ * le reste du modele : x vers la droite, y vers le haut.
+ */
+export interface Zone {
+  id: string
+  /** Metres depuis le bord gauche du terrain complet. */
+  x: number
+  /** Metres depuis le bord bas du terrain complet. */
+  y: number
+  largeur: number
+  hauteur: number
+  teinte: TeinteZone
+  /** Libelle pose au centre. Vide : la zone parle par sa couleur seule. */
+  libelle: string
+}
+
+/** Cote minimal d'une zone, en metres : en deca elle n'est plus saisissable. */
+export const ZONE_MINIMALE = 1
+
+/**
+ * Annotation libre : un mot pose sur le terrain, la ou il se lit.
+ *
+ * « Defense 6-0 », « depart au signal », « 3 ballons ici » : des precisions qui
+ * appartiennent a l'endroit du terrain qu'elles designent, et que la consigne
+ * ecrite sous le schema ne peut pas viser.
+ *
+ * Appartient au schema pour la meme raison que les zones : c'est de la mise en
+ * place, pas du mouvement.
+ */
+export interface Annotation {
+  id: string
+  /** Point d'ancrage du texte, en metres, repere metier. */
+  x: number
+  y: number
+  texte: string
+}
+
+/** Longueur maximale d'une annotation : au-dela elle deborde du terrain. */
+export const MAX_LONGUEUR_ANNOTATION = 40
+
 export interface Schema {
   vue: VueTerrain
   jetons: Jeton[]
   etapes: Etape[]
+  /**
+   * Zones coloriees et annotations : facultatives, absentes des schemas ecrits
+   * avant la version 3 du format. Le code les traite donc toujours comme
+   * pouvant manquer, plutot que de reecrire tous les fichiers existants.
+   */
+  zones?: Zone[]
+  annotations?: Annotation[]
 }
 
 // ---------------------------------------------------------------- Exercice
@@ -219,6 +332,53 @@ export const LIBELLES_FORMAT_GARDIENS_COURTS: Record<FormatGardiens, string> = {
   sans: 'Aucun',
   'avec-joueurs': 'Avec les joueurs',
   'gardiens-seuls': 'Entre eux, à part',
+}
+
+/**
+ * Espace de jeu qu'un exercice reclame.
+ *
+ * Jumeau de l'effectif : l'entraineur ne decouvre pas au gymnase qu'il ne
+ * pourra pas mener ce qu'il avait prepare. Un mardi sur deux, le gymnase est
+ * partage avec le basket ou une autre categorie, et la moitie de la seance
+ * preparee sur terrain complet tombe a l'eau.
+ *
+ * Trois paliers, et non une surface en metres carres : c'est ainsi qu'un
+ * gymnase se partage — tout, la moitie dans la longueur, ou un quart de la
+ * salle pour un atelier.
+ */
+export type Espace = 'quart' | 'demi' | 'complet'
+
+export const LIBELLES_ESPACE: Record<Espace, string> = {
+  quart: 'Un quart de salle',
+  demi: 'Un demi-terrain',
+  complet: 'Le terrain complet',
+}
+
+/** Memes valeurs en court, pour les listes et les pastilles. */
+export const LIBELLES_ESPACE_COURTS: Record<Espace, string> = {
+  quart: 'Quart',
+  demi: 'Demi',
+  complet: 'Complet',
+}
+
+/**
+ * Ordre croissant des paliers : c'est la comparaison de ces rangs, et non
+ * l'ordre alphabetique, qui dit si l'espace disponible suffit.
+ */
+export const RANG_ESPACE: Record<Espace, number> = { quart: 1, demi: 2, complet: 3 }
+
+/**
+ * Espace deduit de la vue du schema.
+ *
+ * Sert de valeur de repli pour tout ce qui a ete ecrit avant que le champ
+ * n'existe : les 62 fiches livrees comme les fichiers des entraineurs. La
+ * deduction est juste dans l'immense majorite des cas — on ne dessine pas sur
+ * terrain complet un exercice qui tient sur un demi — et elle vaut infiniment
+ * mieux que de tout declarer « complet » et de noyer l'alerte sous les
+ * faux positifs.
+ */
+export function espaceParDefaut(vue: VueTerrain): Espace {
+  return vue === 'complet' ? 'complet' : vue === 'zone' ? 'quart' : 'demi'
 }
 
 /**
@@ -300,6 +460,13 @@ export interface Exercice {
   evolution: string
   formatGardiens: FormatGardiens
   /**
+   * Espace necessaire pour mener l'exercice tel qu'il est decrit.
+   *
+   * Par defaut un demi-terrain : c'est l'espace de la grande majorite des
+   * situations, et la vue sur laquelle un schema neuf s'ouvre.
+   */
+  espace: Espace
+  /**
    * L'exercice peut se derouler en meme temps qu'un autre, sur une autre partie
    * du terrain (typiquement le travail specifique des gardiens). Sa duree ne
    * s'ajoute alors pas au temps total de la seance.
@@ -337,6 +504,14 @@ export interface Seance {
   effectifJoueurs: number
   /** Gardiens presents ce jour-la. 0 = non renseigne. */
   effectifGardiens: number
+  /**
+   * Espace reellement disponible ce soir-la. Chaine vide = non renseigne.
+   *
+   * Meme convention que l'effectif : tant que rien n'est dit, aucune alerte
+   * n'est levee. On ne reproche pas a l'entraineur de ne pas avoir repondu a
+   * une question qu'on ne lui a pas posee.
+   */
+  espaceDisponible: Espace | ''
   exercices: Exercice[]
   /**
    * Instant ISO ou le mode terrain a ete lance, absent sinon.
@@ -369,6 +544,26 @@ export function manqueEffectif(exercice: Exercice, seance: Seance): Manque | und
     seance.effectifGardiens > 0 ? exercice.nombreGardiens - seance.effectifGardiens : 0
   if (joueurs <= 0 && gardiens <= 0) return undefined
   return { joueurs: Math.max(0, joueurs), gardiens: Math.max(0, gardiens) }
+}
+
+/**
+ * L'exercice demande-t-il plus de place que la seance n'en a ?
+ *
+ * Renvoie l'espace RECLAME quand il depasse le disponible, et rien sinon.
+ * Exactement le motif de manqueEffectif : un espace non renseigne ne declenche
+ * aucune alerte, et un exercice qui tient dans moins de place que disponible
+ * n'est jamais signale.
+ */
+export function manqueEspace(exercice: Exercice, seance: Seance): Espace | undefined {
+  if (!seance.espaceDisponible) return undefined
+  const requis = RANG_ESPACE[exercice.espace] ?? RANG_ESPACE.demi
+  if (requis <= RANG_ESPACE[seance.espaceDisponible]) return undefined
+  return exercice.espace
+}
+
+/** Vrai des qu'un exercice se heurte a l'effectif OU a l'espace du jour. */
+export function exerciceIncompatible(exercice: Exercice, seance: Seance): boolean {
+  return manqueEffectif(exercice, seance) !== undefined || manqueEspace(exercice, seance) !== undefined
 }
 
 /**

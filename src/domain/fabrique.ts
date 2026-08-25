@@ -48,6 +48,9 @@ export function nouvelExercice(titre = 'Nouvel exercice'): Exercice {
     pointsCles: '',
     evolution: '',
     formatGardiens: 'avec-joueurs',
+    // Un demi-terrain : l'espace de la grande majorite des situations, et la
+    // vue sur laquelle un schema neuf s'ouvre.
+    espace: 'demi',
     enParallele: false,
     evaluation: nouvelleEvaluation(),
     schema: nouveauSchema(),
@@ -74,6 +77,7 @@ export function nouvelleSeance(titre = 'Nouvelle séance', mienne: MonEquipe = A
     objectifSeance: '',
     effectifJoueurs: 0,
     effectifGardiens: 0,
+    espaceDisponible: '',
     exercices: [],
     creeLe: date,
     modifieLe: date,

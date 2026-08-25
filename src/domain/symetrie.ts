@@ -10,7 +10,7 @@
  * jamais les deux buts. L'attaque continue de se jouer dans le meme sens.
  */
 
-import { TERRAIN, type Jeton, type Position, type Schema } from './types'
+import { TERRAIN, type Annotation, type Jeton, type Position, type Schema, type Zone } from './types'
 
 /** Image d'un point par la symetrie d'axe median. */
 export function refleterPosition(position: Position): Position {
@@ -51,8 +51,26 @@ export function refleterEtiquette(etiquette: string): string {
 }
 
 /**
+ * Image d'une zone.
+ *
+ * Une zone est decrite par son coin BAS-gauche : le miroir en fait le coin
+ * HAUT-gauche, et c'est donc y + hauteur qu'il faut refleter, pas y. Refleter y
+ * seul deplacait la zone d'une hauteur entiere vers le bas — le defaut ne se
+ * voyait pas sur une zone carree centree, et sautait aux yeux sur une bande.
+ */
+export function refleterZone(zone: Zone): Zone {
+  return { ...zone, y: TERRAIN.largeur - (zone.y + zone.hauteur) }
+}
+
+/** Image d'une annotation : un point, donc la meme regle que les positions. */
+export function refleterAnnotation(annotation: Annotation): Annotation {
+  return { ...annotation, y: TERRAIN.largeur - annotation.y }
+}
+
+/**
  * Symetrique complet d'un schema : toutes les etapes, toutes les positions,
- * les orientations imposees, les fleches libres et les courbures.
+ * les orientations imposees, les fleches libres et les courbures, les zones et
+ * les annotations.
  *
  * Les fleches liees a un jeton n'ont rien a refleter : leurs extremites sont
  * les positions des jetons, qui viennent d'etre reflechies.
@@ -60,6 +78,8 @@ export function refleterEtiquette(etiquette: string): string {
 export function refleterSchema(schema: Schema): Schema {
   return {
     ...schema,
+    zones: schema.zones?.map(refleterZone),
+    annotations: schema.annotations?.map(refleterAnnotation),
     jetons: schema.jetons.map(
       (jeton): Jeton => ({
         ...jeton,

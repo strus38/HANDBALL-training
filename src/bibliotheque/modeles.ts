@@ -13,9 +13,11 @@
 import { nouvelId } from '../domain/fabrique'
 import { appliquerMouvement } from '../domain/mouvement'
 import {
+  espaceParDefaut,
   nouvelleEvaluation,
   ORIENTATION_PAR_DEFAUT,
   type Categorie,
+  type Espace,
   type Difficulte,
   type Exercice,
   type FormatGardiens,
@@ -106,6 +108,11 @@ export interface ModeleExercice {
   evolution: string
   formatGardiens: FormatGardiens
   enParallele?: boolean
+  /**
+   * Espace reclame. Absent, il se deduit de la vue : une fiche dessinee sur
+   * terrain complet en demande un, une fiche sur demi-terrain aussi.
+   */
+  espace?: Espace
   vue: VueTerrain
   jetons: ModeleJeton[]
   /** Consigne de la mise en place, avant tout mouvement. */
@@ -203,6 +210,7 @@ export function construireExercice(modele: ModeleExercice): Exercice {
     pointsCles: modele.pointsCles,
     evolution: modele.evolution,
     formatGardiens: modele.formatGardiens,
+    espace: modele.espace ?? espaceParDefaut(modele.vue),
     enParallele: modele.enParallele ?? false,
     evaluation: nouvelleEvaluation(),
     issuDeLaBibliotheque: true,
