@@ -22,7 +22,13 @@ permissions:
 jobs:
   publier:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Le plafond est la pour tuer un blocage, pas pour borner un travail normal.
+    # Il valait quinze minutes du temps ou un seul club etait fabrique ; chacun
+    # coute environ trois minutes de machine — typage, bundle, notice avec ses
+    # captures prises dans un vrai navigateur, tests et tests de fumee — et le
+    # cache des captures ne se partage pas d'un club a l'autre, leurs livrables
+    # etant differents. A revoir le jour ou le compte des clubs doublera encore.
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
