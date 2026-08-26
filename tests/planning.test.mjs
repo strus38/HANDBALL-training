@@ -26,6 +26,16 @@
  * 6. Une equipe hors planning ne doit rien declencher du tout. L'automatisme
  *    ne remplace pas la saisie libre, il s'ajoute quand il sait.
  *
+ * 7. Un test ne doit pas dependre du JOUR OU ON LE LANCE. Les sections 7 et 8
+ *    reposaient sur une seance nee sans date, donc calee sur le prochain
+ *    entrainement a partir d'aujourd'hui : 90 minutes quand il tombait un
+ *    mardi, 75 quand il tombait un vendredi. Les assertions etaient ecrites
+ *    pour 90. Le test passait donc du lundi au mardi et echouait du mercredi
+ *    au dimanche, sans que rien n'ait change dans le code — de quoi faire
+ *    chercher un defaut la ou il n'y en avait pas, et de quoi bloquer la
+ *    publication d'une version un jour sur deux. Toute seance dont la DUREE
+ *    compte est desormais calee sur une date ecrite.
+ *
  * Lancement : npm test
  */
 
@@ -205,18 +215,27 @@ const avec = (minutes, enParallele = false) => ({
   duree: minutes,
   enParallele,
 })
-verifier('une seance vide ne depasse rien', depassementCreneau(seance) === 0)
+
+/**
+ * La seance sur laquelle se mesure un depassement : posee un mardi, donc 90
+ * minutes, aujourd'hui comme dans six mois. La seance de la section 5 garde
+ * sa date automatique — c'est elle qu'on y verifie — mais elle ne peut pas
+ * servir ici, ou c'est la DUREE qui est en jeu.
+ */
+const seanceDuMardi = calerSurLePlanning({ ...seance, date: MARDI })
+verifier('le creneau du mardi dure bien 90 minutes', seanceDuMardi.dureeCreneau === 90)
+verifier('une seance vide ne depasse rien', depassementCreneau(seanceDuMardi) === 0)
 verifier(
   'un plan qui tient ne dit rien',
-  depassementCreneau({ ...seance, exercices: [avec(40), avec(45)] }) === 0,
+  depassementCreneau({ ...seanceDuMardi, exercices: [avec(40), avec(45)] }) === 0,
 )
 verifier(
   'cinq minutes de trop sont signalees',
-  depassementCreneau({ ...seance, exercices: [avec(50), avec(45)] }) === 5,
+  depassementCreneau({ ...seanceDuMardi, exercices: [avec(50), avec(45)] }) === 5,
 )
 verifier(
   'un exercice en parallele n allonge pas la seance',
-  depassementCreneau({ ...seance, exercices: [avec(50), avec(40), avec(30, true)] }) === 0,
+  depassementCreneau({ ...seanceDuMardi, exercices: [avec(50), avec(40), avec(30, true)] }) === 0,
 )
 verifier(
   'sans creneau connu, aucun depassement',
@@ -225,11 +244,13 @@ verifier(
 
 console.log('')
 console.log('8. La duree du creneau traverse les fichiers')
-const relu = importerFichier(exporterSeance({ ...seance, exercices: [avec(50), avec(45)] }))
+const relu = importerFichier(
+  exporterSeance({ ...seanceDuMardi, exercices: [avec(50), avec(45)] }),
+)
 verifier('elle survit a l export', relu.seance.dureeCreneau === 90)
 verifier('et l alerte se recalcule a l identique', depassementCreneau(relu.seance) === 5)
 
-const ancien = JSON.parse(exporterSeance(seance))
+const ancien = JSON.parse(exporterSeance(seanceDuMardi))
 delete ancien.contenu.seance.dureeCreneau
 const reluAncien = importerFichier(JSON.stringify(ancien))
 verifier(
