@@ -472,7 +472,7 @@ body {
   gap: 18px;
   margin: 0 -20px 30px;
   padding: 26px 28px;
-  background: var(--bleu-900);
+  background: var(--structure-900);
 }
 .tete svg { width: 62px; height: 62px; flex-shrink: 0; }
 .tete h1 { margin: 0; color: #fff; font-size: 24px; line-height: 1.2; }
@@ -481,14 +481,14 @@ body {
 /* Les trois choses a retenir, avant meme la premiere etape : un entraineur
    qui n'irait pas plus loin doit deja pouvoir se debrouiller. */
 .essentiel {
-  background: var(--bleu-050);
-  border: 1px solid var(--bleu-100);
-  border-left: 5px solid var(--jaune);
+  background: var(--structure-050);
+  border: 1px solid var(--structure-100);
+  border-left: 5px solid var(--accent);
   border-radius: var(--rayon);
   padding: 18px 22px;
   margin-bottom: 34px;
 }
-.essentiel h2 { margin: 0 0 10px; font-size: 17px; color: var(--bleu-900); }
+.essentiel h2 { margin: 0 0 10px; font-size: 17px; color: var(--structure-900); }
 .essentiel ol { margin: 0; padding-left: 22px; }
 .essentiel li { margin-bottom: 6px; }
 
@@ -500,7 +500,7 @@ body {
   gap: 12px;
   margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 2px solid var(--jaune);
+  border-bottom: 2px solid var(--accent);
 }
 
 .numero {
@@ -508,7 +508,7 @@ body {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--bleu-900);
+  background: var(--structure-900);
   color: #fff;
   font-weight: 700;
   font-size: 15px;
@@ -517,7 +517,7 @@ body {
   justify-content: center;
 }
 
-.tete-etape h2 { margin: 0; font-size: 20px; color: var(--bleu-900); flex: 1; }
+.tete-etape h2 { margin: 0; font-size: 20px; color: var(--structure-900); flex: 1; }
 
 .duree {
   flex: none;
@@ -529,7 +529,7 @@ body {
 .corps h3 {
   margin: 20px 0 8px;
   font-size: 15.5px;
-  color: var(--bleu-900);
+  color: var(--structure-900);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -552,7 +552,7 @@ body {
 
 .note {
   background: var(--surface);
-  border-left: 3px solid var(--bleu-100);
+  border-left: 3px solid var(--structure-100);
   border-radius: 0 var(--rayon) var(--rayon) 0;
   padding: 10px 14px;
   color: var(--texte-doux);
@@ -573,16 +573,16 @@ body {
 .liens {
   background: var(--surface);
   border: 1px solid var(--bordure);
-  border-top: 4px solid var(--bleu-900);
+  border-top: 4px solid var(--structure-900);
   border-radius: var(--rayon);
   padding: 22px 26px;
   margin: 6px 0 40px;
 }
-.liens h2 { margin: 0 0 8px; font-size: 20px; color: var(--bleu-900); }
+.liens h2 { margin: 0 0 8px; font-size: 20px; color: var(--structure-900); }
 .liens h3 {
   margin: 22px 0 8px;
   font-size: 15.5px;
-  color: var(--bleu-900);
+  color: var(--structure-900);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -635,7 +635,7 @@ body {
   border-radius: var(--rayon);
   padding: 20px 24px;
 }
-.suite h2 { margin: 0 0 8px; font-size: 19px; color: var(--bleu-900); }
+.suite h2 { margin: 0 0 8px; font-size: 19px; color: var(--structure-900); }
 .suite ul { margin: 0; padding-left: 22px; }
 .suite li { margin-bottom: 6px; color: var(--texte-doux); }
 .suite li strong { color: var(--texte); }

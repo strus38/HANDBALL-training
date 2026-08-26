@@ -2,9 +2,9 @@
  * Ce que la marque du club fournit aux documents engendres : l'ecusson et les
  * couleurs, pris a la source plutot que recopies.
  *
- * La notice s'en sert. Changer le jaune du club dans src/ui/styles.css, ou
- * redessiner l'ecusson dans `clubs/<identifiant>/Ecusson.tsx`, met le document
- * a jour sans rien retoucher ici.
+ * La notice s'en sert. Changer la palette dans `clubs/<identifiant>/profil.json`,
+ * ou redessiner l'ecusson dans `clubs/<identifiant>/Ecusson.tsx`, met le
+ * document a jour sans rien retoucher ici.
  *
  * L'ecusson est pris dans le profil du club fabrique : ce module ne sait pas
  * quel club il sert, et c'est ce qui lui permet de les servir tous.
@@ -13,7 +13,7 @@
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { RACINE_CLUB } from './club.mjs'
+import { PROFIL, RACINE_CLUB } from './club.mjs'
 
 const racine = join(dirname(fileURLToPath(import.meta.url)), '..')
 const lire = (chemin) => readFileSync(join(racine, chemin), 'utf8')
@@ -75,12 +75,28 @@ export function logo(identifiant = 'logo-document') {
   return svg
 }
 
-/** Bloc :root de la feuille de styles : la seule source des couleurs. */
+/**
+ * Les jetons de style du document engendre : les neutres de l'application,
+ * puis les couleurs du club par-dessus.
+ *
+ * Le meme empilement que dans l'application, et dans le meme ordre : la
+ * feuille de style porte les neutres et un repli gris, le profil du club pose
+ * ses couleurs par-dessus. Lire la seule feuille de style ferait sortir une
+ * notice entierement grise, sans que rien ne le signale.
+ */
 export function jetonsDeStyle() {
   const styles = lire('src/ui/styles.css')
   const debut = styles.indexOf(':root {')
   const fin = styles.indexOf('\n}', debut)
   if (debut === -1 || fin === -1) throw new Error('Bloc :root introuvable dans styles.css')
-  return styles.slice(debut, fin + 2)
+  const duClub = Object.entries(PROFIL.couleurs)
+    .map(([role, valeur]) => `  --${role}: ${valeur};`)
+    .join('\n')
+  // Meme calcul que src/ui/couleurs.ts : les ombres se teintent de la
+  // structure profonde, decomposee pour accepter une opacite.
+  const sombre = PROFIL.couleurs['structure-900']
+  const teinte = [1, 3, 5].map((i) => parseInt(sombre.slice(i, i + 2), 16)).join(', ')
+  const entete = '\n\n  /* Couleurs du club, posees par son profil. */\n'
+  return styles.slice(debut, fin) + entete + duClub + `\n  --ombre-teinte: ${teinte};\n}\n`
 }
 

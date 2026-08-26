@@ -9,8 +9,10 @@
  * Lancement : npm test
  */
 
+import { DOSSIER_CLUB } from '../outils/club.mjs'
 import {
   CATALOGUE,
+  FONDS_COMMUN,
   REFS_COMBINAISONS,
   DISTANCE_PORTEUR,
   construireExercice,
@@ -34,7 +36,10 @@ const JOUEURS_DE_CHAMP = ['attaquant', 'defenseur']
 
 console.log('')
 console.log('1. Integrite des modeles')
-verifier('le catalogue est complet', CATALOGUE.length === 62, '(' + CATALOGUE.length + ')')
+// Le compte porte sur le FONDS COMMUN, ce que tout club recoit. Le total, lui,
+// depend du club fabrique : c'est tests/club.test.mjs qui verifie que le
+// catalogue vaut bien le fonds commun plus les fiches du club.
+verifier('le fonds commun est complet', FONDS_COMMUN.length === 56, '(' + FONDS_COMMUN.length + ')')
 verifier('chaque fiche a un titre', CATALOGUE.every((m) => m.titre.trim().length > 0))
 verifier('chaque fiche a au moins un jeton', CATALOGUE.every((m) => m.jetons.length > 0))
 
@@ -73,11 +78,23 @@ verifier(
 
 // Le vrai garde-fou : l'inventaire versionne. Une reference qui disparait
 // emporte avec elle les favoris et l'historique des entraineurs.
-const { readFileSync: lireFichier } = await import('node:fs')
-const connues = lireFichier(new URL('./references-connues.txt', import.meta.url), 'utf8')
-  .split('\n')
-  .map((l) => l.trim())
-  .filter((l) => l && !l.startsWith('#'))
+//
+// DEUX inventaires depuis que chaque club apporte ses fiches : celui du fonds
+// commun, que tous recoivent, et celui du club fabrique. Un seul fichier aurait
+// reproche a chaque nouveau club la disparition des fiches d'un autre — elles
+// n'ont jamais ete les siennes.
+const { existsSync, readFileSync: lireFichier } = await import('node:fs')
+const lireInventaire = (chemin) =>
+  existsSync(chemin)
+    ? lireFichier(chemin, 'utf8')
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l && !l.startsWith('#'))
+    : []
+const connues = [
+  ...lireInventaire('tests/references-connues.txt'),
+  ...lireInventaire(`${DOSSIER_CLUB}/references-connues.txt`),
+]
 const disparues = connues.filter((r) => !refs.includes(r))
 const nouvelles = refs.filter((r) => !connues.includes(r))
 verifier(
@@ -86,7 +103,7 @@ verifier(
   [
     '',
     ...disparues.map((r) => '        ' + r),
-    '        Si le retrait est voulu, retirez aussi sa ligne de tests/references-connues.txt.',
+    '        Si le retrait est voulu, retirez aussi sa ligne de l inventaire correspondant.',
   ].join('\n'),
 )
 verifier('l inventaire est a jour', nouvelles.length === 0)

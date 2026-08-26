@@ -2,5 +2,16 @@
   "identifiant": "hbpsm",
   "nomCourt": "HBPSM",
   "nom": "Handball Pays de Saint-Marcellin",
-  "nomLivrable": "HBPSM-entrainements.html"
+  "nomLivrable": "HBPSM-entrainements.html",
+  "couleurs": {
+    "accent": "#ffc72c",
+    "accent-clair": "#fff3d1",
+    "accent-fonce": "#d99e00",
+    "structure-900": "#0b2a52",
+    "structure-800": "#103866",
+    "structure-700": "#16487f",
+    "structure-500": "#1f6fbd",
+    "structure-100": "#e4eefa",
+    "structure-050": "#f2f7fd"
+  }
 }

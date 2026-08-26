@@ -36,9 +36,17 @@
  *    publication d'une version un jour sur deux. Toute seance dont la DUREE
  *    compte est desormais calee sur une date ecrite.
  *
+ * CE QUE CE FICHIER SUPPOSE. Le planning appartient au club fabrique : la
+ * section 1 croise ses deux listes et vaut pour n'importe lequel, mais tout ce
+ * qui suit decrit un planning PRECIS — celui du club de reference du depot,
+ * avec ses horaires et ses durees. Fabriquer un autre club et lui appliquer ces
+ * assertions ne prouverait rien ; elles s'arretent donc la, en le disant.
+ *
  * Lancement : npm test
  */
 
+import { readFileSync } from 'node:fs'
+import { CLUB } from '../outils/club.mjs'
 import {
   EQUIPES_CLUB,
   PLANNING,
@@ -97,12 +105,24 @@ verifier(
   [...nommees].every((nom) => surLeTerrain.has(nom)),
   [...nommees].filter((nom) => !surLeTerrain.has(nom)).join(', '),
 )
-verifier('la categorie d age suit le nom', equipeDuClub(U13G).categorieAge === '-13 ans')
 verifier('une equipe inconnue ne se trouve pas', equipeDuClub('Selection U15') === undefined)
 verifier('chaque creneau finit apres son debut', PLANNING.every((c) => dureeCreneau(c) > 0))
 
+// Au-dela de la coherence verifiee ci-dessus, les assertions decrivent un
+// planning nommement. Un autre club a le sien, et il ne ressemble pas a
+// celui-la : on s'arrete ici plutot que de lui reprocher ses propres horaires.
+if (CLUB !== JSON.parse(readFileSync('package.json', 'utf8')).clubParDefaut) {
+  console.log('')
+  console.log(`  (« ${CLUB} » n'est pas le club de reference : la suite decrit`)
+  console.log('   un planning precis et ne le concerne pas.)')
+  console.log('')
+  console.log(`=== ${ok} reussis, ${ko} echoues ===`)
+  process.exit(ko === 0 ? 0 : 1)
+}
+
 console.log('')
 console.log('2. La duree se lit dans le creneau')
+verifier('la categorie d age suit le nom', equipeDuClub(U13G).categorieAge === '-13 ans')
 const mardi13 = creneauDuJour(U13G, MARDI)
 const vendredi13 = creneauDuJour(U13G, VENDREDI)
 verifier('mardi, les moins de 13 ont 90 minutes', dureeCreneau(mardi13) === 90)

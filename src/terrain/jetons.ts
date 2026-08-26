@@ -1,10 +1,17 @@
 /**
  * Apparence des jetons sur le terrain.
  *
- * Les couleurs reprennent celles du club (jaune et bleu) : l'attaque porte le
- * jaune, la defense le bleu, comme sur un maillot. Le contraste est calcule
- * pour rester lisible a l'ecran comme sur une feuille imprimee en noir et
- * blanc, ou seule la forme distingue alors les jetons.
+ * L'attaque porte le jaune, la defense le bleu, comme sur un maillot. Le
+ * contraste est calcule pour rester lisible a l'ecran comme sur une feuille
+ * imprimee en noir et blanc, ou seule la forme distingue alors les jetons.
+ *
+ * CES COULEURS NE SUIVENT PAS LE CLUB, et c'est deliberé. Une seance s'echange
+ * en fichier .hbt.json d'un club a l'autre : si l'attaquant prenait la couleur
+ * de celui qui ouvre, le meme exercice se lirait autrement d'un gymnase au
+ * suivant, et la « zone jaune » cesserait d'etre jaune. Un schema est une
+ * notation commune, comme un rond central ou une ligne des neuf metres — pas
+ * une affaire d'ecusson. Elles se trouvent donc ici, en dur, et non dans la
+ * palette du profil.
  *
  * Les joueurs sont un disque a la couleur du camp, deux bras tendus vers
  * l'avant, et une pastille centrale qui porte l'etiquette. Le disque a ete

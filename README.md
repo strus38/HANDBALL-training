@@ -99,9 +99,10 @@ dans son profil :
 
 | Fichier | Ce qu'il porte |
 | --- | --- |
-| `profil.json` | Identifiant, nom court, nom complet, nom du fichier livré |
+| `profil.json` | Identifiant, noms, nom du fichier livré, et la palette du club |
 | `Ecusson.tsx` | L'écusson du club |
 | `fiches.ts` | Ses séances propres, ajoutées au fonds commun — vide pour la plupart des clubs |
+| `planning.ts` | Ses équipes et leurs créneaux hebdomadaires |
 
 ```
 npm run build            # le club par defaut du depot
@@ -111,6 +112,11 @@ CLUB=xxx npm run build   # l exemplaire du club xxx
 Ouvrir un club, c'est copier un dossier de `clubs/` et en changer le contenu :
 aucun fichier de `src/` n'est touché. Le fonds commun des exercices part avec
 tous les exemplaires ; les fiches d'un club ne partent qu'avec le sien.
+
+Les couleurs sont nommées par **rôle** — `accent`, `structure-900` — jamais par
+teinte : un club en vert et noir ne récupère pas un `--jaune` vert. Des tests
+refusent une palette incomplète, un rôle inconnu, ou un accent sur lequel le
+texte ne se lirait plus.
 
 Le détail de ces choix, et les raisons derrière, sont dans les commentaires du
 code : ce sont eux la référence du projet.

@@ -23,6 +23,33 @@
 
 import profil from '@club/profil.json'
 
+/**
+ * La palette du club, par ROLE et jamais par teinte.
+ *
+ * Chaque clef est le nom d'une variable CSS, sans les deux tirets : le profil
+ * declare donc directement ce que la feuille de style consomme, sans table de
+ * correspondance a tenir entre les deux.
+ *
+ * STRUCTURE, du plus fonce au plus clair : l'ossature de l'interface — entete,
+ * boutons d'action, titres, fonds doux. `structure-900` doit rester lisible sur
+ * fond clair.
+ *
+ * ACCENT : les elements actifs et les reperes. Il porte TOUJOURS du texte
+ * fonce ; un accent trop sombre rend son propre texte illisible, et c'est un
+ * test, pas un oeil, qui doit le dire — voir tests/club.test.mjs.
+ */
+export interface PaletteClub {
+  accent: string
+  'accent-clair': string
+  'accent-fonce': string
+  'structure-900': string
+  'structure-800': string
+  'structure-700': string
+  'structure-500': string
+  'structure-100': string
+  'structure-050': string
+}
+
 export interface ProfilClub {
   /** Identifiant court et technique : dossier, prefixes, noms de sauvegarde. */
   identifiant: string
@@ -32,6 +59,8 @@ export interface ProfilClub {
   nom: string
   /** Le fichier que l'entraineur double-clique. */
   nomLivrable: string
+  /** Ses couleurs. Le type les rend obligatoires : un profil incomplet ne compile pas. */
+  couleurs: PaletteClub
 }
 
 /**

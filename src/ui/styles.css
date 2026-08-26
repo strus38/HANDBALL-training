@@ -1,24 +1,52 @@
 /**
  * Feuille de style de l'application.
  *
- * Les couleurs viennent du club : jaune et bleu (HBPSM, Saint-Marcellin).
- * Le bleu profond porte la structure (entete, boutons d'action, titres) car il
- * garde un contraste suffisant sur fond clair ; le jaune sert d'accent, sur les
- * elements actifs et les reperes, toujours associe a du texte bleu fonce, un
- * texte clair sur jaune etant illisible.
+ * Deux familles de couleurs portent l'interface, et elles ont un ROLE, pas une
+ * teinte : la STRUCTURE tient l'ossature — entete, boutons d'action, titres —
+ * parce qu'elle garde un contraste suffisant sur fond clair ; l'ACCENT marque
+ * les elements actifs et les reperes, toujours associe a du texte fonce, un
+ * texte clair sur accent etant illisible.
+ *
+ * Elles s'appelaient « --jaune » et « --bleu-900 », d'apres les couleurs du
+ * premier club servi. Tant qu'il n'y en avait qu'un, le raccourci ne coutait
+ * rien ; le premier club en vert et noir aurait herite d'un « --jaune » vert,
+ * et chaque relecture aurait demande une traduction mentale.
  */
 
 :root {
-  /* Couleurs du club */
-  --jaune: #ffc72c;
-  --jaune-clair: #fff3d1;
-  --jaune-fonce: #d99e00;
-  --bleu-900: #0b2a52;
-  --bleu-800: #103866;
-  --bleu-700: #16487f;
-  --bleu-500: #1f6fbd;
-  --bleu-100: #e4eefa;
-  --bleu-050: #f2f7fd;
+  /*
+   * Couleurs du club — POSEES PAR SON PROFIL, pas ici.
+   *
+   * Ces valeurs-ci sont un repli gris : ce que montrerait un exemplaire dont
+   * la palette n'aurait pas ete appliquee. Aucun livrable ne les affiche.
+   * `src/ui/couleurs.ts` pose celle du club sur :root avant le premier rendu,
+   * et un profil auquel il manque une couleur ne compile pas.
+   *
+   * Le gris est deliberement terne : si un exemplaire sortait un jour sans sa
+   * palette, cela se verrait au premier coup d'oeil plutot que de passer pour
+   * un choix graphique.
+   */
+  --accent: #c9ccd1;
+  --accent-clair: #eceef1;
+  --accent-fonce: #9aa0a8;
+  --structure-900: #2b3138;
+  --structure-800: #3a424b;
+  --structure-700: #4a535e;
+  --structure-500: #6b7683;
+  --structure-100: #e6e9ed;
+  --structure-050: #f3f5f7;
+
+  /*
+   * La teinte des ombres et des voiles : « --structure-900 » decompose en
+   * composantes, parce qu'une ombre a besoin d'une opacite et qu'une variable
+   * CSS ne se coupe pas en trois. `src/ui/couleurs.ts` la calcule et la pose,
+   * a partir de la meme couleur : rien a declarer dans le profil.
+   *
+   * Elle etait ecrite « rgba(11, 42, 82, …) » a six endroits — le bleu marine
+   * d'un club precis. Le voile des dialogues couvre tout l'ecran a 45 % : sur
+   * une application noire et verte, il se serait vu.
+   */
+  --ombre-teinte: 43, 49, 56;
 
   /* Neutres */
   --fond: #f5f7fa;
@@ -40,8 +68,8 @@
   /* Formes */
   --rayon: 10px;
   --rayon-petit: 7px;
-  --ombre: 0 1px 2px rgba(11, 42, 82, 0.07), 0 2px 8px rgba(11, 42, 82, 0.06);
-  --ombre-forte: 0 8px 30px rgba(11, 42, 82, 0.18);
+  --ombre: 0 1px 2px rgba(var(--ombre-teinte), 0.07), 0 2px 8px rgba(var(--ombre-teinte), 0.06);
+  --ombre-forte: 0 8px 30px rgba(var(--ombre-teinte), 0.18);
 
   font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
   color-scheme: light;
@@ -70,7 +98,7 @@ h1,
 h2,
 h3,
 h4 {
-  color: var(--bleu-900);
+  color: var(--structure-900);
   letter-spacing: -0.01em;
 }
 
@@ -96,7 +124,7 @@ textarea {
   flex-wrap: wrap;
   gap: 8px 14px;
   padding: 10px 20px;
-  background: var(--bleu-900);
+  background: var(--structure-900);
   color: #fff;
   box-shadow: var(--ombre);
   z-index: 3;
@@ -158,14 +186,14 @@ textarea {
 /* Tant qu'elle n'est pas renseignee, elle appelle le clic : le jaune du club
    sur le bleu de l'entete, le seul contraste que l'oeil y trouve. */
 .entete .bouton.discret.bouton-equipe.a-renseigner {
-  color: var(--bleu-900);
-  background: var(--jaune);
+  color: var(--structure-900);
+  background: var(--accent);
   font-weight: 600;
 }
 
 .entete .bouton.discret.bouton-equipe.a-renseigner:hover:not(:disabled) {
-  background: var(--jaune-fonce);
-  color: var(--bleu-900);
+  background: var(--accent-fonce);
+  color: var(--structure-900);
 }
 
 .corps {
@@ -198,7 +226,7 @@ textarea {
   border: 1px solid var(--bordure-forte);
   border-radius: var(--rayon-petit);
   background: var(--surface);
-  color: var(--bleu-800);
+  color: var(--structure-800);
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -206,8 +234,8 @@ textarea {
 }
 
 .bouton:hover:not(:disabled) {
-  background: var(--bleu-050);
-  border-color: var(--bleu-500);
+  background: var(--structure-050);
+  border-color: var(--structure-500);
 }
 
 .bouton:active:not(:disabled) {
@@ -215,14 +243,14 @@ textarea {
 }
 
 .bouton.principal {
-  background: var(--bleu-700);
-  border-color: var(--bleu-700);
+  background: var(--structure-700);
+  border-color: var(--structure-700);
   color: #fff;
 }
 
 .bouton.principal:hover:not(:disabled) {
-  background: var(--bleu-800);
-  border-color: var(--bleu-800);
+  background: var(--structure-800);
+  border-color: var(--structure-800);
 }
 
 .bouton.danger {
@@ -245,7 +273,7 @@ textarea {
 
 .bouton.discret:hover:not(:disabled) {
   background: var(--surface-2);
-  color: var(--bleu-800);
+  color: var(--structure-800);
 }
 
 .bouton:disabled {
@@ -275,17 +303,17 @@ textarea {
 }
 
 .bouton.segment.actif {
-  background: var(--jaune);
-  border-color: var(--jaune-fonce);
-  color: var(--bleu-900);
+  background: var(--accent);
+  border-color: var(--accent-fonce);
+  color: var(--structure-900);
   font-weight: 650;
 }
 
 /* Un bouton qui porte un etat, comme « ★ En favori ». */
 .bouton.actif {
-  background: var(--jaune-clair);
-  border-color: var(--jaune-fonce);
-  color: var(--bleu-900);
+  background: var(--accent-clair);
+  border-color: var(--accent-fonce);
+  color: var(--structure-900);
   font-weight: 650;
 }
 
@@ -334,8 +362,8 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--bleu-500);
-  box-shadow: 0 0 0 3px var(--bleu-100);
+  border-color: var(--structure-500);
+  box-shadow: 0 0 0 3px var(--structure-100);
 }
 
 .bouton:focus-visible,
@@ -344,7 +372,7 @@ textarea:focus {
 .lien-exercice:focus-visible,
 .puce:focus-visible,
 .etoile:focus-visible {
-  outline: 2px solid var(--bleu-500);
+  outline: 2px solid var(--structure-500);
   outline-offset: 2px;
 }
 
@@ -353,8 +381,8 @@ textarea:focus {
   gap: 10px;
   align-items: flex-start;
   padding: 11px 13px;
-  background: var(--bleu-050);
-  border: 1px solid var(--bleu-100);
+  background: var(--structure-050);
+  border: 1px solid var(--structure-100);
   border-radius: var(--rayon-petit);
   cursor: pointer;
 }
@@ -363,7 +391,7 @@ textarea:focus {
   width: 18px;
   height: 18px;
   margin-top: 2px;
-  accent-color: var(--bleu-700);
+  accent-color: var(--structure-700);
   flex-shrink: 0;
 }
 
@@ -445,15 +473,15 @@ textarea:focus {
 }
 
 .liste-seances .active {
-  background: var(--bleu-050);
-  border-color: var(--bleu-100);
-  border-left-color: var(--jaune);
+  background: var(--structure-050);
+  border-color: var(--structure-100);
+  border-left-color: var(--accent);
 }
 
 .liste-seances .titre-seance {
   font-weight: 600;
   display: block;
-  color: var(--bleu-900);
+  color: var(--structure-900);
 }
 
 .liste-seances .meta-seance {
@@ -484,9 +512,9 @@ textarea:focus {
 }
 
 .bandeau.information {
-  background: var(--bleu-050);
-  border-bottom: 1px solid var(--bleu-100);
-  color: var(--bleu-800);
+  background: var(--structure-050);
+  border-bottom: 1px solid var(--structure-100);
+  color: var(--structure-800);
 }
 
 .bandeau.information .bouton {
@@ -520,7 +548,7 @@ textarea:focus {
 }
 
 .indicateur.erreur {
-  color: var(--jaune);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -549,7 +577,7 @@ textarea:focus {
 
 .version:hover,
 .version:focus-visible {
-  color: var(--jaune);
+  color: var(--accent);
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -583,7 +611,7 @@ textarea:focus {
   gap: 10px;
   margin: 10px 0 0;
   font-size: 13px;
-  color: var(--bleu-700);
+  color: var(--structure-700);
   font-weight: 500;
 }
 
@@ -602,14 +630,14 @@ textarea:focus {
   margin: 12px 0 0;
   padding: 8px 12px;
   border-radius: var(--rayon-petit);
-  background: var(--bleu-050);
-  border-left: 3px solid var(--bleu-100);
+  background: var(--structure-050);
+  border-left: 3px solid var(--structure-100);
   font-size: 13px;
   color: var(--texte-doux);
 }
 
 .creneau-seance strong {
-  color: var(--bleu-700);
+  color: var(--structure-700);
   text-transform: capitalize;
 }
 
@@ -619,7 +647,7 @@ textarea:focus {
   margin: 12px 0 0;
   padding: 10px 12px;
   border-radius: var(--rayon-petit);
-  background: var(--bleu-050);
+  background: var(--structure-050);
   font-size: 12.5px;
   color: var(--texte-doux);
 }
@@ -629,7 +657,7 @@ textarea:focus {
 }
 
 .creneaux-equipe strong {
-  color: var(--bleu-700);
+  color: var(--structure-700);
   text-transform: capitalize;
 }
 
@@ -647,7 +675,7 @@ textarea:focus {
 }
 
 .lien-discret:hover {
-  color: var(--bleu-700);
+  color: var(--structure-700);
 }
 
 .grille-equipe-seance {
@@ -734,7 +762,7 @@ textarea:focus {
 }
 
 .ligne-exercice:hover {
-  border-color: var(--bleu-500);
+  border-color: var(--structure-500);
   box-shadow: var(--ombre);
 }
 
@@ -743,8 +771,8 @@ textarea:focus {
   height: 27px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: var(--jaune);
-  color: var(--bleu-900);
+  background: var(--accent);
+  color: var(--structure-900);
   display: grid;
   place-items: center;
   font-size: 13px;
@@ -764,7 +792,7 @@ textarea:focus {
 .titre-exercice {
   display: block;
   font-weight: 600;
-  color: var(--bleu-900);
+  color: var(--structure-900);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -783,7 +811,7 @@ textarea:focus {
   font-style: normal;
   font-size: 11px;
   font-weight: 600;
-  background: var(--jaune-clair);
+  background: var(--accent-clair);
   color: var(--alerte);
   border-radius: 999px;
   padding: 1px 8px;
@@ -820,7 +848,7 @@ textarea:focus {
 }
 
 .etoile.pleine {
-  color: var(--jaune);
+  color: var(--accent);
 }
 
 .etoiles.note-basse .etoile.pleine {
@@ -828,7 +856,7 @@ textarea:focus {
 }
 
 .etoiles.lecture {
-  color: var(--jaune);
+  color: var(--accent);
   font-size: 15px;
   letter-spacing: 1px;
 }
@@ -884,7 +912,7 @@ textarea:focus {
 .titre-fiche {
   font-size: 17px;
   font-weight: 650;
-  color: var(--bleu-900);
+  color: var(--structure-900);
   border: 1px solid transparent;
   background: transparent;
   max-width: 480px;
@@ -1004,8 +1032,8 @@ textarea:focus {
 }
 
 .bouton.plein-ecran.actif {
-  background: var(--jaune);
-  color: var(--bleu-900);
+  background: var(--accent);
+  color: var(--structure-900);
 }
 
 .icone-plein-ecran {
@@ -1061,17 +1089,17 @@ textarea:focus {
 
 .separateur:hover,
 .separateur.actif {
-  background: var(--jaune);
+  background: var(--accent);
 }
 
 .separateur:hover::after,
 .separateur.actif::after {
-  background: var(--bleu-900);
+  background: var(--structure-900);
   opacity: 1;
 }
 
 .separateur:focus-visible {
-  outline: 2px solid var(--bleu-500);
+  outline: 2px solid var(--structure-500);
   outline-offset: -1px;
 }
 
@@ -1167,7 +1195,7 @@ textarea:focus {
 }
 
 .repli-signaletique:hover .etiquette-groupe {
-  color: var(--bleu-700);
+  color: var(--structure-700);
 }
 
 .chevron {
@@ -1214,8 +1242,8 @@ textarea:focus {
 }
 
 .nombre:focus-within {
-  border-color: var(--bleu-500);
-  box-shadow: 0 0 0 3px var(--bleu-100);
+  border-color: var(--structure-500);
+  box-shadow: 0 0 0 3px var(--structure-100);
 }
 
 .nombre input {
@@ -1224,7 +1252,7 @@ textarea:focus {
   background: none;
   text-align: right;
   font-weight: 650;
-  color: var(--bleu-900);
+  color: var(--structure-900);
   padding-right: 0;
 }
 
@@ -1272,7 +1300,7 @@ textarea:focus {
   border: 1px solid var(--bordure);
   border-radius: var(--rayon);
   overflow: hidden;
-  background: var(--bleu-050);
+  background: var(--structure-050);
   box-shadow: var(--ombre);
 }
 
@@ -1306,7 +1334,7 @@ textarea:focus {
 
 .terrain-ligne {
   fill: none;
-  stroke: var(--bleu-800);
+  stroke: var(--structure-800);
   stroke-width: 0.14;
   stroke-linecap: round;
 }
@@ -1322,7 +1350,7 @@ textarea:focus {
 
 .terrain-but {
   fill: #ffffff;
-  stroke: var(--bleu-900);
+  stroke: var(--structure-900);
   stroke-width: 0.16;
 }
 
@@ -1344,13 +1372,13 @@ textarea:focus {
 
 .jeton-halo {
   fill: none;
-  stroke: var(--bleu-500);
+  stroke: var(--structure-500);
   stroke-width: 0.18;
   stroke-dasharray: 0.4 0.3;
 }
 
 .jeton-fantome {
-  fill: rgba(11, 42, 82, 0.13);
+  fill: rgba(var(--ombre-teinte), 0.13);
   stroke: none;
 }
 
@@ -1415,7 +1443,7 @@ textarea:focus {
 }
 
 .entree-menu:hover:not(:disabled) {
-  background: var(--bleu-050);
+  background: var(--structure-050);
 }
 
 .entree-menu:disabled {
@@ -1424,7 +1452,7 @@ textarea:focus {
 }
 
 .entree-menu.active {
-  background: var(--jaune-clair);
+  background: var(--accent-clair);
 }
 
 .icone-menu {
@@ -1474,8 +1502,8 @@ textarea:focus {
   margin-top: 10px;
   flex-shrink: 0;
   padding: 12px 14px;
-  background: var(--bleu-050);
-  border: 1px solid var(--bleu-100);
+  background: var(--structure-050);
+  border: 1px solid var(--structure-100);
   border-radius: var(--rayon-petit);
   flex-wrap: wrap;
 }
@@ -1535,7 +1563,7 @@ textarea:focus {
 .voile {
   position: fixed;
   inset: 0;
-  background: rgba(11, 42, 82, 0.45);
+  background: rgba(var(--ombre-teinte), 0.45);
   display: grid;
   place-items: center;
   padding: 24px;
@@ -1594,13 +1622,13 @@ textarea:focus {
 }
 
 .puce:hover {
-  border-color: var(--bleu-500);
-  color: var(--bleu-800);
+  border-color: var(--structure-500);
+  color: var(--structure-800);
 }
 
 .puce.active {
-  background: var(--bleu-700);
-  border-color: var(--bleu-700);
+  background: var(--structure-700);
+  border-color: var(--structure-700);
   color: #fff;
   font-weight: 600;
 }
@@ -1661,17 +1689,17 @@ textarea:focus {
 }
 
 .etoile-favori:hover {
-  border-color: var(--jaune-fonce);
-  color: var(--jaune-fonce);
+  border-color: var(--accent-fonce);
+  color: var(--accent-fonce);
   background: var(--surface);
 }
 
 .etoile-favori.active {
-  color: var(--jaune-fonce);
+  color: var(--accent-fonce);
 }
 
 .etoile-favori:focus-visible {
-  outline: 2px solid var(--bleu-500);
+  outline: 2px solid var(--structure-500);
   outline-offset: 1px;
 }
 
@@ -1697,19 +1725,19 @@ textarea:focus {
 }
 
 .carte-modele:hover {
-  border-color: var(--bleu-500);
+  border-color: var(--structure-500);
 }
 
 .carte-modele.active {
-  background: var(--bleu-050);
-  border-color: var(--bleu-100);
-  border-left-color: var(--jaune);
+  background: var(--structure-050);
+  border-color: var(--structure-100);
+  border-left-color: var(--accent);
 }
 
 .titre-modele {
   display: block;
   font-weight: 600;
-  color: var(--bleu-900);
+  color: var(--structure-900);
   margin-bottom: 2px;
 }
 
@@ -1743,8 +1771,8 @@ textarea:focus {
 }
 
 .etiquette-format.avec-joueurs {
-  background: var(--bleu-100);
-  color: var(--bleu-700);
+  background: var(--structure-100);
+  color: var(--structure-700);
 }
 
 /* Exercice dont le mouvement se deroule en plusieurs etapes : le jaune du club
@@ -1765,15 +1793,15 @@ textarea:focus {
 }
 
 .puce.bascule.active {
-  background: var(--jaune-clair);
-  border-color: var(--jaune);
-  color: var(--bleu-900);
+  background: var(--accent-clair);
+  border-color: var(--accent);
+  color: var(--structure-900);
   font-weight: 600;
 }
 
 .puce.bascule.active:hover {
-  border-color: var(--jaune-fonce);
-  color: var(--bleu-900);
+  border-color: var(--accent-fonce);
+  color: var(--structure-900);
 }
 
 /* Historique d'utilisation sur la carte de bibliotheque : une information de
@@ -1791,15 +1819,15 @@ textarea:focus {
   font-weight: 600;
   border-radius: 999px;
   padding: 1px 8px;
-  background: var(--jaune-clair);
-  color: var(--bleu-900);
-  border: 1px solid var(--jaune);
+  background: var(--accent-clair);
+  color: var(--structure-900);
+  border: 1px solid var(--accent);
 }
 
 .etiquette-difficulte {
   font-style: normal;
   font-size: 9px;
-  color: var(--bleu-500);
+  color: var(--structure-500);
   letter-spacing: 1px;
   margin-left: auto;
 }
@@ -1842,9 +1870,9 @@ textarea:focus {
 }
 
 .objectifs-apercu {
-  color: var(--bleu-800);
+  color: var(--structure-800);
   font-weight: 500;
-  border-left: 3px solid var(--jaune);
+  border-left: 3px solid var(--accent);
   padding-left: 11px;
 }
 
@@ -2015,20 +2043,20 @@ textarea:focus {
   border-radius: 50%;
   border: 1px solid var(--bordure-forte);
   background: var(--surface);
-  color: var(--bleu-800);
+  color: var(--structure-800);
   font-weight: 650;
   cursor: pointer;
   transition: all 0.12s ease;
 }
 
 .puce-etape:hover {
-  border-color: var(--bleu-500);
+  border-color: var(--structure-500);
 }
 
 .puce-etape.active {
-  background: var(--jaune);
-  border-color: var(--jaune-fonce);
-  color: var(--bleu-900);
+  background: var(--accent);
+  border-color: var(--accent-fonce);
+  color: var(--structure-900);
 }
 
 /*
@@ -2043,7 +2071,7 @@ textarea:focus {
 }
 
 .puce-etape.en-lecture.active {
-  box-shadow: 0 0 0 3px var(--jaune-clair);
+  box-shadow: 0 0 0 3px var(--accent-clair);
 }
 
 .detail-etape {
@@ -2068,15 +2096,15 @@ textarea:focus {
   width: 130px;
   min-height: 0;
   padding: 0;
-  accent-color: var(--bleu-700);
+  accent-color: var(--structure-700);
 }
 
 .mention-auto {
   font-style: normal;
   font-size: 9.5px;
   font-weight: 700;
-  background: var(--bleu-100);
-  color: var(--bleu-700);
+  background: var(--structure-100);
+  color: var(--structure-700);
   border-radius: 999px;
   padding: 1px 6px;
   margin-left: 5px;
@@ -2088,13 +2116,13 @@ textarea:focus {
 
 .fleche .trait {
   fill: none;
-  stroke: var(--bleu-900);
+  stroke: var(--structure-900);
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .fleche .pointe {
-  fill: var(--bleu-900);
+  fill: var(--structure-900);
   stroke: none;
 }
 
@@ -2117,7 +2145,7 @@ textarea:focus {
 }
 
 .fleche-dribble .trait {
-  stroke: var(--bleu-700);
+  stroke: var(--structure-700);
 }
 
 /*
@@ -2142,7 +2170,7 @@ textarea:focus {
 
 .fleche-rotation.selectionnee .trait,
 .fleche-rotation.selectionnee .pointe {
-  stroke: var(--jaune-fonce);
+  stroke: var(--accent-fonce);
 }
 
 /* ------------------------------------------- Zones coloriees et annotations */
@@ -2217,8 +2245,8 @@ textarea:focus {
 }
 
 .poignee-zone rect {
-  fill: var(--jaune);
-  stroke: var(--bleu-900);
+  fill: var(--accent);
+  stroke: var(--structure-900);
   stroke-width: 0.09;
   cursor: nwse-resize;
 }
@@ -2246,7 +2274,7 @@ textarea:focus {
   text-anchor: middle;
   dominant-baseline: central;
   font-weight: 700;
-  fill: var(--bleu-900);
+  fill: var(--structure-900);
   pointer-events: none;
   font-family: 'Segoe UI', system-ui, sans-serif;
 }
@@ -2261,7 +2289,7 @@ textarea:focus {
 }
 
 .annotation.selectionnee .annotation-texte {
-  fill: var(--jaune-fonce);
+  fill: var(--accent-fonce);
 }
 
 /* Nuancier des zones, dans le panneau de selection. */
@@ -2281,8 +2309,8 @@ textarea:focus {
 }
 
 .pastille-teinte.actif {
-  border-color: var(--bleu-900);
-  box-shadow: 0 0 0 2px var(--jaune);
+  border-color: var(--structure-900);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .pastille-teinte.teinte-jaune {
@@ -2310,11 +2338,11 @@ textarea:focus {
 
 .fleche.selectionnee .trait,
 .fleche.selectionnee .pointe {
-  stroke: var(--bleu-500);
+  stroke: var(--structure-500);
 }
 
 .fleche.selectionnee .pointe {
-  fill: var(--bleu-500);
+  fill: var(--structure-500);
   stroke: none;
 }
 
@@ -2322,14 +2350,14 @@ textarea:focus {
 
 .repere-aimant circle {
   fill: none;
-  stroke: var(--bleu-500);
+  stroke: var(--structure-500);
   stroke-width: 0.12;
   stroke-dasharray: 0.3 0.24;
 }
 
 .repere-aimant text {
   text-anchor: middle;
-  fill: var(--bleu-700);
+  fill: var(--structure-700);
   font-weight: 700;
   paint-order: stroke;
   stroke: #fff;
@@ -2340,20 +2368,20 @@ textarea:focus {
 
 .numero-action circle {
   fill: #fff;
-  stroke: var(--bleu-900);
+  stroke: var(--structure-900);
   stroke-width: 0.11;
 }
 
 .numero-action text {
   text-anchor: middle;
   dominant-baseline: central;
-  fill: var(--bleu-900);
+  fill: var(--structure-900);
   font-weight: 700;
   pointer-events: none;
 }
 
 .bouton.discret.enfonce {
-  background: var(--jaune-clair);
+  background: var(--accent-clair);
   color: var(--alerte);
 }
 
@@ -2370,14 +2398,14 @@ textarea:focus {
 }
 
 .tige-rotation {
-  stroke: var(--bleu-500);
+  stroke: var(--structure-500);
   stroke-width: 0.1;
   stroke-dasharray: 0.3 0.22;
 }
 
 .bouton-rotation {
-  fill: var(--jaune);
-  stroke: var(--bleu-900);
+  fill: var(--accent);
+  stroke: var(--structure-900);
   stroke-width: 0.11;
 }
 
@@ -2445,7 +2473,7 @@ textarea:focus {
   max-height: 170px;
   overflow-y: auto;
   font-size: 13px;
-  color: var(--bleu-800);
+  color: var(--structure-800);
 }
 
 .liste-divergences li {
@@ -2474,9 +2502,9 @@ textarea:focus {
   avertissement, c'est une note qu'on se laisse a soi-meme.
 */
 .rappel-retour {
-  background: var(--bleu-050);
-  border: 1px solid var(--bleu-100);
-  border-left: 3px solid var(--bleu-500);
+  background: var(--structure-050);
+  border: 1px solid var(--structure-100);
+  border-left: 3px solid var(--structure-500);
   border-radius: var(--rayon-petit);
   padding: 11px 14px;
   margin-bottom: 14px;
@@ -2489,7 +2517,7 @@ textarea:focus {
 }
 
 .rappel-retour .etiquette-groupe {
-  color: var(--bleu-700);
+  color: var(--structure-700);
 }
 
 .carte-retour {
@@ -2506,7 +2534,7 @@ textarea:focus {
 }
 
 .materiel-seance strong {
-  color: var(--bleu-800);
+  color: var(--structure-800);
 }
 
 /*
@@ -2533,7 +2561,7 @@ textarea:focus {
 }
 
 .marque:focus-visible {
-  outline: 2px solid var(--jaune);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -2555,14 +2583,14 @@ textarea:focus {
 
 .lien-accueil:hover {
   background: var(--surface-2);
-  color: var(--bleu-800);
+  color: var(--structure-800);
 }
 
 .lien-accueil.actif {
-  background: var(--bleu-050);
-  border-color: var(--bleu-100);
-  border-left-color: var(--jaune);
-  color: var(--bleu-900);
+  background: var(--structure-050);
+  border-color: var(--structure-100);
+  border-left-color: var(--accent);
+  color: var(--structure-900);
 }
 
 .fil-ariane {
@@ -2575,7 +2603,7 @@ textarea:focus {
 }
 
 .fil-ariane:hover {
-  color: var(--bleu-700);
+  color: var(--structure-700);
   text-decoration: underline;
 }
 
@@ -2640,13 +2668,13 @@ textarea:focus {
 }
 
 .carte-seance:hover {
-  border-color: var(--bleu-500);
-  box-shadow: 0 2px 4px rgba(11, 42, 82, 0.1), 0 6px 18px rgba(11, 42, 82, 0.1);
+  border-color: var(--structure-500);
+  box-shadow: 0 2px 4px rgba(var(--ombre-teinte), 0.1), 0 6px 18px rgba(var(--ombre-teinte), 0.1);
 }
 
 /* Une seance deja passee est presente mais moins mise en avant. */
 .carte-seance.passee {
-  background: var(--bleu-050);
+  background: var(--structure-050);
 }
 
 .carte-seance.passee .zone-ouverture {
@@ -2711,7 +2739,7 @@ textarea:focus {
 .equipe-carte {
   margin: 0;
   font-size: 13px;
-  color: var(--bleu-700);
+  color: var(--structure-700);
   font-weight: 500;
 }
 
@@ -2728,7 +2756,7 @@ textarea:focus {
 
 .chiffres-carte strong {
   font-size: 16px;
-  color: var(--bleu-900);
+  color: var(--structure-900);
   font-weight: 700;
 }
 
@@ -2770,8 +2798,8 @@ textarea:focus {
 /* Une couleur par categorie, reprise par la barre et la legende. */
 .part-echauffement { background: #7fb069; }
 .part-technique { background: #4d9de0; }
-.part-attaque { background: var(--jaune); }
-.part-defense { background: var(--bleu-700); }
+.part-attaque { background: var(--accent); }
+.part-defense { background: var(--structure-700); }
 .part-gardien { background: #1f7a5c; }
 .part-transition { background: #e8590c; }
 .part-physique { background: #9c6ade; }
@@ -2879,7 +2907,7 @@ textarea:focus {
   display: block;
   font-size: 26px;
   line-height: 1.1;
-  color: var(--bleu-900);
+  color: var(--structure-900);
 }
 
 .chiffres-cles span {
@@ -2924,7 +2952,7 @@ textarea:focus {
 
 .part-categorie {
   font-weight: 700;
-  color: var(--bleu-800);
+  color: var(--structure-800);
   text-align: right;
 }
 
@@ -2964,7 +2992,7 @@ textarea:focus {
 .colonne-mois {
   width: 100%;
   max-width: 54px;
-  background: linear-gradient(to top, var(--bleu-700), var(--bleu-500));
+  background: linear-gradient(to top, var(--structure-700), var(--structure-500));
   border-radius: 5px 5px 0 0;
   min-height: 4px;
 }
@@ -2972,7 +3000,7 @@ textarea:focus {
 .valeur-mois {
   font-weight: 700;
   font-size: 13px;
-  color: var(--bleu-900);
+  color: var(--structure-900);
   order: -1;
 }
 
@@ -3075,7 +3103,7 @@ textarea:focus {
 
 /* La couleur dit d'un coup d'oeil ce qui merite d'etre verifie. */
 .proposition.confiance-haute { border-left-color: var(--succes); }
-.proposition.confiance-moyenne { border-left-color: var(--jaune-fonce); }
+.proposition.confiance-moyenne { border-left-color: var(--accent-fonce); }
 .proposition.confiance-faible { border-left-color: var(--danger); }
 
 .rang-proposition {
@@ -3122,7 +3150,7 @@ textarea:focus {
 }
 
 .etiquette-confiance.haute { background: #e2f3ea; color: var(--succes); }
-.etiquette-confiance.moyenne { background: var(--jaune-clair); color: var(--alerte); }
+.etiquette-confiance.moyenne { background: var(--accent-clair); color: var(--alerte); }
 .etiquette-confiance.faible { background: var(--danger-fond); color: var(--danger); }
 
 .avertissement-proposition {
@@ -3211,7 +3239,7 @@ button,
   /* Au-dessus de la bibliotheque : une confirmation ouverte depuis une modale
      doit rester lisible et cliquable. */
   z-index: 20;
-  background: rgba(11, 42, 82, 0.5);
+  background: rgba(var(--ombre-teinte), 0.5);
   animation: apparition 0.12s ease-out;
 }
 
@@ -3221,7 +3249,7 @@ button,
   box-shadow: var(--ombre-forte);
   padding: 22px 24px 18px;
   width: min(460px, 100%);
-  border-top: 4px solid var(--bleu-700);
+  border-top: 4px solid var(--structure-700);
   animation: montee 0.14s ease-out;
 }
 
@@ -3389,7 +3417,7 @@ button,
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    border-bottom: 2px solid var(--bleu-900);
+    border-bottom: 2px solid var(--structure-900);
     padding-bottom: 5px;
     margin-bottom: 8px;
   }
@@ -3400,7 +3428,7 @@ button,
   }
 
   .feuille-entete .numero {
-    color: var(--jaune-fonce);
+    color: var(--accent-fonce);
     margin-right: 6px;
   }
 
@@ -3482,7 +3510,7 @@ button,
     font-size: 8pt;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--bleu-700);
+    color: var(--structure-700);
     margin: 7px 0 2px;
     border-bottom: 1px solid #ccc;
   }
@@ -3536,14 +3564,14 @@ button,
   porte donc la couleur du club plutot que le gris des autres.
 */
 .bouton.mode-terrain-ouvrir {
-  background: var(--jaune);
-  border-color: var(--jaune-fonce);
-  color: var(--bleu-900);
+  background: var(--accent);
+  border-color: var(--accent-fonce);
+  color: var(--structure-900);
   font-weight: 650;
 }
 
 .bouton.mode-terrain-ouvrir:hover:not(:disabled) {
-  background: var(--jaune-fonce);
+  background: var(--accent-fonce);
 }
 
 .bouton.mode-terrain-ouvrir:disabled {
@@ -3600,7 +3628,7 @@ span.avec-dictee {
 }
 
 .bouton-dictee:focus-visible {
-  outline: 2px solid var(--bleu-500);
+  outline: 2px solid var(--structure-500);
   outline-offset: 1px;
 }
 
@@ -3636,11 +3664,11 @@ span.avec-dictee {
 .apercu-repartition {
   margin: 12px 0 0;
   padding: 10px 12px;
-  border-left: 3px solid var(--jaune);
-  background: var(--jaune-clair);
+  border-left: 3px solid var(--accent);
+  background: var(--accent-clair);
   border-radius: var(--rayon-petit);
   font-size: 13px;
-  color: var(--bleu-900);
+  color: var(--structure-900);
 }
 
 .suite-collage {
@@ -3687,7 +3715,7 @@ span.avec-dictee {
   align-items: center;
   gap: 16px;
   padding: 10px 16px;
-  background: var(--bleu-900);
+  background: var(--structure-900);
   color: #fff;
   flex-shrink: 0;
 }
@@ -3709,7 +3737,7 @@ span.avec-dictee {
   lit mal en courant, « 4 min de retard » en rouge se lit d'un coup d'oeil.
 */
 .terrain-horaire strong.en-retard {
-  color: var(--jaune);
+  color: var(--accent);
 }
 
 .terrain-horaire span {
@@ -3768,7 +3796,7 @@ span.avec-dictee {
   margin: 0 0 4px;
   font-size: 30px;
   line-height: 1.2;
-  color: var(--bleu-900);
+  color: var(--structure-900);
 }
 
 .terrain-texte h2 {
@@ -3798,10 +3826,10 @@ span.avec-dictee {
 }
 
 .terrain-objectif {
-  border-left: 4px solid var(--jaune);
+  border-left: 4px solid var(--accent);
   padding-left: 12px;
   font-weight: 600;
-  color: var(--bleu-800);
+  color: var(--structure-800);
 }
 
 .terrain-materiel {
