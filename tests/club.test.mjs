@@ -284,6 +284,31 @@ for (const [a, b, seuil, quoi] of LISIBILITE) {
   verifier(`${quoi} (${a})`, rapport >= seuil, `(contraste ${rapport.toFixed(2)} pour ${seuil})`)
 }
 
+/*
+ * Les deux camps sur le terrain.
+ *
+ * Attaquant et defenseur ont la MEME forme et le meme rayon : seule la couleur
+ * les separe, et sur une feuille imprimee en noir et blanc, seul le niveau de
+ * gris. Un club dont l'accent et la structure se ressemblent rendrait les deux
+ * camps indiscernables — et cela ne se verrait qu'au gymnase, sur du papier
+ * deja distribue.
+ *
+ * Le seuil de 3 est celui d'un objet graphique qu'on distingue sans le lire.
+ * Deux verts proches donnent 1.6 ; le meme club, defense en couleur profonde,
+ * donne 10.
+ */
+const attaque = couleurs['accent']
+const defense = couleurs['structure-700']
+const ecartDesCamps =
+  /^#[0-9a-f]{6}$/i.test(attaque ?? '') && /^#[0-9a-f]{6}$/i.test(defense ?? '')
+    ? contraste(attaque, defense)
+    : 0
+verifier(
+  'attaque et defense se distinguent sur le terrain',
+  ecartDesCamps >= 3,
+  `(contraste ${ecartDesCamps.toFixed(2)} pour 3 — meme forme, seule la couleur les separe)`,
+)
+
 console.log('')
 console.log('6. Le planning est celui du club')
 // Son contenu se verifie dans tests/planning.test.mjs, qui le croise avec la

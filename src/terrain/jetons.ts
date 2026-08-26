@@ -1,17 +1,29 @@
 /**
  * Apparence des jetons sur le terrain.
  *
- * L'attaque porte le jaune, la defense le bleu, comme sur un maillot. Le
- * contraste est calcule pour rester lisible a l'ecran comme sur une feuille
- * imprimee en noir et blanc, ou seule la forme distingue alors les jetons.
+ * LES DEUX CAMPS PORTENT LE MAILLOT DU CLUB. L'attaque prend son accent, la
+ * defense sa couleur profonde — partout, bibliotheque comprise : une fiche ne
+ * change pas d'aspect en entrant dans une seance, sinon l'entraineur croit
+ * avoir modifie quelque chose en la prenant.
  *
- * CES COULEURS NE SUIVENT PAS LE CLUB, et c'est deliberé. Une seance s'echange
- * en fichier .hbt.json d'un club a l'autre : si l'attaquant prenait la couleur
- * de celui qui ouvre, le meme exercice se lirait autrement d'un gymnase au
- * suivant, et la « zone jaune » cesserait d'etre jaune. Un schema est une
- * notation commune, comme un rond central ou une ligne des neuf metres — pas
- * une affaire d'ecusson. Elles se trouvent donc ici, en dur, et non dans la
- * palette du profil.
+ * CE QUI SE JOUE VRAIMENT ICI. Les trois joueurs ont la MEME FORME et le meme
+ * rayon : rien ne les distingue que la couleur, et sur une feuille imprimee en
+ * noir et blanc, rien que le niveau de gris. Une palette dont les deux
+ * couleurs se ressemblent rend donc les deux camps indiscernables — et cela ne
+ * se decouvre qu'au gymnase, sur du papier. `tests/club.test.mjs` mesure cet
+ * ecart et refuse la palette qui ne le tient pas.
+ *
+ * D'ou le choix du mappage : la defense prend la couleur PROFONDE du club, pas
+ * sa seconde couleur. Un club aux deux verts proches donnerait un ecart de 1.6
+ * entre attaque et defense ; le meme club, defense en profond, donne 10.
+ *
+ * LE GARDIEN GARDE SON VERT, pour tous les clubs. Une palette n'offre que deux
+ * couleurs et il en faudrait une troisieme ; et c'est de toute facon son
+ * etiquette « GB » qui le distingue, non sa teinte — elle est proche de celle
+ * de la defense depuis toujours.
+ *
+ * Le ballon, les plots, les haies et l'entraineur restent ce qu'ils sont :
+ * du materiel, pas un camp. Ils ne portent aucun maillot.
  *
  * Les joueurs sont un disque a la couleur du camp, deux bras tendus vers
  * l'avant, et une pastille centrale qui porte l'etiquette. Le disque a ete
@@ -20,7 +32,19 @@
  * qu'un bloc defensif de six joueurs ne se chevauche plus.
  */
 
+import { CLUB } from '../club'
 import type { TypeJeton, VueTerrain } from '../domain/types'
+
+// Le maillot du club, tel que les jetons s'en servent. Les valeurs sont figees
+// a la fabrication : un schema exporte en PNG sort de la page et n'a plus de
+// feuille de style pour lui dire de quelle couleur il est.
+const ATTAQUE = CLUB.couleurs.accent
+const ATTAQUE_PASTEL = CLUB.couleurs['accent-clair']
+const ATTAQUE_PROFOND = CLUB.couleurs['accent-fonce']
+const DEFENSE = CLUB.couleurs['structure-700']
+const DEFENSE_PASTEL = CLUB.couleurs['structure-100']
+/** Le trait et le texte : la couleur la plus profonde du club. */
+const TRAIT = CLUB.couleurs['structure-900']
 
 export type Forme =
   | 'joueur'
@@ -65,10 +89,10 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     libelle: 'Attaquant',
     aide: 'Joueur en possession ou en soutien',
     forme: 'joueur',
-    remplissage: '#ffc72c',
-    contour: '#0b2a52',
-    couleurTexte: '#0b2a52',
-    pastel: '#fff0c2',
+    remplissage: ATTAQUE,
+    contour: TRAIT,
+    couleurTexte: TRAIT,
+    pastel: ATTAQUE_PASTEL,
     rayon: 0.95,
     etiquetteParDefaut: '',
   },
@@ -76,10 +100,10 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     libelle: 'Défenseur',
     aide: 'Joueur du bloc défensif',
     forme: 'joueur',
-    remplissage: '#12467f',
-    contour: '#06182f',
-    couleurTexte: '#0b2a52',
-    pastel: '#cfdcee',
+    remplissage: DEFENSE,
+    contour: TRAIT,
+    couleurTexte: TRAIT,
+    pastel: DEFENSE_PASTEL,
     rayon: 0.95,
     etiquetteParDefaut: '',
   },
@@ -89,7 +113,7 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     forme: 'joueur',
     remplissage: '#1f7a5c',
     contour: '#0d3d2d',
-    couleurTexte: '#0b2a52',
+    couleurTexte: TRAIT,
     pastel: '#cfe7dd',
     rayon: 0.9,
     etiquetteParDefaut: 'GB',
@@ -119,8 +143,8 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     aide: 'But supplémentaire ou cible',
     forme: 'rectangle',
     remplissage: '#ffffff',
-    contour: '#0b2a52',
-    couleurTexte: '#0b2a52',
+    contour: TRAIT,
+    couleurTexte: TRAIT,
     rayon: 0.6,
     etiquetteParDefaut: '',
   },
@@ -151,10 +175,10 @@ export const APPARENCES: Record<TypeJeton, ApparenceJeton> = {
     forme: 'colonne',
     // Le jaune de l'attaque, en plus sourd : une colonne est faite de joueurs,
     // mais elle n'est pas un joueur — la nuance doit se voir sans se lire.
-    remplissage: '#f4b619',
-    contour: '#0b2a52',
-    couleurTexte: '#0b2a52',
-    pastel: '#fff0c2',
+    remplissage: ATTAQUE_PROFOND,
+    contour: TRAIT,
+    couleurTexte: TRAIT,
+    pastel: ATTAQUE_PASTEL,
     rayon: 0.85,
     etiquetteParDefaut: '×4',
     feminin: true,
