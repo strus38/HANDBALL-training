@@ -8,6 +8,7 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
+    "paths": { "@club/*": ["./clubs/hbpsm/*"] },
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
@@ -17,5 +18,5 @@
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": false
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "clubs", "vite.config.ts"]
 }

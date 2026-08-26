@@ -20,10 +20,19 @@
  * qu'elles sont.
  *
  * Source : « Reprise hand ball d'avant saison », vendredi 21 aout 2026.
+ *
+ * Ces fiches n'appartiennent qu'a ce club : elles vivent dans son profil, et
+ * le catalogue les ajoute au fonds commun sous le nom FICHES_CLUB. Un club qui
+ * n'a pas de fiches propres exporte un tableau vide - c'est le cas normal.
  */
 
-import { GARDIEN_DROITE, GARDIEN_GAUCHE, ATTAQUE_PLACEE, DEFENSE_6_0 } from './modeles'
-import type { ModeleExercice, ModeleJeton } from './modeles'
+import {
+  GARDIEN_DROITE,
+  GARDIEN_GAUCHE,
+  ATTAQUE_PLACEE,
+  DEFENSE_6_0,
+} from '../../src/bibliotheque/modeles'
+import type { ModeleExercice, ModeleJeton } from '../../src/bibliotheque/modeles'
 
 /**
  * Zone de jeu delimitee au milieu du terrain, pour les situations qui
@@ -38,7 +47,7 @@ const ZONE_DELIMITEE: ModeleJeton[] = [
   { type: 'plot', x: 30, y: 17 },
 ]
 
-export const HBPSM: ModeleExercice[] = [
+export const FICHES_CLUB: ModeleExercice[] = [
   {
     titre: 'Échauffement collectif - motricité ballon',
     ref: 'echauffement-collectif-motricite-ballon',

@@ -30,6 +30,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { build as construire } from 'esbuild'
+import { PROFIL } from './club.mjs'
 
 const BAC = '.build-tests'
 
@@ -200,7 +201,9 @@ function lireFichier(chemin, normaliserSeance, normaliserExercice) {
     throw new Error(`Ce fichier n'est pas un JSON lisible : ${erreur.message}`)
   }
   if (!brut || typeof brut !== 'object' || brut.format !== 'handball-training') {
-    throw new Error("Ce fichier n'a pas ete ecrit par HBPSM (champ « format » absent ou different).")
+    throw new Error(
+      `Ce fichier n'a pas ete ecrit par ${PROFIL.nomCourt} (champ « format » absent ou different).`,
+    )
   }
   const contenu = brut.contenu ?? {}
   const seances = Array.isArray(contenu.seances)
@@ -315,7 +318,7 @@ export function rapport(fichier, nomFichier, resumerSeance) {
   const L = []
   L.push('')
   L.push('  ' + '='.repeat(64))
-  L.push("  HBPSM — lecture d'un retour d'entraineur")
+  L.push(`  ${PROFIL.nomCourt} — lecture d'un retour d'entraineur`)
   L.push(`  ${nomFichier}`)
   L.push(
     `  exporte le ${enDate(fichier.exporteLe)} par la version ${fichier.application}` +

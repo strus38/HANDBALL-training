@@ -7,6 +7,7 @@
  * un simple cast TypeScript.
  */
 
+import { CLUB } from '../club'
 import { clonerExercice, nouvelExercice, nouvelId, nouvelleSeance } from './fabrique'
 import { migrerSchema } from './mouvement'
 import { lireFavoris, retracerFavoris } from './favoris'
@@ -142,7 +143,8 @@ export function importerFichier(contenuTexte: string): ContenuImporte {
   }
   if (nombre(brut.version, 0) > SCHEMA_VERSION) {
     throw new ErreurImport(
-      'Ce fichier a été créé avec une version plus récente de l\'application. Mettez a jour votre fichier HBPSM-entrainements.html.',
+      'Ce fichier a été créé avec une version plus récente de l\'application.' +
+        `Mettez a jour votre fichier ${CLUB.nomLivrable}.`,
     )
   }
   if (!estObjet(brut.contenu)) throw new ErreurImport('Contenu du fichier illisible.')

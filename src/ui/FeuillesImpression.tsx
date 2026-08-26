@@ -10,6 +10,7 @@
  * Ce bloc n'est visible qu'a l'impression (voir styles.css).
  */
 
+import { CLUB } from '../club'
 import { Terrain } from '../terrain/Terrain'
 import {
   choisirMiseEnPage,
@@ -204,7 +205,9 @@ function Feuille({
       </div>
 
       <footer className="feuille-bas">
-        <span>HBPSM · {seance.titre}</span>
+        <span>
+          {CLUB.nomCourt} · {seance.titre}
+        </span>
         <span>
           {total > 1
             ? `Exercice ${index + 1} sur ${total} · séance de ${dureeTotale(seance)} min`

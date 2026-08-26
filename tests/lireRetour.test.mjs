@@ -20,7 +20,7 @@
  * 3. Les signaux se declenchent sur des seuils, et un seuil qui glisse rend
  *    l'outil bavard — donc ignore.
  *
- * 4. Un fichier qui n'est pas une sauvegarde HBPSM est refuse clairement,
+ * 4. Un fichier qui n'est pas une sauvegarde de l'application est refuse clairement,
  *    plutot que compte comme un classeur vide.
  *
  * Lancement : npm test
@@ -243,7 +243,7 @@ verifier(
 )
 
 console.log('')
-console.log('5. Le refus de ce qui n est pas un fichier HBPSM')
+console.log('5. Le refus de ce qui n est pas un fichier de l application')
 const tel = (x) => x
 const echoue = (valeur) => {
   try {

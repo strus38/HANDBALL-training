@@ -20,10 +20,17 @@
  *
  * Ce module est la source unique du nom. Les outils et les tests l'importent ;
  * un test verifie qu'aucun d'eux n'a garde l'ancien en dur.
+ *
+ * LE NOM APPARTIENT AU CLUB. Depuis qu'un exemplaire est fabrique par club, il
+ * est declare dans `clubs/<identifiant>/profil.json` et non calcule : c'est le
+ * nom que l'entraineur lira sur sa cle USB, il merite d'etre ecrit noir sur
+ * blanc dans le profil plutot que deduit d'une regle que personne ne relit.
  */
 
+import { PROFIL } from './club.mjs'
+
 /** Le fichier que l'entraineur double-clique. */
-export const NOM_LIVRABLE = 'HBPSM-entrainements.html'
+export const NOM_LIVRABLE = PROFIL.nomLivrable
 
 /** Son chemin depuis la racine du depot. */
 export const CHEMIN_LIVRABLE = `dist/${NOM_LIVRABLE}`

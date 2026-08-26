@@ -6,10 +6,13 @@
  * C'est une REPRODUCTION du vrai ecusson, pas le fichier officiel du club : la
  * silhouette du joueur et les lettrages sont approches. Le trace vectoriel a
  * ete choisi pour rester net a l'impression et ne rien peser dans le fichier
- * unique. Le jour ou le club fournit son logo, deposer le fichier dans src/ui/
- * et remplacer le corps de ce composant par une balise <img> : c'est le seul
- * endroit a modifier, et assetsInlineLimit (vite.config.ts) est deja regle
- * pour l'embarquer en base64 dans le livrable hors ligne.
+ * unique. Le jour ou le club fournit son logo, deposer le fichier a cote de
+ * celui-ci et remplacer le corps de ce composant par une balise <img> : c'est
+ * le seul endroit a modifier, et assetsInlineLimit (vite.config.ts) est deja
+ * regle pour l'embarquer en base64 dans le livrable hors ligne.
+ *
+ * L'application ne connait ce composant que sous le nom @club/Ecusson : chaque
+ * club a le sien, aucun code ne nomme celui-ci.
  *
  * Deux precautions de trace :
  * - les couleurs sont ecrites en dur, ce sont celles de l'ecusson : elles ne
@@ -25,7 +28,7 @@ const ROSE = '#e4577f'
 const CIEL = '#7fb0e0'
 const SANS = "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
 
-export function LogoHbpsm() {
+export function Ecusson() {
   return (
     <svg
       className="logo"

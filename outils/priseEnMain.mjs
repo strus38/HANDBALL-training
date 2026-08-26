@@ -25,7 +25,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { capturer } from './captures.mjs'
 import { jetonsDeStyle, logo } from './marque.mjs'
 import { ouvrirNavigateur } from './navigateur.mjs'
-import { CHEMIN_LIVRABLE } from './livrable.mjs'
+import { CHEMIN_LIVRABLE, NOM_LIVRABLE } from './livrable.mjs'
+import { PROFIL } from './club.mjs'
 
 const racine = join(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -149,7 +150,7 @@ const ETAPES = [
     titre: 'Ouvrir l’application',
     capture: 'premier-lancement',
     corps: `
-      <p>Double-cliquez sur <code>HBPSM-entrainements.html</code> — il s’ouvre dans votre
+      <p>Double-cliquez sur <code>${NOM_LIVRABLE}</code> — il s’ouvre dans votre
       navigateur, comme une page internet — sauf qu’il n’y a <strong>rien à installer,
       aucun compte à créer et aucune connexion nécessaire</strong>.</p>
       <p>Posez le fichier où vous voulez : bureau, clé USB, dossier partagé. Vous
@@ -448,7 +449,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HBPSM — Prise en main en ${TOTAL} minutes</title>
+<title>${PROFIL.nomCourt} — Prise en main en ${TOTAL} minutes</title>
 <style>
 ${jetonsDeStyle()}
 
@@ -660,7 +661,7 @@ body {
     ${logo('logo-prise-en-main')}
     <div>
       <h1>Prise en main en ${TOTAL} minutes</h1>
-      <p>HBPSM · Préparation de séances — Handball Pays de Saint-Marcellin</p>
+      <p>${PROFIL.nomCourt} · Préparation de séances — ${PROFIL.nom}</p>
     </div>
   </div>
 

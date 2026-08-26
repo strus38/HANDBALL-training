@@ -2,14 +2,18 @@
  * Ce que la marque du club fournit aux documents engendres : l'ecusson et les
  * couleurs, pris a la source plutot que recopies.
  *
- * La notice et la page de presentation s'en servent toutes les deux. Changer
- * le jaune du club dans src/ui/styles.css, ou redessiner l'ecusson dans
- * src/ui/LogoHbpsm.tsx, met les deux documents a jour sans rien retoucher ici.
+ * La notice s'en sert. Changer le jaune du club dans src/ui/styles.css, ou
+ * redessiner l'ecusson dans `clubs/<identifiant>/Ecusson.tsx`, met le document
+ * a jour sans rien retoucher ici.
+ *
+ * L'ecusson est pris dans le profil du club fabrique : ce module ne sait pas
+ * quel club il sert, et c'est ce qui lui permet de les servir tous.
  */
 
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { RACINE_CLUB } from './club.mjs'
 
 const racine = join(dirname(fileURLToPath(import.meta.url)), '..')
 const lire = (chemin) => readFileSync(join(racine, chemin), 'utf8')
@@ -33,7 +37,7 @@ const GARDER_CAMEL = new Set([
  * minuscules-tirets, et les commentaires JSX disparaissent.
  */
 export function logo(identifiant = 'logo-document') {
-  const source = lire('src/ui/LogoHbpsm.tsx')
+  const source = readFileSync(join(RACINE_CLUB, 'Ecusson.tsx'), 'utf8')
 
   const couleurs = {}
   for (const trouve of source.matchAll(/^const (\w+) = (?:'([^']*)'|"([^"]*)")$/gm)) {
@@ -56,8 +60,19 @@ export function logo(identifiant = 'logo-document') {
     .replace(/<(\/?)clip-path/g, '<$1clipPath')
 
   if (!svg.includes('viewBox')) throw new Error('Logo : viewBox perdu a la conversion')
-  // Un identifiant unique au document : le logo cotoie ici d'autres contenus.
-  return svg.replace(/hbpsm-disque/g, identifiant)
+
+  // Les identifiants internes du SVG sont prefixes, quels qu'ils soient : le
+  // logo cotoie ici d'autres contenus, et deux documents peuvent porter deux
+  // ecussons. Ecrire en dur le nom d'un identifiant reviendrait a supposer le
+  // dessin d'un club particulier — c'est exactement ce qu'on vient de defaire.
+  for (const trouve of svg.matchAll(/\sid="([^"]+)"/g)) {
+    const ancien = trouve[1]
+    const nouveau = `${identifiant}-${ancien}`
+    svg = svg
+      .replaceAll(`id="${ancien}"`, `id="${nouveau}"`)
+      .replaceAll(`url(#${ancien})`, `url(#${nouveau})`)
+  }
+  return svg
 }
 
 /** Bloc :root de la feuille de styles : la seule source des couleurs. */

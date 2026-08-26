@@ -1,8 +1,10 @@
 # Publication d'une version : sur une etiquette v1.2.3, ou a la demande.
 #
-# Les trois fichiers sont attaches a la Release GitHub. C'est ce lien qu'on
-# envoie aux entraineurs : ils telechargent HBPSM-entrainements.html, double-cliquent, et
-# c'est fini. Pas de compte, pas d'installation, pas de depot a cloner.
+# Les fichiers sont attaches a la Release GitHub. C'est ce lien qu'on envoie
+# aux entraineurs : ils telechargent le livrable, double-cliquent, et c'est
+# fini. Pas de compte, pas d'installation, pas de depot a cloner.
+#
+# Le nom du livrable vient du profil du club fabrique : rien ici ne le nomme.
 name: Publier
 
 on:
@@ -57,17 +59,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.version || github.ref_name }}
         run: |
+          # Le nom du livrable appartient au club fabrique : on le demande au
+          # depot plutot que de le reecrire ici, ou il se serait fige.
+          LIVRABLE="$(npm run --silent nom-livrable)"
           # Les notes sont ecrites par echo plutot que par un document en ligne :
           # indente pour rester dans le bloc YAML, un heredoc produirait un
           # fichier decale de dix espaces, que Markdown rendrait en bloc de code.
           {
-            echo "Telechargez **HBPSM-entrainements.html** et double-cliquez dessus : l'application s'ouvre"
+            echo "Telechargez **$(basename "$LIVRABLE")** et double-cliquez dessus : l'application s'ouvre"
             echo "dans votre navigateur, sans installation et sans connexion."
             echo
             echo "- **PRISE-EN-MAIN.html** : de quoi mener sa premiere seance, en dix minutes"
           } > notes.md
           gh release create "$VERSION" \
-            dist/HBPSM-entrainements.html \
+            "$LIVRABLE" \
             dist/PRISE-EN-MAIN.html \
             --title "$VERSION" \
             --notes-file notes.md

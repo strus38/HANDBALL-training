@@ -27,6 +27,8 @@
  * l'entraineur le chercher.
  */
 
+import { CLUB } from '../club'
+
 /** Ce qui est reellement arrive au fichier. L'appelant doit savoir. */
 export type ResultatEnregistrement =
   /** Ecrit la ou l'entraineur l'a demande. */
@@ -99,10 +101,10 @@ export const fichiersNavigateur: AdaptateurFichiers = {
           // l'application : c'est lui qui fait revenir la boite dans le dossier
           // choisi la derniere fois. En changer reviendrait a repartir du
           // dossier des telechargements a chaque version livree.
-          id: 'hbpsm',
+          id: CLUB.identifiant,
           types: [
             {
-              description: 'Fichier HBPSM',
+              description: `Fichier ${CLUB.nomCourt}`,
               accept: { 'application/json': ['.json'] },
             },
           ],

@@ -88,6 +88,29 @@ protocole DevTools.
 - **La documentation est engendrée, jamais recopiée.** Les nombres cités et les
   captures viennent du code et du livrable ; des tests refusent la fabrication
   quand ils divergent.
+- **Un club tient dans un dossier.** Le nom, l'écusson et les fiches propres à
+  un club vivent dans `clubs/<identifiant>/` ; le code, lui, ne nomme jamais de
+  club. Un test refuse qu'un nom de club réapparaisse ailleurs.
+
+## Un club, un exemplaire
+
+L'application est la même pour tous ; ce qui change d'un club à l'autre tient
+dans son profil :
+
+| Fichier | Ce qu'il porte |
+| --- | --- |
+| `profil.json` | Identifiant, nom court, nom complet, nom du fichier livré |
+| `Ecusson.tsx` | L'écusson du club |
+| `fiches.ts` | Ses séances propres, ajoutées au fonds commun — vide pour la plupart des clubs |
+
+```
+npm run build            # le club par defaut du depot
+CLUB=xxx npm run build   # l exemplaire du club xxx
+```
+
+Ouvrir un club, c'est copier un dossier de `clubs/` et en changer le contenu :
+aucun fichier de `src/` n'est touché. Le fonds commun des exercices part avec
+tous les exemplaires ; les fiches d'un club ne partent qu'avec le sien.
 
 Le détail de ces choix, et les raisons derrière, sont dans les commentaires du
 code : ce sont eux la référence du projet.

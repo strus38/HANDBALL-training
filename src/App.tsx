@@ -3,7 +3,8 @@ import { ListeSeances } from './ui/ListeSeances'
 import { DetailSeance } from './ui/DetailSeance'
 import { FicheExercice } from './ui/FicheExercice'
 import { FeuillesImpression } from './ui/FeuillesImpression'
-import { LogoHbpsm } from './ui/LogoHbpsm'
+import { Ecusson } from '@club/Ecusson'
+import { CLUB } from './club'
 import { TableauSeances } from './ui/TableauSeances'
 import { Bilan } from './ui/Bilan'
 import { DupliquerSeance } from './ui/DupliquerSeance'
@@ -271,7 +272,7 @@ export function App() {
   const sauvegarderTout = async () => {
     const jour = new Date().toISOString().slice(0, 10)
     const resultat = await fichiersNavigateur.enregistrer(
-      `hbpsm-sauvegarde-${jour}${EXTENSION}`,
+      `${CLUB.identifiant}-sauvegarde-${jour}${EXTENSION}`,
       exporterSauvegarde(
         atelier.seances,
         atelier.mesModeles,
@@ -332,13 +333,11 @@ export function App() {
           }}
           title="Revenir à la liste des séances"
         >
-          <LogoHbpsm />
+          <Ecusson />
         </button>
         <div className="identite">
-          <h1>HBPSM · Préparation de séances</h1>
-          <span className="sous-titre">
-            Handball Pays de Saint-Marcellin · fonctionne hors ligne
-          </span>
+          <h1>{CLUB.nomCourt} · Préparation de séances</h1>
+          <span className="sous-titre">{CLUB.nom} · fonctionne hors ligne</span>
         </div>
         <div className="pousse" />
         <EtiquetteVersion />

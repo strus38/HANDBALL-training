@@ -1,7 +1,7 @@
 /**
  * Captures d'ecran de l'application, pour la page de presentation.
  *
- * Le principe : on prend le LIVRABLE (dist/HBPSM-entrainements.html), on lui ajoute un
+ * Le principe : on prend le LIVRABLE (dist/, nomme par le profil du club), on lui ajoute un
  * script qui amorce des donnees realistes puis conduit l'interface jusqu'a
  * l'ecran voulu, et on laisse Chrome photographier le resultat.
  *

@@ -1,7 +1,7 @@
 /**
  * Pilote de navigateur minimal, par le protocole DevTools.
  *
- * Sert au test de fumee : ouvrir le livrable `dist/HBPSM-entrainements.html` dans un vrai
+ * Sert au test de fumee : ouvrir le livrable fabrique (voir outils/livrable.mjs) dans un vrai
  * navigateur, et verifier ce que les tests de domaine ne peuvent pas voir —
  * la mise en page imprimee, la superposition des colonnes, l'animation.
  *
@@ -59,7 +59,7 @@ export async function ouvrirNavigateur() {
   const executable = await trouverExecutable()
   if (!executable) return undefined
 
-  const profil = await mkdtemp(join(tmpdir(), 'hbpsm-'))
+  const profil = await mkdtemp(join(tmpdir(), 'hbt-'))
   const processus = spawn(executable, [
     '--headless=new',
     '--disable-gpu',

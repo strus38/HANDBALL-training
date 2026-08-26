@@ -14,17 +14,30 @@
 import { SENIORS_MASCULINS } from './seniorsMasculins'
 import { GARDIENS } from './gardiens'
 import { SANS_BALLON } from './sansBallon'
-import { HBPSM } from './hbpsm'
+import { FICHES_CLUB } from '@club/fiches'
 import { COMBINAISONS } from './combinaisons'
 import type { ModeleExercice } from './modeles'
 
-export const CATALOGUE: ModeleExercice[] = [
+/**
+ * Le fonds commun : les fiches que tout club recoit.
+ *
+ * Separe des fiches du club parce que les deux n'ont pas la meme duree de vie.
+ * Le fonds commun evolue avec l'application ; les fiches d'un club lui
+ * appartiennent et ne partent qu'avec son profil.
+ */
+export const FONDS_COMMUN: ModeleExercice[] = [
   ...SENIORS_MASCULINS,
   ...GARDIENS,
   ...SANS_BALLON,
-  ...HBPSM,
   ...COMBINAISONS,
 ]
+
+/**
+ * Ce que la bibliotheque affiche : le fonds commun, plus les fiches du club
+ * pour lequel cet exemplaire a ete fabrique. La plupart des clubs n'en ont
+ * aucune et voient donc le seul fonds commun.
+ */
+export const CATALOGUE: ModeleExercice[] = [...FONDS_COMMUN, ...FICHES_CLUB]
 
 /**
  * References des combinaisons nommees.

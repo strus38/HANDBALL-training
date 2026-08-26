@@ -7,7 +7,7 @@
  * ne pouvaient rien voir : ils testent des fonctions pures. Aucun ne tombe si
  * une commande devient inatteignable.
  *
- * Ce test charge le LIVRABLE - dist/HBPSM-entrainements.html, le fichier qu'on donne a
+ * Ce test charge le LIVRABLE - le fichier qu'on donne a
  * l'entraineur - dans le Chrome de la machine, cree une seance, ouvre une
  * fiche, et verifie que les commandes essentielles sont la et fonctionnent.
  * Il ne remplace pas un oeil humain, mais il attrape la disparition d'un bouton
