@@ -310,7 +310,67 @@ verifier(
 )
 
 console.log('')
-console.log('6. Le planning est celui du club')
+console.log('6. La feuille de style ne cache aucune couleur de club')
+
+/*
+ * Ce que ce controle rattrape.
+ *
+ * Le sous-titre de l'entete, le repere de version, l'indicateur de sauvegarde
+ * et un fond de carte etaient ecrits « #9fb6d4 » et « #7d94b2 » — des bleus
+ * pales de la famille du premier club, poses hors du bloc de jetons. Aucun test
+ * ne pouvait les voir : ils ne sont ni dans un profil, ni dans un nom. Ils sont
+ * sortis au deuxieme club, en tache mauve sur une entete noire, et seulement
+ * parce que quelqu'un a regarde une capture.
+ *
+ * Toute couleur ecrite hors du bloc :root doit donc etre declaree ici, avec sa
+ * raison. Ajouter une ligne est un geste delibere : la bonne question a se
+ * poser d'abord est « ne serait-ce pas un jeton ? ».
+ */
+const HORS_JETONS = {
+  // Universels : ni club, ni theme.
+  '#fff': 'blanc', '#ffffff': 'blanc', '#000': 'noir',
+  '#444': 'gris', '#666': 'gris', '#999': 'gris',
+  '#bbb': 'gris', '#ccc': 'gris', '#ddd': 'gris',
+  // Etats : ils disent une chose precise et ne se negocient pas avec un club.
+  // Un danger rouge reste rouge chez un club qui joue en rouge.
+  '#b3261e': 'danger', '#7a1b15': 'danger', '#8f1e17': 'danger',
+  '#e7c6c3': 'danger', '#c98b8b': 'danger',
+  '#1c7a45': 'succes', '#86d6a5': 'succes', '#e2f3ea': 'succes',
+  '#6b4b00': 'alerte', '#eddaa8': 'alerte', '#8a6400': 'alerte',
+  '#f7f4ec': 'alerte',
+  // Zones nommees par leur couleur dans l'interface : la « zone jaune » doit
+  // rester jaune, sans quoi son nom ment.
+  '#ffc72c': 'zone jaune', '#1f6fbd': 'zone bleue', '#103866': 'zone bleue',
+  '#6c7a89': 'zone grise', '#3b4652': 'zone grise',
+  // Le terrain et ce qui s'y pose : materiel et gardien, pas un camp.
+  '#dfe7f0': 'sol du terrain', '#1f7a5c': 'gardien', '#0d3d2d': 'gardien',
+  '#e8590c': 'ballon',
+  // Reperes de trace, distincts entre eux avant tout.
+  '#4d9de0': 'trace', '#7fb069': 'trace', '#9c6ade': 'trace', '#d64550': 'trace',
+}
+
+const feuille = readFileSync('src/ui/styles.css', 'utf8')
+const horsRoot = feuille.slice(feuille.indexOf('color-scheme: light;'))
+const ecrites = [
+  ...new Set(
+    [...horsRoot.matchAll(/#[0-9a-fA-F]{3,8}\b/g)].map((m) => m[0].toLowerCase()),
+  ),
+]
+const inconnues = ecrites.filter((c) => !(c in HORS_JETONS))
+verifier(
+  'toute couleur hors des jetons est declaree',
+  inconnues.length === 0,
+  `${inconnues.join(', ')} — un jeton conviendrait-il ?`,
+)
+const disparues = Object.keys(HORS_JETONS).filter((c) => !ecrites.includes(c))
+verifier(
+  'et la liste ne garde rien qui ait disparu',
+  disparues.length === 0,
+  disparues.join(', '),
+)
+
+console.log('')
+console.log('7. Le planning est celui du club')
 // Son contenu se verifie dans tests/planning.test.mjs, qui le croise avec la
 // mecanique. Ici, on verifie seulement qu'il EXISTE et qu'il est fourni par le
 // profil : un club livre avec un planning vide ne proposerait plus aucune date.

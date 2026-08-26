@@ -30,7 +30,7 @@
  */
 
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
-import { CATALOGUE } from '../.build-tests/domaine.mjs'
+import { CATALOGUE, FONDS_COMMUN } from '../.build-tests/domaine.mjs'
 
 let ok = 0,
   ko = 0
@@ -100,12 +100,21 @@ verifier(
   guide.includes('${NOMBRE_DE_FICHES}') || guide.includes('NOMBRE_DE_FICHES'),
   '(un nombre tape a la main ment des qu une bibliotheque est ajoutee)',
 )
+// Le README presente le DEPOT, pas l'exemplaire d'un club : il annonce donc le
+// fonds commun, ce que tout club recoit. Le total, lui, depend des fiches que
+// le club a ecrites — et un README qui aurait annonce les 62 de Saint-Marcellin
+// aurait promis six exercices de plus a tous les autres.
 const annoncesReadme = [...readme.matchAll(/(\d+)\s+exercices/g)].map((m) => Number(m[1]))
-const fauxReadme = annoncesReadme.filter((n) => n !== CATALOGUE.length)
+const fauxReadme = annoncesReadme.filter((n) => n !== FONDS_COMMUN.length)
 verifier(
-  `le README annonce ${CATALOGUE.length} exercices`,
+  `le README annonce ${FONDS_COMMUN.length} exercices`,
   fauxReadme.length === 0,
-  `(${[...new Set(fauxReadme)].join(', ')} au lieu de ${CATALOGUE.length})`,
+  `(${[...new Set(fauxReadme)].join(', ')} au lieu de ${FONDS_COMMUN.length})`,
+)
+verifier(
+  'le guide annonce ce que ce club-ci livre',
+  CATALOGUE.length >= FONDS_COMMUN.length,
+  `(${CATALOGUE.length} pour un fonds commun de ${FONDS_COMMUN.length})`,
 )
 
 console.log('')

@@ -13,9 +13,10 @@ au gymnase, et se souvenir de ce qui a marché.
 
 ## Pourquoi celui-ci plutôt qu'un autre
 
-- **62 exercices sont déjà écrits.** Échauffement, attaque, défense, montée de
+- **56 exercices sont déjà écrits.** Échauffement, attaque, défense, montée de
   balle, gardiens, préparation physique — avec objectifs, points clés et
-  variantes. Vous en prenez un, vous l'ajustez ; l'original reste intact.
+  variantes. Vous en prenez un, vous l'ajustez ; l'original reste intact. C'est
+  le fonds commun, livré à tous les clubs ; le vôtre peut y ajouter les siens.
 - **Le terrain est aux cotes officielles.** Vous posez les joueurs, vous tirez
   une flèche, la position suivante en découle. Le mouvement se rejoue en
   animation et s'imprime à n'importe quelle taille sans se déformer.
@@ -29,7 +30,7 @@ au gymnase, et se souvenir de ce qui a marché.
   navigateur, et un fichier `.hbt.json` emporte l'ensemble d'un ordinateur à
   l'autre.
 
-![La bibliothèque : 62 exercices, filtrables, avec leur schéma](docs/bibliotheque.png)
+![La bibliothèque : les exercices, filtrables, avec leur schéma](docs/bibliotheque.png)
 
 ## Prendre en main en dix minutes
 
@@ -109,8 +110,10 @@ npm run build            # le club par defaut du depot
 CLUB=xxx npm run build   # l exemplaire du club xxx
 ```
 
-Ouvrir un club, c'est copier un dossier de `clubs/` et en changer le contenu :
-aucun fichier de `src/` n'est touché. Le fonds commun des exercices part avec
+Deux clubs sont servis aujourd'hui : le Handball Pays de Saint-Marcellin, pour
+qui l'application a été écrite, et le Handball Tain Vion Tournon. Ouvrir un club
+de plus, c'est copier un dossier de `clubs/` et en changer le contenu : aucun
+fichier de `src/` n'est touché. Le fonds commun des exercices part avec
 tous les exemplaires ; les fiches d'un club ne partent qu'avec le sien.
 
 Les couleurs sont nommées par **rôle** — `accent`, `structure-900` — jamais par

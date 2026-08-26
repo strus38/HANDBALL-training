@@ -1,0 +1,17 @@
+{
+  "identifiant": "hbtvt",
+  "nomCourt": "HBTVT",
+  "nom": "Handball Tain Vion Tournon",
+  "nomLivrable": "HBTVT-entrainements.html",
+  "couleurs": {
+    "accent": "#b0cb12",
+    "accent-clair": "#f2f6d5",
+    "accent-fonce": "#8ba00c",
+    "structure-900": "#0d150f",
+    "structure-800": "#16281a",
+    "structure-700": "#1f3d25",
+    "structure-500": "#439c2d",
+    "structure-100": "#d9ecd3",
+    "structure-050": "#f1f8ee"
+  }
+}
