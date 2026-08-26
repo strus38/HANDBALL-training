@@ -1,6 +1,6 @@
 {
   "name": "handball-training",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "private": true,
   "type": "module",
   "description": "Application de preparation de seances d'entrainement de handball",
@@ -15,7 +15,9 @@
     "prise-en-main": "node outils/priseEnMain.mjs",
     "importer": "node outils/importerCahier.mjs",
     "lire-retour": "node outils/lireRetour.mjs",
-    "nom-livrable": "node -e \"import('./outils/livrable.mjs').then(m=>console.log(m.CHEMIN_LIVRABLE))\""
+    "verifier-tous": "node outils/verifierTous.mjs",
+    "fichiers-livres": "node outils/fichiersLivres.mjs",
+    "notes-de-version": "node outils/notesDeVersion.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

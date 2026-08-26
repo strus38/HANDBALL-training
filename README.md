@@ -7,7 +7,9 @@ Pas d'installation, pas de compte, pas de connexion.**
 par n'importe quel club : préparer une séance, la dessiner, l'imprimer, la mener
 au gymnase, et se souvenir de ce qui a marché.
 
-[**→ Télécharger la dernière version**](../../releases/latest)
+[**→ Télécharger la dernière version**](../../releases/latest) — chaque release
+porte l'exemplaire de chaque club servi ; prenez celui qui porte le nom du
+vôtre.
 
 ![Une fiche d'exercice : le schéma à gauche, le détail à droite](docs/fiche.png)
 
@@ -34,10 +36,10 @@ au gymnase, et se souvenir de ce qui a marché.
 
 ## Prendre en main en dix minutes
 
-Le fichier **PRISE-EN-MAIN.html**, livré à côté de l'application dans chaque
-[release](../../releases/latest), conduit un entraîneur de la première ouverture
-à sa première séance imprimée. C'est le seul document, et il est illustré de
-captures prises dans l'application elle-même.
+Le fichier **`<CLUB>`-PRISE-EN-MAIN.html**, livré à côté de l'application dans
+chaque [release](../../releases/latest), conduit un entraîneur de la première
+ouverture à sa première séance imprimée. C'est le seul document, et il est
+illustré de captures prises dans l'exemplaire de son propre club.
 
 ![Une séance, exercice par exercice, avec le temps qui se recalcule](docs/seance.png)
 
@@ -55,8 +57,9 @@ livrable est un seul fichier HTML autonome, produit par Vite.
 
 ```
 npm install
-npm run dev          # serveur de developpement
-npm run verifier     # fabrication + tests + tests de fumee
+npm run dev             # serveur de developpement
+npm run verifier        # fabrication + tests + tests de fumee, un club
+npm run verifier-tous   # les mêmes, pour chaque club du dépôt
 ```
 
 `npm run build` enchaîne le typage, le bundle en fichier unique, puis la

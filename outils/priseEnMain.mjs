@@ -1,5 +1,5 @@
 /**
- * Fabrique dist/PRISE-EN-MAIN.html : de quoi mener sa premiere seance.
+ * Fabrique la prise en main du club : de quoi mener sa premiere seance.
  *
  * C'EST LE SEUL DOCUMENT LIVRE AU COACH. Il y en avait trois — un manuel de
  * mille cinq cents lignes, une plaquette, et ce guide — et aucun n'etait relu.
@@ -12,7 +12,7 @@
  * vit dans les commentaires du code, qui sont la reference du projet.
  *
  * Deux sorties :
- * - dist/PRISE-EN-MAIN.html, autonome, a poser a cote de l'application ;
+ * - la notice du club, autonome, a poser a cote de l'application ;
  * - docs/*.png, les memes captures en fichiers, pour le README de GitHub, qui
  *   ne sait pas afficher une image en base64.
  *
@@ -25,8 +25,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { capturer } from './captures.mjs'
 import { jetonsDeStyle, logo } from './marque.mjs'
 import { ouvrirNavigateur } from './navigateur.mjs'
-import { CHEMIN_LIVRABLE, NOM_LIVRABLE } from './livrable.mjs'
-import { PROFIL } from './club.mjs'
+import { CHEMIN_LIVRABLE, CHEMIN_NOTICE, DOSSIER_SORTIE, NOM_LIVRABLE } from './livrable.mjs'
+import { CLUB, CLUB_PAR_DEFAUT, PROFIL } from './club.mjs'
 
 const racine = join(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -708,15 +708,26 @@ ${sections}
 </html>
 `
 
-mkdirSync(join(racine, 'dist'), { recursive: true })
-writeFileSync(join(racine, 'dist', 'PRISE-EN-MAIN.html'), html)
-console.log(`Prise en main ecrite : dist/PRISE-EN-MAIN.html (${Math.round(html.length / 1024)} ko, ${TOTAL} min)`)
+mkdirSync(join(racine, DOSSIER_SORTIE), { recursive: true })
+writeFileSync(join(racine, CHEMIN_NOTICE), html)
+console.log(`Prise en main ecrite : ${CHEMIN_NOTICE} (${Math.round(html.length / 1024)} ko, ${TOTAL} min)`)
 
-// Les memes captures, en fichiers, pour le README.
-mkdirSync(join(racine, 'docs'), { recursive: true })
-for (const nom of POUR_LE_README) {
-  const source = captures.find((c) => c.nom === nom)
-  if (!source) throw new Error(`Capture « ${nom} » absente : le README la reclame.`)
-  copyFileSync(source.chemin, join(racine, 'docs', `${nom}.png`))
+/*
+ * Les memes captures, en fichiers, pour le README — mais du SEUL club par
+ * defaut.
+ *
+ * Le README presente le depot, pas un exemplaire : ses images doivent montrer
+ * toujours le meme. Sans cette reserve, fabriquer les clubs l'un apres l'autre
+ * laissait le README aux couleurs du DERNIER fabrique, au hasard de l'ordre du
+ * dossier — et la modification passait inapercue dans un `git status` ou les
+ * trois images changent a chaque fabrication de toute facon.
+ */
+if (CLUB === CLUB_PAR_DEFAUT) {
+  mkdirSync(join(racine, 'docs'), { recursive: true })
+  for (const nom of POUR_LE_README) {
+    const source = captures.find((c) => c.nom === nom)
+    if (!source) throw new Error(`Capture « ${nom} » absente : le README la reclame.`)
+    copyFileSync(source.chemin, join(racine, 'docs', `${nom}.png`))
+  }
+  console.log(`Captures du README : docs/${POUR_LE_README.join('.png, docs/')}.png`)
 }
-console.log(`Captures du README : docs/${POUR_LE_README.join('.png, docs/')}.png`)

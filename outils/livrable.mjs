@@ -27,10 +27,50 @@
  * blanc dans le profil plutot que deduit d'une regle que personne ne relit.
  */
 
-import { PROFIL } from './club.mjs'
+import { CLUB, profilDe } from './club.mjs'
+
+/**
+ * Les deux fichiers livres a un club, quel qu'il soit.
+ *
+ * Une seule fonction pour la regle de nommage : les outils qui parcourent tous
+ * les clubs — le controle d'assemblage, les notes de version — la posent la
+ * meme question que la fabrication d'un seul.
+ */
+export function fichiersDe(club) {
+  const profil = profilDe(club)
+  return {
+    dossier: `dist/${club}`,
+    livrable: `dist/${club}/${profil.nomLivrable}`,
+    notice: `dist/${club}/${profil.nomCourt}-PRISE-EN-MAIN.html`,
+  }
+}
+
+const miens = fichiersDe(CLUB)
 
 /** Le fichier que l'entraineur double-clique. */
-export const NOM_LIVRABLE = PROFIL.nomLivrable
+export const NOM_LIVRABLE = profilDe(CLUB).nomLivrable
 
-/** Son chemin depuis la racine du depot. */
-export const CHEMIN_LIVRABLE = `dist/${NOM_LIVRABLE}`
+/**
+ * La notice, au nom du club elle aussi.
+ *
+ * Elle s'appelait « PRISE-EN-MAIN.html » pour tout le monde. Une Release
+ * GitHub range ses fichiers a plat : deux clubs y auraient depose deux notices
+ * du meme nom, et la seconde aurait ecrase la premiere sans un mot. Un
+ * entraineur qui telecharge les deux fichiers de son club voit maintenant tout
+ * de suite qu'ils vont ensemble.
+ */
+export const NOM_NOTICE = miens.notice.slice(miens.dossier.length + 1)
+
+/**
+ * Un dossier de sortie par club.
+ *
+ * `vite build` vide son dossier de sortie a chaque fabrication : dans un
+ * « dist » commun, le deuxieme club effacait le premier, et seul le dernier
+ * fabrique arrivait a la Release. Chacun le sien, et l'ordre n'a plus
+ * d'importance.
+ */
+export const DOSSIER_SORTIE = miens.dossier
+
+/** Chemins depuis la racine du depot. */
+export const CHEMIN_LIVRABLE = miens.livrable
+export const CHEMIN_NOTICE = miens.notice

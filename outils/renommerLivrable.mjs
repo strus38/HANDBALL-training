@@ -12,9 +12,9 @@
  */
 
 import { existsSync, renameSync, rmSync } from 'node:fs'
-import { NOM_LIVRABLE, CHEMIN_LIVRABLE } from './livrable.mjs'
+import { NOM_LIVRABLE, CHEMIN_LIVRABLE, DOSSIER_SORTIE } from './livrable.mjs'
 
-const SORTIE_VITE = 'dist/index.html'
+const SORTIE_VITE = `${DOSSIER_SORTIE}/index.html`
 
 if (existsSync(SORTIE_VITE)) {
   // Un livrable deja renomme traine peut-etre d'une fabrication precedente :

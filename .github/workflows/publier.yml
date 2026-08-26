@@ -51,28 +51,19 @@ jobs:
 
       - run: npm ci
 
-      # On ne publie que ce qui passe : le build seul ne lance pas les tests.
-      - run: npm run verifier
+      # On ne publie que ce qui passe, et pour TOUS les clubs : un exemplaire
+      # casse ne doit pas partir dans la meme Release que les autres.
+      - run: npm run verifier-tous
 
       - name: Publier la version
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.version || github.ref_name }}
         run: |
-          # Le nom du livrable appartient au club fabrique : on le demande au
-          # depot plutot que de le reecrire ici, ou il se serait fige.
-          LIVRABLE="$(npm run --silent nom-livrable)"
-          # Les notes sont ecrites par echo plutot que par un document en ligne :
-          # indente pour rester dans le bloc YAML, un heredoc produirait un
-          # fichier decale de dix espaces, que Markdown rendrait en bloc de code.
-          {
-            echo "Telechargez **$(basename "$LIVRABLE")** et double-cliquez dessus : l'application s'ouvre"
-            echo "dans votre navigateur, sans installation et sans connexion."
-            echo
-            echo "- **PRISE-EN-MAIN.html** : de quoi mener sa premiere seance, en dix minutes"
-          } > notes.md
+          # Les notes et la liste des fichiers viennent du depot : un club
+          # ajoute apparait dans la Release sans qu'on touche a ce fichier.
+          npm run --silent notes-de-version > notes.md
           gh release create "$VERSION" \
-            "$LIVRABLE" \
-            dist/PRISE-EN-MAIN.html \
+            $(npm run --silent fichiers-livres | tr '\n' ' ') \
             --title "$VERSION" \
             --notes-file notes.md

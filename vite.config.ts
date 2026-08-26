@@ -82,6 +82,8 @@ export default defineConfig({
     __REVISION__: JSON.stringify(revision()),
   },
   build: {
+    // Un dossier par club : `vite build` vide le sien sans toucher aux autres.
+    outDir: `dist/${CLUB}`,
     target: 'es2020',
     assetsInlineLimit: 100_000_000,
     cssCodeSplit: false,

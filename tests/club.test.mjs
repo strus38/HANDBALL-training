@@ -370,7 +370,26 @@ verifier(
 )
 
 console.log('')
-console.log('7. Le planning est celui du club')
+console.log("7. L assemblage ne fige aucun club")
+// Les deux ateliers nommaient « dist/HBPSM-entrainements.html » et
+// « dist/PRISE-EN-MAIN.html » en dur. Ajouter un club ne changeait rien pour
+// eux : son exemplaire n'aurait ete ni controle, ni attache a la Release, sans
+// le moindre avertissement. Ils demandent desormais la liste au depot.
+for (const atelier of ['.github/workflows/verifier.yml', '.github/workflows/publier.yml']) {
+  verifier(
+    `${atelier.split('/').pop()} demande la liste des fichiers au depot`,
+    readFileSync(atelier, 'utf8').includes('fichiers-livres'),
+  )
+}
+verifier(
+  'et la verification passe par tous les clubs',
+  ['.github/workflows/verifier.yml', '.github/workflows/publier.yml'].every((a) =>
+    readFileSync(a, 'utf8').includes('verifier-tous'),
+  ),
+)
+
+console.log('')
+console.log('8. Le planning est celui du club')
 // Son contenu se verifie dans tests/planning.test.mjs, qui le croise avec la
 // mecanique. Ici, on verifie seulement qu'il EXISTE et qu'il est fourni par le
 // profil : un club livre avec un planning vide ne proposerait plus aucune date.

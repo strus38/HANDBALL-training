@@ -23,8 +23,16 @@ import { fileURLToPath } from 'node:url'
 const racine = join(dirname(fileURLToPath(import.meta.url)), '..')
 const paquet = JSON.parse(readFileSync(join(racine, 'package.json'), 'utf8'))
 
+/** Tous les clubs du depot, dans l'ordre du dossier. */
+export const CLUBS = readdirSync(join(racine, 'clubs')).filter((n) =>
+  existsSync(join(racine, 'clubs', n, 'profil.json')),
+)
+
+/** Celui pour lequel le depot fabrique quand on ne precise rien. */
+export const CLUB_PAR_DEFAUT = paquet.clubParDefaut
+
 /** Identifiant du club fabrique. */
-export const CLUB = process.env.CLUB || paquet.clubParDefaut
+export const CLUB = process.env.CLUB || CLUB_PAR_DEFAUT
 
 /** Son dossier, depuis la racine du depot. */
 export const DOSSIER_CLUB = `clubs/${CLUB}`
@@ -44,3 +52,8 @@ export const PROFIL = JSON.parse(readFileSync(chemin, 'utf8'))
 
 /** Chemin absolu du dossier du club — ce que « @club » designe. */
 export const RACINE_CLUB = join(racine, DOSSIER_CLUB)
+
+/** Le profil de n'importe quel club, pour les outils qui les parcourent tous. */
+export function profilDe(club) {
+  return JSON.parse(readFileSync(join(racine, 'clubs', club, 'profil.json'), 'utf8'))
+}

@@ -49,15 +49,15 @@ jobs:
 
       - run: npm ci
 
-      - name: Verifier (typage, bundle, livrables, tests)
-        run: npm run verifier
+      - name: Verifier chaque club (typage, bundle, livrables, tests)
+        run: npm run verifier-tous
 
       - name: Controler que les livrables sont la
         run: |
-          # Le nom du livrable appartient au profil du club : on le demande au
-          # depot plutot que de le reecrire ici, ou il se serait fige.
+          # La liste des fichiers attendus vient du depot, jamais d'ici : un
+          # club ajoute doit etre controle sans qu'on pense a le declarer.
           manquant=0
-          for f in "$(npm run --silent nom-livrable)" dist/PRISE-EN-MAIN.html; do
+          for f in $(npm run --silent fichiers-livres); do
             if [ -s "$f" ]; then
               echo "$f  $(du -h "$f" | cut -f1)"
             else
@@ -71,6 +71,6 @@ jobs:
         with:
           name: livrables
           path: |
-            dist/*.html
+            dist/*/*.html
           if-no-files-found: error
           retention-days: 30
