@@ -189,6 +189,9 @@ try {
     let capture = null;
     window.print = () => {
       const feuilles = [...document.querySelectorAll('.feuille')];
+      // Copie conservee : l'application retire les feuilles 60 ms plus tard, et
+      // il faut qu'elles soient encore la quand le navigateur produira le PDF.
+      window.__feuilles = document.querySelector('.impression').cloneNode(true);
       // A4 paysage moins 9 mm de marges : environ 726 px a 96 ppp.
       const HAUTEUR_PAGE = 726;
       capture = {
@@ -235,6 +238,35 @@ try {
 
   verifier('une page par exercice', papier.capture?.pagesEstimees === papier.exercices,
     `(${papier.capture?.pagesEstimees} pages pour ${papier.exercices} exercices)`)
+
+  // LE COMPTE QUI FAIT FOI : celui d'un vrai PDF, pas celui d'un media simule.
+  //
+  // Ce qui precede mesure la page en media d'impression EMULE, dans une fenetre
+  // de navigateur. Une requete de media ne s'y evalue pas comme sur le papier :
+  // « orientation » y suit la fenetre, alors qu'a l'impression Chrome l'evalue
+  // contre la page A4 DEBOUT, quelle que soit l'orientation demandee. Une
+  // variante « @media print and (orientation: portrait) » a donc pu gagner sur
+  // TOUTES les impressions pendant que ces mesures-la annonçaient sept pages
+  // parfaites : chaque fiche sortait sur deux pages, le schema tranche au bas
+  // de la premiere. Sept exercices, quatorze pages, et un terrain coupe.
+  //
+  // Seul le PDF reellement produit tranche. On remet les feuilles conservees
+  // dans la page — l'application les a retirees entre-temps — et on compte.
+  await navigateur.evaluer(`
+    const copie = window.__feuilles;
+    if (copie && !document.querySelector('.impression')) {
+      document.querySelector('.application').appendChild(copie);
+    }
+    return !!copie;
+  `)
+  const pagesReelles = await navigateur.nombreDePages()
+  verifier('le PDF produit tient en une page par exercice',
+    pagesReelles === papier.exercices,
+    `(${pagesReelles} pages de PDF pour ${papier.exercices} exercices)`)
+  await navigateur.evaluer(`
+    if (window.__feuilles && window.__feuilles.parentNode) window.__feuilles.remove();
+    return true;
+  `)
 
   console.log('')
   console.log('5. Un seul terrain par feuille, portant tout l enchainement')

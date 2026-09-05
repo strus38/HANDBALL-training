@@ -35,21 +35,20 @@ export interface Zone {
 /**
  * Zone imprimable en millimetres, entete et pied de page deduits.
  *
- * DEUX zones, parce que la feuille peut sortir dans les deux sens. La fiche
- * demande le paysage — c'est la largeur qui commande la taille d'un terrain —
- * mais la boite de dialogue du navigateur passe outre, et un entraineur qui
- * imprime en portrait n'a aucune raison d'y perdre.
+ * UNE SEULE zone, celle du paysage que @page demande et que Chrome respecte —
+ * y compris quand les options d'impression reclament le portrait.
  *
- * Sans la seconde zone, la mise en page etait calculee pour 279 mm de large et
- * rendue dans 192 : les proportions ne correspondaient plus a rien, le texte
- * s'entassait dans une colonne trop etroite, et la feuille s'arretait au tiers
- * de la page.
+ * Il y en a eu deux, la seconde taillee pour le portrait, choisie a
+ * l'impression par une requete de media sur l'orientation. Cette requete ne
+ * dit pas ce qu'on croyait : a l'impression, Chrome l'evalue contre la page A4
+ * DEBOUT, quelle que soit l'orientation reelle. La zone portrait gagnait donc
+ * a chaque impression, la fiche etait calculee pour 192 mm de large et rendue
+ * dans 279, et le schema sortait tranche au bas de la page.
  *
- * A4 : 297 x 210 en paysage, 210 x 297 en portrait ; 9 mm de marges de chaque
- * cote ; 24 mm pour l'entete et le pied de page.
+ * A4 paysage : 297 x 210 ; 9 mm de marges de chaque cote ; 24 mm pour l'entete
+ * et le pied de page.
  */
 export const ZONE_PAYSAGE: Zone = { largeur: 279, hauteur: 168 }
-export const ZONE_PORTRAIT: Zone = { largeur: 192, hauteur: 255 }
 
 /** Zone par defaut : celle que la fiche demande. */
 export const ZONE = ZONE_PAYSAGE

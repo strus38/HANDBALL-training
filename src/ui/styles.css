@@ -3362,12 +3362,6 @@ button,
       src/impression/miseEnPage.ts est ignoree — le terrain prend sa hauteur
       naturelle et la fiche deborde sur une deuxieme page.
 
-      Une hauteur en millimetres ne marche pas non plus. Elle fige le format :
-      192 mm est la hauteur utile d'une A4 PAYSAGE, et si l'entraineur imprime
-      en portrait — sa boite de dialogue peut passer outre @page — la feuille
-      s'arrete au tiers de la page et laisse 87 mm de blanc, schema et texte
-      rapetisses d'autant.
-
       Les unites de fenetre ne marchent pas davantage : « 100vh » se resout
       contre la FENETRE et non contre la page. Dans un navigateur haut de
       900 px, chaque fiche reclamait alors 238 mm et debordait sur une seconde
@@ -3376,13 +3370,8 @@ button,
       Reste la valeur en millimetres : 210 mm de haut moins 2 x 9 mm de marges,
       soit la hauteur utile d'une A4 PAYSAGE, celle que @page demande juste
       au-dessus. Et Chrome la respecte : un PDF force en portrait par les
-      options d'impression ressort quand meme en 297 x 210.
-
-      Une regle « @media (orientation: portrait) » a ete essayee pour couvrir
-      un navigateur qui passerait outre. Elle a ete retiree : l'orientation s'y
-      evalue contre la FENETRE et non contre la page, si bien qu'une fenetre
-      etroite faisait reclamer 279 mm a chaque fiche — deux pages chacune. Le
-      remede etait pire que le mal qu'il visait.
+      options d'impression ressort quand meme en 297 x 210 — verifie en
+      produisant les deux.
     */
     height: 192mm;
     max-height: 192mm;
@@ -3399,21 +3388,26 @@ button,
   }
 
   /*
-    Impression en portrait : la feuille suit la page.
-    L'orientation d'une requete de media, en impression, s'evalue contre LA
-    PAGE — verifie en produisant de vrais PDF dans les deux sens. La feuille
-    remplit donc les 279 mm utiles d'une A4 portrait au lieu de s'arreter aux
-    192 mm d'une paysage, et src/ui/FeuillesImpression.tsx bascule au meme
-    moment sur la mise en page calculee pour cette largeur.
-  */
-  @media (orientation: portrait) {
-    .feuille {
-      height: 279mm;
-      max-height: 279mm;
-    }
-  }
+    PAS DE VARIANTE PORTRAIT ICI, et ce n'est pas un oubli.
 
-  }
+    Une regle « @media (orientation: portrait) » a longtemps donne 279 mm a la
+    feuille, pour le cas ou la boite de dialogue sortirait la page dans l'autre
+    sens. Elle etait FAUSSE, et elle l'etait sur toutes les impressions : a
+    l'impression, Chrome evalue orientation, width, height et aspect-ratio
+    contre la page A4 DEBOUT, quelle que soit l'orientation reelle demandee.
+    Mesure : une sonde CSS imprimee sur une page « A4 landscape » ressort en
+    « orientation: portrait », 762 x 484 px, rapport inferieur a 1.
+
+    La branche portrait gagnait donc a chaque fois. Chaque fiche reclamait
+    279 mm sur une page qui en offre 192 : le schema etait tranche net au bas
+    de la premiere page et le texte partait sur une deuxieme. Une seance de
+    sept exercices sortait en quatorze pages, et c'est ce que l'entraineur
+    voyait — un terrain coupe, sans savoir pourquoi.
+
+    Aucune requete de media ne peut distinguer les deux sens : la feuille s'en
+    remet donc a @page, que Chrome respecte, lui, meme quand les options
+    d'impression demandent le portrait.
+  */
 
   .feuille-entete {
     display: flex;
