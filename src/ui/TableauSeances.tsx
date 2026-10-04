@@ -103,7 +103,7 @@ export function TableauSeances({
             <button
               className="bouton"
               onClick={onTableauDeBord}
-              title="Récupérer en ligne la séance préparée par le tableau de bord du club : la seule fonction qui passe par internet"
+              title="Prochain match, classements, repérage et séance de la semaine, d'après le tableau de bord du club (connexion internet)"
             >
               {tableauDeBord}
             </button>
@@ -175,7 +175,7 @@ export function TableauSeances({
               <button
                 className="bouton"
                 onClick={onTableauDeBord}
-                title="Récupérer en ligne la séance préparée par le tableau de bord du club : la seule fonction qui passe par internet"
+                title="Prochain match, classements, repérage et séance de la semaine, d'après le tableau de bord du club (connexion internet)"
               >
                 {tableauDeBord}
               </button>

@@ -9,8 +9,11 @@ interface Props {
   onImporter: () => void
   onAccueil: () => void
   onBilan: () => void
+  /** Libelle du lien vers le tableau de bord du club ; absent si le club n'en a pas. */
+  tableauDeBord?: string
+  onTableauDeBord?: () => void
   /** Vue affichee dans le panneau principal, pour marquer le lien actif. */
-  vue: 'accueil' | 'bilan' | 'seance'
+  vue: 'accueil' | 'bilan' | 'seance' | 'tableau'
   /**
    * Replie le menu. Le bouton vit ici, sur le panneau qu'il commande : dans
    * l'entete de l'application, detache de la liste, personne ne le trouvait.
@@ -26,6 +29,8 @@ export function ListeSeances({
   onImporter,
   onAccueil,
   onBilan,
+  tableauDeBord,
+  onTableauDeBord,
   vue,
   onReplier,
 }: Props) {
@@ -68,6 +73,15 @@ export function ListeSeances({
       >
         Bilan de la saison
       </button>
+      {tableauDeBord && onTableauDeBord && (
+        <button
+          className={`lien-accueil${vue === 'tableau' ? ' actif' : ''}`}
+          onClick={onTableauDeBord}
+          title="Prochain match, classements et repérage, d'après le tableau de bord du club (connexion internet)"
+        >
+          {tableauDeBord}
+        </button>
+      )}
       {seances.length === 0 ? (
         <p style={{ padding: '16px', color: 'var(--texte-doux)', fontSize: 13 }}>
           Aucune séance enregistrée.

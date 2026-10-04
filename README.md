@@ -2,8 +2,8 @@
 
 **Un seul fichier. Double-cliquez, l'application s'ouvre dans votre navigateur.
 Pas d'installation, pas de compte, pas de connexion.**
-(Une seule exception, au choix de chaque club : le bouton qui va chercher la séance
-préparée par son tableau de bord.)
+(Une seule exception, au choix de chaque club : l'écran qui affiche son tableau de
+bord et va chercher la séance qu'il prépare.)
 
 Écrit pour les entraîneurs du Handball Pays de Saint-Marcellin, et utilisable
 par n'importe quel club : préparer une séance, la dessiner, l'imprimer, la mener
@@ -47,16 +47,22 @@ illustré de captures prises dans l'exemplaire de son propre club.
 
 ## Ce qu'il ne fait pas
 
-Pas de gestion de licences, de convocations ni de feuilles de match. Pas de
-statistiques de match. Pas de partage en ligne : une séance s'échange en
+Pas de gestion de licences, de convocations ni de feuilles de match. Aucune
+statistique de match calculée ici. Pas de partage en ligne : une séance s'échange en
 envoyant un fichier. C'est un outil de préparation d'entraînement, et rien
 d'autre.
 
 La seule chose qui passe par internet est facultative et propre à chaque club :
-si son profil déclare un tableau de bord (un site qui suit l'équipe et prépare la
-séance de la semaine), un bouton à côté d'« Importer » télécharge cette séance et
-l'ajoute comme une séance reçue, sans rien demander : elle ne porte aucun nom de
-joueur. Rien d'autre ne touche au réseau, et un test le vérifie.
+si son profil déclare un tableau de bord (un site qui suit l'équipe semaine après
+semaine), l'écran « Tableau de bord » en montre le résumé publié par ce site :
+prochain match, chances d'atteindre l'objectif de la phase, classement, repérage de
+l'adversaire, axes de travail. Ces chiffres sont calculés par le site, pas par
+l'application. Un bouton y ajoute la séance de la semaine qu'il prépare, comme une
+séance reçue ; un autre ouvre le tableau de bord complet (planification des matchs,
+convocation, fiches des joueurs), qui demande la phrase secrète du club. Ce qui
+arrive dans l'application ne porte aucun nom de joueur et ne demande rien ; la
+dernière copie reçue reste lisible sans réseau. Rien d'autre ne touche au réseau,
+et un test le vérifie.
 
 ## Contribuer
 
@@ -111,7 +117,7 @@ dans son profil :
 
 | Fichier | Ce qu'il porte |
 | --- | --- |
-| `profil.json` | Identifiant, noms, nom du fichier livré, la palette du club, et facultativement l'adresse de son tableau de bord |
+| `profil.json` | Identifiant, noms, nom du fichier livré, la palette du club, et facultativement son tableau de bord (séance de la semaine, résumé, page complète) |
 | `Ecusson.tsx` | L'écusson du club |
 | `fiches.ts` | Ses séances propres, ajoutées au fonds commun — vide pour la plupart des clubs |
 | `planning.ts` | Ses équipes et leurs créneaux hebdomadaires |

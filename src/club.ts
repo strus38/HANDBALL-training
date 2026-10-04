@@ -78,8 +78,12 @@ export interface ProfilClub {
 export interface TableauDeBordClub {
   /** Ce que l'entraineur lit sur le bouton. */
   nom: string
-  /** Adresse du fichier chiffre que publie le tableau de bord. */
+  /** Adresse de la seance du prochain entrainement, au format .hbt.json. */
   donnees: string
+  /** Adresse du resume sans nom de joueur : prochain match, classements, chances, reperage. */
+  resume?: string
+  /** Adresse du tableau de bord complet (planification, convocation, joueurs), sous phrase secrete. */
+  page?: string
 }
 
 /**

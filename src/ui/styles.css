@@ -3326,6 +3326,147 @@ button,
   display: none;
 }
 
+/* ======================================================= Tableau de bord du club */
+/* L'ecran qui affiche le resume du tableau de bord : memes cartes et chiffres cles que le
+   bilan ; la couleur d'accent marque ce qui compte (match cle, rangs de l'objectif, notre ligne). */
+
+.tableau-club .entete-tableau .pousse {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tableau-club a.bouton {
+  text-decoration: none;
+}
+
+.bandeau-tableau {
+  background: var(--alerte-fond);
+  color: var(--alerte);
+  border-radius: var(--rayon-petit);
+  padding: 8px 12px;
+  font-size: 13.5px;
+}
+
+.carte-match {
+  border-left: 4px solid var(--accent);
+}
+
+.match-cle {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--structure-900);
+  border-radius: 999px;
+  padding: 1px 9px;
+  font-size: 12px;
+  font-weight: 650;
+  vertical-align: 2px;
+}
+
+.rangs-finaux {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  gap: 8px;
+  align-items: end;
+  height: 140px;
+  margin: 12px 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.rangs-finaux li {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--texte-doux);
+}
+
+.colonne-rang {
+  display: block;
+  width: 70%;
+  border-radius: 4px 4px 0 0;
+  background: var(--bordure-forte);
+}
+
+.rangs-finaux li.objectif .colonne-rang {
+  background: var(--accent-fonce);
+}
+
+.valeur-rang {
+  color: var(--texte);
+  font-weight: 650;
+}
+
+.note-tableau {
+  color: var(--texte-doux);
+  font-size: 13px;
+}
+
+.tableau-classement tr.notre-equipe td {
+  background: var(--accent-clair);
+  font-weight: 650;
+}
+
+.tableau-classement tr.notre-equipe td:first-child {
+  box-shadow: inset 3px 0 var(--accent);
+}
+
+.forme-equipe {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.forme-equipe i {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.forme-equipe .resultat-V {
+  background: var(--succes);
+}
+
+.forme-equipe .resultat-D {
+  background: var(--danger);
+}
+
+.forme-equipe .resultat-N {
+  background: var(--texte-faible);
+}
+
+.axes-tableau {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.axes-tableau li {
+  padding: 8px 0;
+  border-top: 1px solid var(--bordure);
+}
+
+.axes-tableau li:first-child {
+  border-top: 0;
+}
+
+.etiquette-axe {
+  font-size: 12px;
+  color: var(--structure-700);
+  border: 1px solid var(--structure-100);
+  border-radius: 999px;
+  padding: 0 8px;
+}
+
 @media print {
   @page {
     size: A4 landscape;

@@ -15,6 +15,7 @@ import { useAtelier, type EtatSauvegarde } from './ui/useAtelier'
 import { ModeTerrain } from './ui/ModeTerrain'
 import { ReglageEquipe } from './ui/ReglageEquipe'
 import { ErreurReseau, telechargerTexte } from './platform/reseau'
+import { TableauDeBord } from './ui/TableauDeBord'
 import { ChoixImport as DialogueImport } from './ui/ChoixImport'
 import {
   fusionner,
@@ -62,7 +63,7 @@ export function App() {
   const [aImprimer, setAImprimer] = useState<Exercice[]>([])
   // Vue courante : la page d'accueil listant toutes les seances, ou une seance
   // ouverte. L'exercice ouvert forme un troisieme niveau a l'interieur.
-  const [vue, setVue] = useState<'accueil' | 'bilan' | 'seance'>('accueil')
+  const [vue, setVue] = useState<'accueil' | 'bilan' | 'seance' | 'tableau'>('accueil')
   const surAccueil = vue === 'accueil'
   const [aDupliquer, setADupliquer] = useState<Seance | undefined>()
   const [reglageEquipe, setReglageEquipe] = useState(false)
@@ -483,6 +484,11 @@ export function App() {
               setVue('bilan')
               setExerciceOuvertId(undefined)
             }}
+            tableauDeBord={CLUB.tableauDeBord?.nom}
+            onTableauDeBord={() => {
+              setVue('tableau')
+              setExerciceOuvertId(undefined)
+            }}
             vue={vue}
             onImporter={importer}
           />
@@ -494,6 +500,12 @@ export function App() {
           </div>
         ) : vue === 'bilan' ? (
           <Bilan seances={atelier.seances} />
+        ) : vue === 'tableau' && CLUB.tableauDeBord ? (
+          <TableauDeBord
+            tableau={CLUB.tableauDeBord}
+            recuperation={recuperation}
+            onCreerSeance={() => void recupererDuTableau()}
+          />
         ) : surAccueil || !seance ? (
           <TableauSeances
             seances={atelier.seances}
@@ -509,8 +521,11 @@ export function App() {
               setVue('seance')
             }}
             onImporter={importer}
-            tableauDeBord={CLUB.tableauDeBord && (recuperation ? 'Récupération…' : CLUB.tableauDeBord.nom)}
-            onTableauDeBord={() => void recupererDuTableau()}
+            tableauDeBord={CLUB.tableauDeBord?.nom}
+            onTableauDeBord={() => {
+              setVue('tableau')
+              setExerciceOuvertId(undefined)
+            }}
             onSauvegarder={sauvegarderTout}
             onDupliquer={setADupliquer}
             onExporter={exporterUneSeance}
