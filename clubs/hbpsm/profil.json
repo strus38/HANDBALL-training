@@ -13,5 +13,9 @@
     "structure-500": "#1f6fbd",
     "structure-100": "#e4eefa",
     "structure-050": "#f2f7fd"
+  },
+  "tableauDeBord": {
+    "nom": "Tableau de bord HBPSM",
+    "donnees": "https://raw.githubusercontent.com/strus38/hbpsm-dashboard/main/publie/seance-prochaine.hbt.json"
   }
 }

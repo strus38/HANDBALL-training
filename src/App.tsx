@@ -14,6 +14,7 @@ import { Bibliotheque } from './bibliotheque/Bibliotheque'
 import { useAtelier, type EtatSauvegarde } from './ui/useAtelier'
 import { ModeTerrain } from './ui/ModeTerrain'
 import { ReglageEquipe } from './ui/ReglageEquipe'
+import { ErreurReseau, telechargerTexte } from './platform/reseau'
 import { ChoixImport as DialogueImport } from './ui/ChoixImport'
 import {
   fusionner,
@@ -65,6 +66,8 @@ export function App() {
   const surAccueil = vue === 'accueil'
   const [aDupliquer, setADupliquer] = useState<Seance | undefined>()
   const [reglageEquipe, setReglageEquipe] = useState(false)
+  // Telechargement en cours de la seance du tableau de bord du club.
+  const [recuperation, setRecuperation] = useState(false)
   /**
    * Importation suspendue le temps que l'entraineur tranche.
    *
@@ -224,6 +227,55 @@ export function App() {
       setMessageImport(
         erreur instanceof ErreurImport ? erreur.message : 'Import impossible : fichier illisible.',
       )
+    }
+  }
+
+  /**
+   * La seance que le tableau de bord du club prepare pour le prochain
+   * entrainement : la SEULE chose que l'application va chercher sur internet,
+   * et seulement sur ce clic.
+   *
+   * Le tableau de bord la publie en clair : elle ne porte aucun nom de joueur
+   * (le nom des equipes, des chiffres d'equipe, des numeros de maillot), donc
+   * aucune phrase secrete a demander. Elle passe par importerFichier, avec les
+   * memes garde-fous qu'un fichier recu. Deja la, elle est ouverte plutot que
+   * dupliquee : on clique deux fois sur un bouton qui semble ne rien faire.
+   */
+  const recupererDuTableau = async () => {
+    const tableau = CLUB.tableauDeBord
+    if (!tableau || recuperation) return
+    setRecuperation(true)
+    setMessageImport(undefined)
+    try {
+      const texte = await telechargerTexte(tableau.donnees)
+      const contenu = importerFichier(texte)
+      if (contenu.type !== 'seance') throw new ErreurImport("Le tableau de bord n'a pas préparé de séance.")
+      const recue = contenu.seance
+      const deja = atelier.seances.find((s) => s.titre === recue.titre && s.date === recue.date)
+      setExerciceOuvertId(undefined)
+      if (deja) {
+        atelier.setSeanceCouranteId(deja.id)
+        setVue('seance')
+        setMessageImport(`Séance « ${recue.titre} » déjà reçue : la voici.`)
+        return
+      }
+      atelier.ajouterSeance(recue)
+      setVue('seance')
+      const quand = new Date(String((JSON.parse(texte) as { exporteLe?: unknown }).exporteLe ?? ''))
+      setMessageImport(
+        `Séance « ${recue.titre} » reçue du tableau de bord` +
+          (Number.isNaN(quand.getTime())
+            ? '.'
+            : `, préparée le ${quand.toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}.`),
+      )
+    } catch (erreur) {
+      setMessageImport(
+        erreur instanceof ErreurReseau || erreur instanceof ErreurImport
+          ? erreur.message
+          : 'Récupération impossible : la séance du tableau de bord est illisible.',
+      )
+    } finally {
+      setRecuperation(false)
     }
   }
 
@@ -457,6 +509,8 @@ export function App() {
               setVue('seance')
             }}
             onImporter={importer}
+            tableauDeBord={CLUB.tableauDeBord && (recuperation ? 'Récupération…' : CLUB.tableauDeBord.nom)}
+            onTableauDeBord={() => void recupererDuTableau()}
             onSauvegarder={sauvegarderTout}
             onDupliquer={setADupliquer}
             onExporter={exporterUneSeance}

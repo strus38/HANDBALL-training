@@ -22,6 +22,9 @@ interface Props {
   onOuvrir: (id: string) => void
   onNouvelle: () => void
   onImporter: () => void
+  /** Libelle du bouton du tableau de bord ; absent si le club n'en a pas. */
+  tableauDeBord?: string
+  onTableauDeBord?: () => void
   onSauvegarder: () => void
   onDupliquer: (seance: Seance) => void
   onExporter: (seance: Seance) => void
@@ -35,6 +38,8 @@ export function TableauSeances({
   onOuvrir,
   onNouvelle,
   onImporter,
+  tableauDeBord,
+  onTableauDeBord,
   onSauvegarder,
   onDupliquer,
   onExporter,
@@ -94,6 +99,15 @@ export function TableauSeances({
           >
             Importer
           </button>
+          {tableauDeBord && onTableauDeBord && (
+            <button
+              className="bouton"
+              onClick={onTableauDeBord}
+              title="Récupérer en ligne la séance préparée par le tableau de bord du club : la seule fonction qui passe par internet"
+            >
+              {tableauDeBord}
+            </button>
+          )}
           <button
             className="bouton principal"
             onClick={onNouvelle}
@@ -157,6 +171,15 @@ export function TableauSeances({
             >
               Importer un fichier
             </button>
+            {tableauDeBord && onTableauDeBord && (
+              <button
+                className="bouton"
+                onClick={onTableauDeBord}
+                title="Récupérer en ligne la séance préparée par le tableau de bord du club : la seule fonction qui passe par internet"
+              >
+                {tableauDeBord}
+              </button>
+            )}
           </div>
         </div>
       ) : affichees.length === 0 ? (

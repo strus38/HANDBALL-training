@@ -4,7 +4,7 @@ Le premier profil de club, et celui qui sert de reference aux autres.
 
 | Fichier | Ce qu'il porte |
 | --- | --- |
-| `profil.json` | L'identite et la palette : identifiant, noms, nom du fichier livre, couleurs par role |
+| `profil.json` | L'identite et la palette : identifiant, noms, nom du fichier livre, couleurs par role ; l'adresse du tableau de bord du club |
 | `Ecusson.tsx` | L'ecusson, dessine en SVG |
 | `fiches.ts` | Les six seances propres au club, ajoutees au fonds commun |
 | `planning.ts` | Les equipes et leurs creneaux hebdomadaires |
@@ -19,3 +19,11 @@ fabriquer avec `CLUB=<identifiant>`.
 
 Un club sans fiches propres est le cas normal : `fiches.ts` exporte alors un
 tableau vide. Saint-Marcellin est l'exception qui en a six.
+
+Le club a un tableau de bord (depot strus38/hbpsm-dashboard) : il suit les seniors
+garcons chaque semaine et publie la seance qu'il propose pour le prochain
+entrainement, en clair car elle ne porte aucun nom de joueur (le reste de ses
+donnees est chiffre et n'arrive jamais ici). `tableauDeBord` dans `profil.json`
+fait apparaitre le bouton qui la recupere, sans phrase secrete : c'est la seule
+partie de l'application qui passe par internet. Le tableau de bord ecrit
+`publie/seance-prochaine.hbt.json` ; le renommer la-bas casserait le bouton ici.

@@ -2,6 +2,8 @@
 
 **Un seul fichier. Double-cliquez, l'application s'ouvre dans votre navigateur.
 Pas d'installation, pas de compte, pas de connexion.**
+(Une seule exception, au choix de chaque club : le bouton qui va chercher la séance
+préparée par son tableau de bord.)
 
 Écrit pour les entraîneurs du Handball Pays de Saint-Marcellin, et utilisable
 par n'importe quel club : préparer une séance, la dessiner, l'imprimer, la mener
@@ -49,6 +51,12 @@ Pas de gestion de licences, de convocations ni de feuilles de match. Pas de
 statistiques de match. Pas de partage en ligne : une séance s'échange en
 envoyant un fichier. C'est un outil de préparation d'entraînement, et rien
 d'autre.
+
+La seule chose qui passe par internet est facultative et propre à chaque club :
+si son profil déclare un tableau de bord (un site qui suit l'équipe et prépare la
+séance de la semaine), un bouton à côté d'« Importer » télécharge cette séance et
+l'ajoute comme une séance reçue, sans rien demander : elle ne porte aucun nom de
+joueur. Rien d'autre ne touche au réseau, et un test le vérifie.
 
 ## Contribuer
 
@@ -103,7 +111,7 @@ dans son profil :
 
 | Fichier | Ce qu'il porte |
 | --- | --- |
-| `profil.json` | Identifiant, noms, nom du fichier livré, et la palette du club |
+| `profil.json` | Identifiant, noms, nom du fichier livré, la palette du club, et facultativement l'adresse de son tableau de bord |
 | `Ecusson.tsx` | L'écusson du club |
 | `fiches.ts` | Ses séances propres, ajoutées au fonds commun — vide pour la plupart des clubs |
 | `planning.ts` | Ses équipes et leurs créneaux hebdomadaires |

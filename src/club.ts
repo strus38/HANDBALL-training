@@ -61,6 +61,25 @@ export interface ProfilClub {
   nomLivrable: string
   /** Ses couleurs. Le type les rend obligatoires : un profil incomplet ne compile pas. */
   couleurs: PaletteClub
+  /** Facultatif : la seance preparee par le tableau de bord du club, a recuperer en ligne. */
+  tableauDeBord?: TableauDeBordClub
+}
+
+/**
+ * Le tableau de bord du club, s'il en a un : un site qui suit l'equipe semaine
+ * apres semaine et publie la seance qu'il propose pour le prochain
+ * entrainement. Elle ne porte aucun nom de joueur, d'ou aucune phrase secrete :
+ * ce qui est nominatif reste chiffre chez lui et n'arrive jamais ici.
+ *
+ * C'EST LA SEULE PARTIE DE L'APPLICATION QUI PASSE PAR INTERNET, et seulement
+ * quand l'entraineur clique sur son bouton. Tout le reste fonctionne au
+ * gymnase, sans reseau. Un club qui n'en declare pas n'a pas le bouton.
+ */
+export interface TableauDeBordClub {
+  /** Ce que l'entraineur lit sur le bouton. */
+  nom: string
+  /** Adresse du fichier chiffre que publie le tableau de bord. */
+  donnees: string
 }
 
 /**
