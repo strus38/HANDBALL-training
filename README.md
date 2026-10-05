@@ -59,7 +59,9 @@ prochain match, chances d'atteindre l'objectif de la phase, classement, repérag
 l'adversaire, axes de travail. Ces chiffres sont calculés par le site, pas par
 l'application. Un bouton y ajoute la séance de la semaine qu'il prépare, comme une
 séance reçue ; un autre ouvre le tableau de bord complet (planification des matchs,
-convocation, fiches des joueurs), qui demande la phrase secrète du club. Ce qui
+convocation, fiches des joueurs), qui demande la phrase secrète du club. Ouvert depuis
+l'application, il est en mode entraîneur : on y modifie la feuille ; ouvert directement,
+il se consulte seulement. Ce qui
 arrive dans l'application ne porte aucun nom de joueur et ne demande rien ; la
 dernière copie reçue reste lisible sans réseau. Rien d'autre ne touche au réseau,
 et un test le vérifie.

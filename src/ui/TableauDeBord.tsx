@@ -130,7 +130,7 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
               href={tableau.page}
               target="_blank"
               rel="noopener noreferrer"
-              title="Planification des matchs, convocation et fiches des joueurs : la phrase secrète du club est demandée une fois par ordinateur"
+              title="Planification des matchs, convocation et fiches des joueurs, en mode entraîneur : vous seul pouvez y modifier la feuille. La phrase secrète du club est demandée une fois par ordinateur"
             >
               Ouvrir le tableau de bord complet ↗
             </a>

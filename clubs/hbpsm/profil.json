@@ -18,6 +18,6 @@
     "nom": "Tableau de bord HBPSM",
     "donnees": "https://raw.githubusercontent.com/strus38/hbpsm-dashboard/main/publie/seance-prochaine.hbt.json",
     "resume": "https://raw.githubusercontent.com/strus38/hbpsm-dashboard/main/publie/tableau-public.json",
-    "page": "https://strus38.github.io/hbpsm-dashboard/"
+    "page": "https://strus38.github.io/hbpsm-dashboard/#entraineur"
   }
 }

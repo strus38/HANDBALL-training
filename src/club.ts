@@ -82,7 +82,9 @@ export interface TableauDeBordClub {
   donnees: string
   /** Adresse du resume sans nom de joueur : prochain match, classements, chances, reperage. */
   resume?: string
-  /** Adresse du tableau de bord complet (planification, convocation, joueurs), sous phrase secrete. */
+  /** Adresse du tableau de bord complet (planification, convocation, joueurs), sous phrase secrete.
+   *  Elle peut porter le marqueur du mode entraineur (#entraineur) : ouverte depuis l'application,
+   *  la page permet de modifier la feuille ; ouverte autrement, elle se consulte seulement. */
   page?: string
 }
 
