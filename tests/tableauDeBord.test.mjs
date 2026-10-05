@@ -11,7 +11,7 @@
 
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { importerFichier, lireResume, ErreurResume, libelleObjectif, manche, nomCourtEquipe, ordinal } from '../.build-tests/domaine.mjs'
+import { importerFichier, lireResume, ErreurResume, initialesEquipe, libelleObjectif, manche, nomCourtEquipe, ordinal } from '../.build-tests/domaine.mjs'
 
 let ok = 0, ko = 0
 const verifier = (nom, condition, detail = '') => {
@@ -81,6 +81,20 @@ verifier('le nom court garde ce qui distingue l équipe', nomCourtEquipe('P16M D
 verifier('et le numéro de l équipe', nomCourtEquipe('P16M DIV2 RTE CLUB BRAVO SUD 2') === 'Bravo Sud 2' && nomCourtEquipe('CLUB CHARLIE-2') === 'Charlie-2')
 verifier('un match de coupe se dit par son tour', manche({ journee: null, coupe: 'Coupe de France', tour: '2EME TOUR' }) === 'Coupe de France · 2e tour'
   && manche({ journee: null, coupe: 'Coupe de France', tour: '1ER TOUR' }, true) === 'Coupe' && manche({ journee: 3 }) === 'J3')
+
+console.log('\n5. Les logos des équipes viennent dans le résumé, jamais par une adresse')
+const image = 'data:image/webp;base64,UklGRhIAAABXRUJQVlA4TAYAAAAvAAAAAAA='
+const avecLogos = lireResume(JSON.stringify({
+  v: 1, poules: {},
+  logos: { 'CLUB ALPHA': image, 'CLUB BRAVO SUD': 'https://logos.example/bravo.webp', 'CLUB CHARLIE': 12,
+    'CLUB DELTA': 'data:text/html;base64,PHNjcmlwdD4=', 'CLUB ECHO': 'data:image/png;base64,abc"><script>' },
+}))
+verifier('l image intégrée est gardée', avecLogos.logos['CLUB ALPHA'] === image)
+verifier('une adresse, un autre type ou un texte abîmé sont écartés', Object.keys(avecLogos.logos).join() === 'CLUB ALPHA',
+  Object.keys(avecLogos.logos).join())
+verifier('sans logos : rien, sans casser l écran', Object.keys(resume.logos).length === 0)
+verifier('à défaut de logo, les initiales', initialesEquipe('P16M DIV- CLUB BRAVO SUD') === 'BS'
+  && initialesEquipe('P16M DIV2 RTE CLUB BRAVO SUD 2') === 'BS' && initialesEquipe('') === '?')
 
 console.log(`\n=== ${ok} reussis, ${ko} echoues ===`)
 process.exit(ko === 0 ? 0 : 1)

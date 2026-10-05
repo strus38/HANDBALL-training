@@ -89,7 +89,15 @@ export interface ResumeTableau {
   poules: Record<string, LigneClassement[]>
   resultats: { poule: string; journee: number | null; date: string | null; dom: string; ext: string; sd: number; se: number }[]
   axes: { titre: string; libelle: string; constat: string }[]
+  /** Logo de chaque equipe, en petite image integree au fichier (data:) ; absent : ses initiales. */
+  logos: Record<string, string>
 }
+
+/**
+ * Seules les images integrees au resume sont gardees : une adresse vers un site ferait sortir
+ * l'ecran sur internet a chaque affichage, et il doit marcher sans reseau.
+ */
+const IMAGE_INTEGREE = /^data:image\/(?:webp|png|jpeg|gif);base64,[A-Za-z0-9+/]+={0,2}$/
 
 const estObjet = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v)
 
@@ -121,6 +129,11 @@ export function lireResume(texte: string): ResumeTableau {
     ),
     resultats: liste(brut.resultats),
     axes: liste(brut.axes),
+    logos: estObjet(brut.logos)
+      ? Object.fromEntries(
+          Object.entries(brut.logos).filter((e): e is [string, string] => typeof e[1] === 'string' && IMAGE_INTEGREE.test(e[1])),
+        )
+      : {},
   }
 }
 
@@ -141,6 +154,20 @@ export function nomCourtEquipe(nom: string): string {
   // le numero d'equipe distingue l'equipe 2 de l'equipe 1 du meme club : on le garde
   const numero = /[\s-](\d)\s*$/.exec(nom)?.[1]
   return numero && !court.endsWith(numero) ? `${court} ${numero}` : court
+}
+
+/** « Sablons Rhodia » -> « SR », « Nord Drome 2 » -> « ND » : a la place d'un logo absent. */
+export function initialesEquipe(nom: string): string {
+  const mots = nomCourtEquipe(nom)
+    .split(/[\s-]+/)
+    .filter((m) => m && !/^\d+$/.test(m))
+  return (
+    mots
+      .map((m) => m[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || '?'
+  )
 }
 
 /** « J3 », ou pour un match de coupe « Coupe de France · 1er tour » (court : « Coupe »). */

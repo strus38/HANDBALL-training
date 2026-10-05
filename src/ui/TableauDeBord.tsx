@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import { CLUB, type TableauDeBordClub } from '../club'
 import {
   ErreurResume,
+  initialesEquipe,
   lireResume,
   libelleObjectif,
   manche,
@@ -51,6 +52,16 @@ function Forme({ forme }: { forme: string[] }) {
           {r}
         </i>
       ))}
+    </span>
+  )
+}
+
+/** Le logo de l'equipe, venu dans le resume ; a defaut, ses initiales. */
+function Logo({ logos, equipe, grand }: { logos: Record<string, string>; equipe: string; grand?: boolean }) {
+  const image = logos[equipe]
+  return (
+    <span className={grand ? 'logo-equipe grand' : 'logo-equipe'} aria-hidden="true">
+      {image ? <img src={image} alt="" /> : initialesEquipe(equipe)}
     </span>
   )
 }
@@ -105,6 +116,13 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
   const poule = obj?.poule && r?.poules[obj.poule] ? obj.poule : Object.keys(r?.poules ?? {})[0]
   const classement = (poule && r?.poules[poule]) || []
   const maxRang = Math.max(1, ...(obj?.rangs ?? [1]))
+  const face = (equipe: string) =>
+    r && (
+      <span className="equipe-face">
+        <Logo logos={r.logos} equipe={equipe} grand />
+        <span>{equipe === r.club ? r.club_court : nomCourtEquipe(equipe)}</span>
+      </span>
+    )
 
   return (
     <div className="panneau-principal tableau-club">
@@ -147,10 +165,17 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
             Prochain match · {manche(prochain)} · {dateCourte(prochain.date, prochain.provisoire)} ·{' '}
             {prochain.domicile ? 'à domicile' : "à l'extérieur"}
             {prochain.salle?.nom ? ` · ${prochain.salle.nom}${prochain.salle.ville ? `, ${prochain.salle.ville}` : ''}` : ''}
+            {prochain.cle && (
+              <>
+                {' '}
+                <span className="match-cle">Match clé</span>
+              </>
+            )}
           </p>
-          <h2 title={prochain.adversaire}>
-            {r.club_court} contre {nomCourtEquipe(prochain.adversaire)}{' '}
-            {prochain.cle && <span className="match-cle">Match clé</span>}
+          <h2 className="face-a-face" title={prochain.adversaire}>
+            {face(prochain.domicile ? r.club : prochain.adversaire)}
+            <span className="contre">contre</span>
+            {face(prochain.domicile ? prochain.adversaire : r.club)}
           </h2>
           <ul className="chiffres-cles">
             <li>
@@ -223,7 +248,12 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
               {classement.map((l) => (
                 <tr key={l.equipe} className={l.equipe === r.club ? 'notre-equipe' : undefined}>
                   <td>{l.rang}</td>
-                  <td>{l.equipe}</td>
+                  <td>
+                    <span className="equipe-ligne">
+                      <Logo logos={r.logos} equipe={l.equipe} />
+                      {l.equipe}
+                    </span>
+                  </td>
                   <td>
                     <strong>{l.pts}</strong>
                   </td>
@@ -244,7 +274,10 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
 
       {r && adv && (
         <section className="carte">
-          <h2 title={adv.equipe}>Repérage · {nomCourtEquipe(adv.equipe)}</h2>
+          <h2 className="equipe-ligne" title={adv.equipe}>
+            <Logo logos={r.logos} equipe={adv.equipe} />
+            Repérage · {nomCourtEquipe(adv.equipe)}
+          </h2>
           <ul className="chiffres-cles">
             <li>
               <strong>{virgule(adv.bp_moy)}</strong>
@@ -306,8 +339,13 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
                 <tr key={`${m.journee}-${m.adversaire}`}>
                   <td title={manche(m)}>{manche(m, true)}</td>
                   <td title={m.adversaire}>
-                    {nomCourtEquipe(m.adversaire)} {m.domicile ? '(dom.)' : '(ext.)'}{' '}
-                    {m.cle && <span className="match-cle">Match clé</span>}
+                    <span className="equipe-ligne">
+                      <Logo logos={r.logos} equipe={m.adversaire} />
+                      <span>
+                        {nomCourtEquipe(m.adversaire)} {m.domicile ? '(dom.)' : '(ext.)'}{' '}
+                        {m.cle && <span className="match-cle">Match clé</span>}
+                      </span>
+                    </span>
                   </td>
                   <td>{dateCourte(m.date, m.provisoire)}</td>
                   <td>{m.p_victoire != null ? `${m.p_victoire} %` : '–'}</td>
