@@ -11,7 +11,7 @@
 
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { importerFichier, lireResume, ErreurResume, libelleObjectif, nomCourtEquipe, ordinal } from '../.build-tests/domaine.mjs'
+import { importerFichier, lireResume, ErreurResume, libelleObjectif, manche, nomCourtEquipe, ordinal } from '../.build-tests/domaine.mjs'
 
 let ok = 0, ko = 0
 const verifier = (nom, condition, detail = '') => {
@@ -78,6 +78,9 @@ verifier('un autre format est refusé', refuse(JSON.stringify({ v: 2, poules: {}
 verifier('l objectif se dit en clair', libelleObjectif(3) === 'finir dans les 3 premiers' && libelleObjectif(1) === 'finir 1er')
 verifier('les rangs se disent en clair', ordinal(1) === '1er' && ordinal(3) === '3e' && ordinal(null) === '–')
 verifier('le nom court garde ce qui distingue l équipe', nomCourtEquipe('P16M DIV- CLUB BRAVO SUD') === 'Bravo Sud')
+verifier('et le numéro de l équipe', nomCourtEquipe('P16M DIV2 RTE CLUB BRAVO SUD 2') === 'Bravo Sud 2' && nomCourtEquipe('CLUB CHARLIE-2') === 'Charlie-2')
+verifier('un match de coupe se dit par son tour', manche({ journee: null, coupe: 'Coupe de France', tour: '2EME TOUR' }) === 'Coupe de France · 2e tour'
+  && manche({ journee: null, coupe: 'Coupe de France', tour: '1ER TOUR' }, true) === 'Coupe' && manche({ journee: 3 }) === 'J3')
 
 console.log(`\n=== ${ok} reussis, ${ko} echoues ===`)
 process.exit(ko === 0 ? 0 : 1)

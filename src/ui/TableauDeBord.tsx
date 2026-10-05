@@ -15,6 +15,7 @@ import {
   ErreurResume,
   lireResume,
   libelleObjectif,
+  manche,
   nomCourtEquipe,
   ordinal,
   type MatchResume,
@@ -143,7 +144,7 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
       {r && prochain && (
         <section className="carte carte-match">
           <p className="chapeau-carte">
-            Prochain match · J{prochain.journee ?? '?'} · {dateCourte(prochain.date, prochain.provisoire)} ·{' '}
+            Prochain match · {manche(prochain)} · {dateCourte(prochain.date, prochain.provisoire)} ·{' '}
             {prochain.domicile ? 'à domicile' : "à l'extérieur"}
             {prochain.salle?.nom ? ` · ${prochain.salle.nom}${prochain.salle.ville ? `, ${prochain.salle.ville}` : ''}` : ''}
           </p>
@@ -161,8 +162,8 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
               <span>victoire estimée, équipe au complet</span>
             </li>
             <li>
-              <strong>{signe(prochain.enjeu)}</strong>
-              <span>points de chance de {libelleObjectif(obj?.cible)} en jeu</span>
+              <strong>{prochain.coupe ? '–' : signe(prochain.enjeu)}</strong>
+              <span>{prochain.coupe ? 'match de coupe : hors classement' : `points de chance de ${libelleObjectif(obj?.cible)} en jeu`}</span>
             </li>
             {adv?.passe && adv.passe.face_a_face.length > 0 && (
               <li>
@@ -303,7 +304,7 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
             <tbody>
               {obj.matchs.slice(1, 7).map((m: MatchResume) => (
                 <tr key={`${m.journee}-${m.adversaire}`}>
-                  <td>J{m.journee ?? '?'}</td>
+                  <td title={manche(m)}>{manche(m, true)}</td>
                   <td title={m.adversaire}>
                     {nomCourtEquipe(m.adversaire)} {m.domicile ? '(dom.)' : '(ext.)'}{' '}
                     {m.cle && <span className="match-cle">Match clé</span>}

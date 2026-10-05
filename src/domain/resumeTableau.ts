@@ -14,6 +14,9 @@ export class ErreurResume extends Error {}
 
 export interface MatchResume {
   journee: number | null
+  /** Match de coupe : son nom et son tour (« 1ER TOUR ») ; il n'a pas de journee. */
+  coupe?: string | null
+  tour?: string | null
   date: string | null
   provisoire?: boolean
   adversaire: string
@@ -134,5 +137,16 @@ export function nomCourtEquipe(nom: string): string {
     .replace(/^P\d+[MF]?\s*(DIV\d*)?\s*-?\s*/i, '')
     .split(/\s+/)
     .filter((m) => !/^(HB|HBC|HANDBALL|CLUB|RTE|ENTENTE|-)$/i.test(m))
-  return (mots.slice(0, 2).join(' ') || nom).toLowerCase().replace(/(^|[\s-])\S/g, (c) => c.toUpperCase())
+  const court = (mots.slice(0, 2).join(' ') || nom).toLowerCase().replace(/(^|[\s-])\S/g, (c) => c.toUpperCase())
+  // le numero d'equipe distingue l'equipe 2 de l'equipe 1 du meme club : on le garde
+  const numero = /[\s-](\d)\s*$/.exec(nom)?.[1]
+  return numero && !court.endsWith(numero) ? `${court} ${numero}` : court
+}
+
+/** « J3 », ou pour un match de coupe « Coupe de France · 1er tour » (court : « Coupe »). */
+export function manche(m: Pick<MatchResume, 'journee' | 'coupe' | 'tour'>, court = false): string {
+  if (!m.coupe) return `J${m.journee ?? '?'}`
+  if (court) return 'Coupe'
+  const tour = (m.tour ?? '').toLowerCase().replace(/(\d+)\s*(?:eme|ème)\b/, '$1e')
+  return tour ? `${m.coupe} · ${tour}` : m.coupe
 }
