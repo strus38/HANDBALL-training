@@ -246,12 +246,17 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
             </thead>
             <tbody>
               {classement.map((l) => (
-                <tr key={l.equipe} className={l.equipe === r.club ? 'notre-equipe' : undefined}>
-                  <td>{l.rang}</td>
+                <tr
+                  key={l.equipe}
+                  className={l.equipe === r.club ? 'notre-equipe' : l.forfait ? 'forfait' : undefined}
+                  title={l.forfait ? 'Forfait général : ses matchs ne comptent pas cette saison' : undefined}
+                >
+                  <td>{l.rang ?? '–'}</td>
                   <td>
                     <span className="equipe-ligne">
                       <Logo logos={r.logos} equipe={l.equipe} />
                       {l.equipe}
+                      {l.forfait && <span className="etiquette-forfait">forfait</span>}
                     </span>
                   </td>
                   <td>
@@ -309,9 +314,26 @@ export function TableauDeBord({ tableau, recuperation, onCreerSeance }: Props) {
               .
             </p>
           )}
+          {(adv.niveau ?? 0) > 0 && (
+            <p className="bandeau-tableau">
+              Joue cette saison une division au-dessus de la nôtre{adv.poule_libelle ? ` (${adv.poule_libelle})` : ''} : niveau
+              potentiellement supérieur, compté dans la victoire estimée.
+            </p>
+          )}
+          {((adv.passe?.niveau ?? 0) > 0 || adv.dessus) && (
+            <p className="bandeau-tableau">
+              La saison passée, en {(adv.dessus ?? adv.passe)?.division ?? 'division au-dessus'} :{' '}
+              {(adv.dessus ?? adv.passe)?.rangs.map((x) => `${ordinal(x.rang)} sur ${x.equipes}`).join(', ')}
+              {(adv.dessus ?? adv.passe)?.continuite
+                ? ` ; ${(adv.dessus ?? adv.passe)?.continuite?.deja} de leurs ${(adv.dessus ?? adv.passe)?.continuite?.sur} joueurs de cette saison y jouaient`
+                : ''}
+              . Niveau potentiellement supérieur au nôtre.
+            </p>
+          )}
           {adv.passe && (
             <p className="note-tableau">
-              {adv.passe.saison} : {adv.passe.v}-{adv.passe.n}-{adv.passe.d},{' '}
+              {adv.passe.saison}
+              {(adv.passe.niveau ?? 0) > 0 ? ` (${adv.passe.division ?? 'division au-dessus'})` : ''} : {adv.passe.v}-{adv.passe.n}-{adv.passe.d},{' '}
               {adv.passe.rangs.map((x) => `${ordinal(x.rang)} de la poule ${x.poule}`).join(', ')}
               {adv.passe.continuite
                 ? ` ; ${adv.passe.continuite.deja} de leurs ${adv.passe.continuite.sur} joueurs de cette saison étaient déjà là.`

@@ -29,7 +29,8 @@ export interface MatchResume {
 }
 
 export interface LigneClassement {
-  rang: number
+  /** Absent pour une equipe en forfait general : elle reste affichee, en bas, sans rang. */
+  rang: number | null
   equipe: string
   pts: number
   j: number
@@ -40,6 +41,22 @@ export interface LigneClassement {
   bc: number
   diff: number
   forme: string[]
+  forfait?: boolean
+}
+
+/** Bilan d'une saison passee ; niveau 1 : dans la division au-dessus de celle du club. */
+export interface BilanPasse {
+  saison: string
+  niveau?: number
+  division?: string | null
+  j: number
+  v: number
+  n: number
+  d: number
+  bp_moy: number
+  bc_moy: number
+  rangs: { poule: string; rang: number | null; equipes: number }[]
+  continuite: { deja: number; sur: number } | null
 }
 
 export interface EquipeResume {
@@ -54,18 +71,12 @@ export interface EquipeResume {
   arrets_pct: number | null
   buteurs: { num: number | null; buts: number; m: number; tirs: number | null; reussite: number | null; pen: number }[]
   gardiens: { num: number | null; m: number; pct: number | null; estime: boolean }[]
-  passe: {
-    saison: string
-    j: number
-    v: number
-    n: number
-    d: number
-    bp_moy: number
-    bc_moy: number
-    rangs: { poule: string; rang: number | null; equipes: number }[]
-    face_a_face: { date: string | null; dom: boolean; score: string; res: string }[]
-    continuite: { deja: number; sur: number } | null
-  } | null
+  passe: (BilanPasse & { face_a_face: { date: string | null; dom: boolean; score: string; res: string }[] }) | null
+  /** Le club jouait aussi, la saison passee, dans la division au-dessus. */
+  dessus?: BilanPasse | null
+  /** Division de cette saison, pour un adversaire de coupe : 1 = au-dessus de celle du club. */
+  niveau?: number | null
+  poule_libelle?: string | null
 }
 
 export interface ResumeTableau {

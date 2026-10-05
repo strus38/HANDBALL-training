@@ -93,6 +93,10 @@ verifier('l image intégrée est gardée', avecLogos.logos['CLUB ALPHA'] === ima
 verifier('une adresse, un autre type ou un texte abîmé sont écartés', Object.keys(avecLogos.logos).join() === 'CLUB ALPHA',
   Object.keys(avecLogos.logos).join())
 verifier('sans logos : rien, sans casser l écran', Object.keys(resume.logos).length === 0)
+const avecForfait = lireResume(JSON.stringify({ v: 1, poules: { 71: [
+  { rang: 1, equipe: 'CLUB ALPHA', pts: 3, j: 1, v: 1, n: 0, d: 0, bp: 30, bc: 20, diff: 10, forme: ['V'] },
+  { rang: null, equipe: 'CLUB GOLF', pts: 0, j: 0, v: 0, n: 0, d: 0, bp: 0, bc: 0, diff: 0, forme: [], forfait: true }] } }))
+verifier('une équipe en forfait général arrive sans rang, marquée', avecForfait.poules['71'][1].forfait === true && avecForfait.poules['71'][1].rang === null)
 verifier('à défaut de logo, les initiales', initialesEquipe('P16M DIV- CLUB BRAVO SUD') === 'BS'
   && initialesEquipe('P16M DIV2 RTE CLUB BRAVO SUD 2') === 'BS' && initialesEquipe('') === '?')
 
